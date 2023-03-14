@@ -11,6 +11,5 @@ struct PhotosLibrary: Codable {
         for item in imgs {
             photos.append(item)
         }
-        saveLibrary(lib: self)
     }
 }

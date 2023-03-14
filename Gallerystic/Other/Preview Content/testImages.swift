@@ -23,11 +23,11 @@ var testImagesModels: [Photo] {
     return photoArr
 }
 
-var testLibrary: PhotosLibrary {
-    var lib: PhotosLibrary
-    
-    return lib
-}
+//var testLibrary: PhotosLibrary {
+//    var lib: PhotosLibrary
+//    
+//    return lib
+//}
 
 func saveTestImagesToLibrary() {
     var photoArr: [Photo] = []

@@ -7,7 +7,7 @@ import PhotosUI
 
 struct ContentView: View {
     @Binding var library: PhotosLibrary
-    @State private var importSelectedItem: PhotosPickerItem? = nil
+    @State private var importSelectedItems = [PhotosPickerItem]()
     
     let columns = [
         GridItem(.flexible()),
@@ -38,21 +38,25 @@ struct ContentView: View {
             }
             .toolbar {
                 PhotosPicker(
-                    selection: $importSelectedItem,
+                    selection: $importSelectedItems,
                     matching: .images,
                     photoLibrary: .shared()
                 ) { Image(systemName: "plus") }
-                    .onChange(of: importSelectedItem) { newItem in
+                    .onChange(of: importSelectedItems) { _ in
                         Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                                let uiImage = UIImage(data: data)
-                                if let uiImage {
-                                    let uuid = writeImageToFile(uiImage: uiImage)
-                                    if let uuid {
-                                        library.addImages([Photo(id: uuid)])
+                            for item in importSelectedItems {
+                                if let data = try? await item.loadTransferable(type: Data.self) {
+                                    let uiImage = UIImage(data: data)
+                                    if let uiImage {
+                                        let uuid = writeImageToFile(uiImage: uiImage)
+                                        if let uuid {
+                                            library.addImages([Photo(id: uuid)])
+                                        }
                                     }
                                 }
                             }
+                            saveLibrary(lib: library)
+                            importSelectedItems = []
                         }
                     }
             }

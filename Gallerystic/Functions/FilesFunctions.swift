@@ -35,7 +35,7 @@ func readImageFromFile(id: UUID) -> UIImage? {
 }
 
 func writeImageToFile(uiImage: UIImage) -> UUID? {
-    if let data = uiImage.jpegData(compressionQuality: 1) {
+    if let data = uiImage.jpegData(compressionQuality: 0.8) {
         let uuid = UUID()
         let filepath = getDocumentsDirectory().appendingPathComponent(uuid.uuidString + ".jpg")
 
