@@ -17,7 +17,7 @@ var testImagesModels: [Photo] {
     for item in testImages {
         let uuid = UUID()
         if UIImage(named: item) != nil {
-            photoArr.append(Photo(id: uuid))
+            photoArr.append(Photo(id: uuid, status: .normal, creationDate: Date(), keywords: []))
         }
     }
     return photoArr
@@ -35,7 +35,7 @@ func saveTestImagesToLibrary() {
         if let uiImage = UIImage(named: item) {
             let uuid = writeImageToFile(uiImage: uiImage)
             if let uuid {
-                photoArr.append(Photo(id: uuid))
+                photoArr.append(Photo(id: uuid, status: .normal, creationDate: Date(), keywords: []))
             }
         }
     }

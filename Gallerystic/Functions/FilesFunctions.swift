@@ -20,11 +20,12 @@ func saveLibrary(lib: PhotosLibrary) {
 func loadLibrary() -> PhotosLibrary {
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
     
-    guard let stringData, let library: PhotosLibrary = try? JSONDecoder().decode(PhotosLibrary.self, from: stringData) else {
+    guard let stringData else {
         let newLibrary = PhotosLibrary(photos: [])
         saveLibrary(lib: newLibrary)
         return newLibrary
     }
+    let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
     return library
 }
 

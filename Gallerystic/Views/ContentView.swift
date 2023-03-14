@@ -9,32 +9,10 @@ struct ContentView: View {
     @Binding var library: PhotosLibrary
     @State private var importSelectedItems = [PhotosPickerItem]()
     
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center) {
-                    ForEach(library.photos, id: \.self) { item in
-                        if let uiImage = readImageFromFile(id: item.id) {
-                            GeometryReader { gr in
-                                NavigationLink(destination: ImageDetailedView(selectedImage: item, library: library), label: {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(height: gr.size.width)
-                                })
-                            }
-                            .clipped()
-                            .aspectRatio(1, contentMode: .fit)
-                        }
-                    }
-                }
-                Spacer()
+            VStack {
+                PhotosGalleryView(library: $library)
             }
             .toolbar {
                 PhotosPicker(
@@ -48,9 +26,16 @@ struct ContentView: View {
                                 if let data = try? await item.loadTransferable(type: Data.self) {
                                     let uiImage = UIImage(data: data)
                                     if let uiImage {
+                                        let creationDate: Date
+                                        if let localID = item.itemIdentifier {
+                                            let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
+                                            creationDate = asset?.creationDate ?? Date()
+                                        } else {
+                                            creationDate = Date()
+                                        }
                                         let uuid = writeImageToFile(uiImage: uiImage)
                                         if let uuid {
-                                            library.addImages([Photo(id: uuid)])
+                                            library.addImages([Photo(id: uuid, status: .normal, creationDate: creationDate, keywords: [])])
                                         }
                                     }
                                 }
@@ -59,6 +44,10 @@ struct ContentView: View {
                             importSelectedItems = []
                         }
                     }
+            }
+        }
+        .onAppear {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
         }
     }

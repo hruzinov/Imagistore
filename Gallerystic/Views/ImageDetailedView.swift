@@ -6,7 +6,10 @@ import SwiftUI
 
 struct ImageDetailedView: View {
     @State var selectedImage: Photo
-    @State var library: PhotosLibrary
+    @Binding var library: PhotosLibrary
+    var photos: [Photo] {
+        library.filterPhotos(status: .normal)
+    }
     
     var body: some View {
         VStack {
@@ -19,7 +22,7 @@ struct ImageDetailedView: View {
             ScrollView(.horizontal) {
                 ScrollViewReader { scroll in
                     HStack {
-                        ForEach(library.photos, id: \.self) { item in
+                        ForEach(photos) { item in
                             if let uiImage = readImageFromFile(id: item.id) {
                                 Button {
                                     self.selectedImage = item
@@ -40,6 +43,40 @@ struct ImageDetailedView: View {
                     }
                 }
             }
+            HStack {
+                Spacer()
+                Menu {
+                    Button(role: .destructive) {
+                        let deletedImage = selectedImage
+                        if let photoIndex = library.photos.firstIndex(of: deletedImage) {
+                            
+                            if photos.count > 1 {
+                                if photoIndex == 0 {
+                                    selectedImage = photos[photoIndex+1]
+                                } else {
+                                    selectedImage = photos[photoIndex-1]
+                                }
+                            }
+                            
+                            library.photos.remove(at: photoIndex)
+                            
+//                            library.removeImages([deletedImage])
+                        }
+                    } label: {
+                        Text("Confirm").foregroundColor(Color.red)
+                    }
+
+                } label: {
+                    Image(systemName: "trash").font(.title2)
+                }
+//                Button {
+//                    <#code#>
+//                } label: {
+//                    Image(systemName: "trash")
+//                }
+
+            }
+            .padding(.top, 5)
         }
     }
 }

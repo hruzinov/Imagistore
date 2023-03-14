@@ -12,4 +12,22 @@ struct PhotosLibrary: Codable {
             photos.append(item)
         }
     }
+    
+    mutating func removeImages(_ imgs: [Photo]) {
+        for item in imgs {
+            if let photoIndex = photos.firstIndex(of: item) {
+                photos[photoIndex].status = .deleted
+            }
+        }
+    }
+    
+    func filterPhotos(status: PhotoStatus) -> [Photo] {
+        var newArray = [Photo]()
+        for item in photos {
+            if item.status == status {
+                newArray.append(item)
+            }
+        }
+        return newArray
+    }
 }

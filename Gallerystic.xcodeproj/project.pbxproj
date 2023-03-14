@@ -17,6 +17,7 @@
 		493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FA29BE2F81006F9CD8 /* Assets.xcassets */; };
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
 		4937530729BE3202006F9CD8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4937530629BE3202006F9CD8 /* GoogleService-Info.plist */; };
+		497647F529C0C102001C3FE4 /* PhotosGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4937530629BE3202006F9CD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosGalleryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,10 +115,19 @@
 		4937530529BE2FA6006F9CD8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				497647F329C0C0EE001C3FE4 /* UI */,
 				493752F829BE2F7F006F9CD8 /* ContentView.swift */,
 				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		497647F329C0C0EE001C3FE4 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */,
+			);
+			path = UI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,6 +207,7 @@
 			files = (
 				49273B6629BE431C00ECF488 /* testImages.swift in Sources */,
 				491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */,
+				497647F529C0C102001C3FE4 /* PhotosGalleryView.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
@@ -333,6 +345,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -362,6 +375,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

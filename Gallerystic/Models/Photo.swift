@@ -4,6 +4,13 @@
 
 import SwiftUI
 
-struct Photo: Hashable, Codable {
+struct Photo: Identifiable, Hashable, Codable {
     var id: UUID
+    var status: PhotoStatus
+    var creationDate: Date
+    var keywords: [String]
+}
+
+enum PhotoStatus: Codable {
+    case normal, deleted
 }
