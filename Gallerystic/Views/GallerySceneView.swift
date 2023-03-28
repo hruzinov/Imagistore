@@ -5,21 +5,27 @@
 import SwiftUI
 import PhotosUI
 
-struct ContentView: View {
+struct GallerySceneView: View {
     @Binding var library: PhotosLibrary
+    @State var selectedImage: Photo?
     @State private var importSelectedItems = [PhotosPickerItem]()
+    @State var showGalleryOverlay: Bool = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
-                PhotosGalleryView(library: $library)
+                PhotosGalleryView(library: $library, selectedImage: $selectedImage)
             }
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                PhotosPicker(
-                    selection: $importSelectedItems,
-                    matching: .images,
-                    photoLibrary: .shared()
-                ) { Image(systemName: "plus") }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    PhotosPicker(
+                        selection: $importSelectedItems,
+                        matching: .images,
+                        photoLibrary: .shared()
+                    ) {
+                        Image(systemName: "plus")
+                    }
                     .onChange(of: importSelectedItems) { _ in
                         Task {
                             for item in importSelectedItems {
@@ -43,18 +49,23 @@ struct ContentView: View {
                             saveLibrary(lib: library)
                             importSelectedItems = []
                         }
+                        
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                }
             }
+            
         }
+
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
         }
     }
 }
-
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView(library: .constant(PhotosLibrary(photos: [Photo])))
-//    }
-//}

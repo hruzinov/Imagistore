@@ -13,10 +13,11 @@
 		49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B6329BE413E00ECF488 /* ImageDetailedView.swift */; };
 		49273B6629BE431C00ECF488 /* testImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B6529BE431C00ECF488 /* testImages.swift */; };
 		493752F729BE2F7F006F9CD8 /* GallerysticApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */; };
-		493752F929BE2F7F006F9CD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F829BE2F7F006F9CD8 /* ContentView.swift */; };
+		493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */; };
 		493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FA29BE2F81006F9CD8 /* Assets.xcassets */; };
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
 		4937530729BE3202006F9CD8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4937530629BE3202006F9CD8 /* GoogleService-Info.plist */; };
+		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
 		497647F529C0C102001C3FE4 /* PhotosGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,10 +30,11 @@
 		49273B6529BE431C00ECF488 /* testImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testImages.swift; sourceTree = "<group>"; };
 		493752F329BE2F7F006F9CD8 /* Gallerystic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gallerystic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerysticApp.swift; sourceTree = "<group>"; };
-		493752F829BE2F7F006F9CD8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerySceneView.swift; sourceTree = "<group>"; };
 		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4937530629BE3202006F9CD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosGalleryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,7 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				497647F329C0C0EE001C3FE4 /* UI */,
-				493752F829BE2F7F006F9CD8 /* ContentView.swift */,
+				493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */,
 				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
 			);
 			path = Views;
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */,
+				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -211,7 +214,8 @@
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
-				493752F929BE2F7F006F9CD8 /* ContentView.swift in Sources */,
+				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,
+				493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */,
 				493752F729BE2F7F006F9CD8 /* GallerysticApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

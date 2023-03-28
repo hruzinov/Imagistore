@@ -10,8 +10,8 @@ struct GallerysticApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(library: $photosLibrary)
-                .preferredColorScheme(.dark)
+            GallerySceneView(library: $photosLibrary)
+//                .preferredColorScheme(.dark)/
         }
     }
 }

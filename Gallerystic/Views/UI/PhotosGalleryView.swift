@@ -1,7 +1,4 @@
 //
-//  PhotosGalleryView.swift
-//  Gallerystic
-//
 //  Created by Evhen Gruzinov on 14.03.2023.
 //
 
@@ -9,31 +6,47 @@ import SwiftUI
 
 struct PhotosGalleryView: View {
     @Binding var library: PhotosLibrary
-    var photos: [Photo] {
-        library.filterPhotos(status: .normal)
-    }
+    @Binding var selectedImage: Photo?
     
     let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
+        GridItem(.flexible(), spacing: 1),
+        GridItem(.flexible(), spacing: 1),
+        GridItem(.flexible(), spacing: 1)
     ]
     
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: columns, alignment: .center) {
-                ForEach(photos) { item in
-                    if let uiImage = readImageFromFile(id: item.id) {
-                        GeometryReader { gr in
-                            NavigationLink(destination: ImageDetailedView(selectedImage: item, library: $library), label: {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: gr.size.width)
-                            })
+            LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
+                ForEach($library.photos) { $item in
+                    if item.status == .normal {
+                        if let uiImage = item.imageData {
+                            GeometryReader { gr in
+                                NavigationLink {
+                                    ImageDetailedView(selectedImage: item.id, library: $library)
+                                        .preferredColorScheme(.dark)
+                                } label: {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: gr.size.width)
+                                }
+
+                                
+//                                Button {
+//                                    withAnimation {
+//                                        selectedImage = item
+//                                        showGalleryOverlay = true
+//                                    }
+//                                } label: {
+//                                    Image(uiImage: uiImage)
+//                                        .resizable()
+//                                        .scaledToFill()
+//                                        .frame(height: gr.size.width)
+//                                }
+                            }
+                            .clipped()
+                            .aspectRatio(1, contentMode: .fit)
                         }
-                        .clipped()
-                        .aspectRatio(1, contentMode: .fit)
                     }
                 }
             }
