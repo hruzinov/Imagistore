@@ -30,19 +30,6 @@ struct PhotosGalleryView: View {
                                         .scaledToFill()
                                         .frame(height: gr.size.width)
                                 }
-
-                                
-//                                Button {
-//                                    withAnimation {
-//                                        selectedImage = item
-//                                        showGalleryOverlay = true
-//                                    }
-//                                } label: {
-//                                    Image(uiImage: uiImage)
-//                                        .resizable()
-//                                        .scaledToFill()
-//                                        .frame(height: gr.size.width)
-//                                }
                             }
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)

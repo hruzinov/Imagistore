@@ -24,41 +24,41 @@ struct ImageDetailedView: View {
                         }
                     }
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-                
-                
-                
-                
-                //            ScrollView(.horizontal) {
-                //                ScrollViewReader { scroll in
-                //                    HStack {
-                //                        ForEach($library.photos) { $item in
-                //                            if item.status == .normal {
-                //                                if let uiImage = item.imageData {
-                //                                    Button {
-                //                                        self.selectedImage = item
-                //                                    } label: {
-                //                                        Image(uiImage: uiImage)
-                //                                            .resizable()
-                //                                            .scaledToFit()
-                //                                            .frame(width: 100, height: 100)
-                //                                            .overlay(selectedImage == item ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:4) : nil)
-                //                                            .padding(2)
-                //                                            .id(item.id)
-                //                                    }
-                //                                }
-                //                            }
-                //                        }
-                //                    }
-                //                    .onAppear {
-                //                        scroll.scrollTo(selectedImage.id)
-                //                    }
-                //                }
-                //            }
-                
-                
-                
-                
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .overlay(
+                    ScrollView(.horizontal) {
+                        ScrollViewReader { scroll in
+                            HStack {
+                                ForEach($library.photos) { $item in
+                                    if item.status == .normal {
+                                        if let uiImage = item.imageData {
+                                            Button {
+                                                self.selectedImage = item.id
+                                            } label: {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 80, height: 80)
+                                                    .overlay(selectedImage == item.id ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:4) : nil)
+                                                    .padding(2)
+                                                    .id(item.id)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .onAppear {
+                                scroll.scrollTo(selectedImage, anchor: .center)
+                            }
+                            .onChange(of: selectedImage) { newValue in
+                                withAnimation {
+                                    scroll.scrollTo(selectedImage)
+                                }
+                                
+                            }
+                        }
+                    }
+                    , alignment: .bottom)
                 
                 //                    HStack {
                 //                        Spacer()
@@ -80,7 +80,6 @@ struct ImageDetailedView: View {
                 //                    .padding(.bottom, 10)
                 //                    .padding(.horizontal, 20)
             }
-            //            }
         }
     }
 }
