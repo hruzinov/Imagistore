@@ -5,11 +5,13 @@
 import Foundation
 
 struct PhotosLibrary: Codable {
+    var libraryVersion: Int
     var photos: [Photo]
     
     mutating func addImages(_ imgs: [Photo]) {
         for item in imgs {
             photos.append(item)
+//            debugPrint(item)
         }
     }
     
@@ -30,4 +32,26 @@ struct PhotosLibrary: Codable {
         }
         return newArray
     }
+    
+    func withSortedPhotos(by: PhotosSortArgument) -> PhotosLibrary {
+        var newPhotos = photos
+        switch by {
+        case .importDate:
+            newPhotos.sort { p1, p2 in
+                p1.importDate < p2.importDate
+            }
+        case .creationDate:
+            newPhotos.sort { p1, p2 in
+                p1.creationDate < p2.creationDate
+            }
+        }
+        var sortedLibrary = self
+        sortedLibrary.photos = newPhotos
+        return sortedLibrary
+    }
+    
+    enum PhotosSortArgument {
+        case importDate, creationDate
+    }
+    
 }

@@ -6,9 +6,10 @@ import SwiftUI
 
 struct Photo: Identifiable, Hashable, Codable {
     var id: UUID
-    lazy var imageData: UIImage? = readImageFromFile(id: id)
+    lazy var uiImage: UIImage? = readImageFromFile(id: id)
     var status: PhotoStatus
     var creationDate: Date
+    var importDate: Date
     var keywords: [String]
 }
 

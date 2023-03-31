@@ -7,14 +7,15 @@ import PhotosUI
 
 struct GallerySceneView: View {
     @Binding var library: PhotosLibrary
-    @State var selectedImage: Photo?
+//    @State var selectedImage: Photo?
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
     
     var body: some View {
         NavigationStack {
             VStack {
-                PhotosGalleryView(library: $library, selectedImage: $selectedImage)
+                PhotosGalleryView(library: $library)
+//                PhotosGalleryView(library: $library, selectedImage: $selectedImage)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -41,7 +42,7 @@ struct GallerySceneView: View {
                                         }
                                         let uuid = writeImageToFile(uiImage: uiImage)
                                         if let uuid {
-                                            library.addImages([Photo(id: uuid, status: .normal, creationDate: creationDate, keywords: [])])
+                                            library.addImages([Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), keywords: [])])
                                         }
                                     }
                                 }

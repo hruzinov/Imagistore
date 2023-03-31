@@ -5,6 +5,7 @@
 import SwiftUI
 
 private let libraryPath = getDocumentsDirectory().appendingPathComponent("library.json")
+private let nowLibVersion = 1
 
 func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -21,12 +22,25 @@ func loadLibrary() -> PhotosLibrary {
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
     
     guard let stringData else {
-        let newLibrary = PhotosLibrary(photos: [])
+        let newLibrary = PhotosLibrary(libraryVersion: nowLibVersion, photos: [])
         saveLibrary(lib: newLibrary)
         return newLibrary
     }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
-    return library
+    
+    // For Future versions
+//    if library.libraryVersion < nowLibVersion {
+//        switch library.libraryVersion {
+//        case 1:
+//            Some func
+//        default:
+//            print("Unknown library version: \(String(describing: library.libraryVersion))")
+//        }
+//
+//        saveLibrary(lib: library)
+//    }
+        
+    return library.withSortedPhotos(by: .creationDate)
 }
 
 func readImageFromFile(id: UUID) -> UIImage? {
