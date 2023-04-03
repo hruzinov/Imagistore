@@ -23,11 +23,24 @@ struct AlbumBlockView: View {
                         .clipped()
                         .aspectRatio(1, contentMode: .fit)
                         .cornerRadius(5)
+                        .overlay(
+                            ZStack {
+                                Text(String(library.photos.filter({ img in
+                                    img.status == .normal
+                                }).count))
+                                .padding(5)
+                                .background {
+                                    Circle().fill(Color.white).opacity(0.7)
+                                }
+                            }.padding(3)
+                        , alignment: .bottomTrailing)
                 }
             } else {
                 VStack {
                     Spacer()
-                    Image(systemName: "photo.on.rectangle").foregroundColor(.gray).font(.title)
+                    Image(systemName: "photo.on.rectangle")
+                        .foregroundColor(.gray)
+                        .font(.title)
                     Spacer()
                 }
                 .frame(width: UIScreen.main.bounds.width / 2.3,
@@ -37,13 +50,12 @@ struct AlbumBlockView: View {
             }
             HStack {
                 VStack(alignment: .leading) {
-                    Text("All images").foregroundColor(.black)
-                    Text(String(library.photos.filter({ img in
-                        img.status == .normal
-                    }).count)).foregroundColor(Color.secondary)
+                    Text("All images")
+                    
                 }
                 Spacer()
             }
         }
+        .foregroundColor(.black)
     }
 }
