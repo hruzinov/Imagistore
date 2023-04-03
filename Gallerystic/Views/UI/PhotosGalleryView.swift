@@ -6,8 +6,9 @@ import SwiftUI
 
 struct PhotosGalleryView: View {
     @Binding var library: PhotosLibrary
+    @State var photosSelector: PhotoStatus
     @State var selectedImage: Photo?
-    
+        
     let columns = [
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
@@ -18,12 +19,11 @@ struct PhotosGalleryView: View {
         ScrollView {
             LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                 ForEach($library.photos) { $item in
-                    if item.status == .normal {
+                    if item.status == photosSelector {
                         if let uiImage = item.uiImage {
                             GeometryReader { gr in
                                 NavigationLink {
                                     ImageDetailedView(selectedImage: item.id, library: $library)
-//                                        .preferredColorScheme(.dark)
                                 } label: {
                                     Image(uiImage: uiImage)
                                         .resizable()

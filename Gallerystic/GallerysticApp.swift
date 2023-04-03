@@ -10,18 +10,16 @@ struct GallerysticApp: App {
     
     var body: some Scene {
         WindowGroup {
-            GallerySceneView(library: $photosLibrary)
-//                .preferredColorScheme(.dark)/
-//                .onAppear {
-//                    print(photosLibrary)
-//                    var sortedLibrary = photosLibrary
-//                    var newPhotos = photosLibrary.photos.sorted {
-//                        $0.creationDate < $1.creationDate
-//                    }
-//                    sortedLibrary.photos = newPhotos
-//                    photosLibrary = sortedLibrary
-//                    print(photosLibrary)
-//                }
+            TabView {
+                GallerySceneView(library: $photosLibrary, photosSelector: .normal, canAddNewPhotos: true)
+                    .tabItem {
+                        Label("Library", systemImage: "photo.artframe")
+                    }
+                AlbumsSceneView(library: $photosLibrary)
+                    .tabItem {
+                        Label("Albums", systemImage: "sparkles.rectangle.stack")
+                    }
+            }
         }
     }
 }
