@@ -16,8 +16,13 @@ struct GallerySceneView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                PhotosGalleryView(library: $library, photosSelector: photosSelector)
-//                PhotosGalleryView(library: $library, selectedImage: $selectedImage)
+                if library.photos.filter({ ph in
+                    ph.status == photosSelector
+                }).count > 0 {
+                    PhotosGalleryView(library: $library, photosSelector: photosSelector)
+                } else {
+                    Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
