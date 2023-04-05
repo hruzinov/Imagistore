@@ -9,6 +9,7 @@ struct Photo: Identifiable, Hashable, Codable {
     lazy var uiImage: UIImage? = readImageFromFile(id: id)
     var status: PhotoStatus
     var creationDate: Date
+    var deletionDate: Date?
     var importDate: Date
     var keywords: [String]
 }

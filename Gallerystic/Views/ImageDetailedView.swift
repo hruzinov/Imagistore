@@ -5,87 +5,45 @@
 import SwiftUI
 
 struct ImageDetailedView: View {
+    @Environment(\.dismiss) var dismiss
     @State var selectedImage: UUID
     @Binding var library: PhotosLibrary
+    @State var photosSelector: PhotoStatus
+    var filteredPhotos: [Photo] {
+        library.photos.filter { ph in
+            ph.status == photosSelector
+        }
+    }
     
     var body: some View {
-        ZStack {
-//            Color.black
-//                .ignoresSafeArea()
-            
-            VStack {
-                TabView(selection: $selectedImage) {
-                    ForEach($library.photos) { $item in
-                        if let uiImage = item.uiImage {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFit()
-                                .pinchToZoom()
+        NavigationStack {
+            ZStack {
+                VStack {
+                    TabView(selection: $selectedImage) {
+                        ForEach($library.photos.filter({ $ph in
+                            ph.status == photosSelector
+                        })) { $item in
+                            if let uiImage = item.uiImage {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .pinchToZoom()
+                            }
                         }
                     }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .padding(.top, 5)
+                    .padding(.bottom, 10)
+                    .padding(.horizontal, 20)
+                    .toolbar(.hidden, for: .tabBar)
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-//                .overlay(
-//                    ScrollView(.horizontal) {
-//                        ScrollViewReader { scroll in
-//                            HStack {
-//                                ForEach($library.photos) { $item in
-//                                    if item.status == .normal {
-//                                        if let uiImage = item.imageData {
-//                                            Button {
-//                                                self.selectedImage = item.id
-//                                            } label: {
-//                                                Image(uiImage: uiImage)
-//                                                    .resizable()
-//                                                    .scaledToFit()
-//                                                    .frame(width: 80, height: 80)
-//                                                    .overlay(selectedImage == item.id ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:4) : nil)
-//                                                    .padding(2)
-//                                                    .id(item.id)
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                            .onAppear {
-//                                scroll.scrollTo(selectedImage, anchor: .center)
-//                            }
-//                            .onChange(of: selectedImage) { newValue in
-//                                withAnimation {
-//                                    scroll.scrollTo(selectedImage)
-//                                }
-//
-//                            }
-//                        }
-//                    }
-//                    , alignment: .bottom)
-                
-                //                    HStack {
-                //                        Spacer()
-                //                        Menu {
-                //                            Button(role: .destructive) {
-                //                                let deletedImage = selectedImage
-                //                                if let photoIndex = library.photos.firstIndex(of: deletedImage) {
-                //                                    library.photos.remove(at: photoIndex)
-                //                                }
-                //                            } label: {
-                //                                Text("Confirm").foregroundColor(Color.red)
-                //                            }
-                //
-                //                        } label: {
-                //                            Image(systemName: "trash").font(.title2)
-                //                        }
-                //                    }
-                //                    .padding(.top, 5)
-                //                    .padding(.bottom, 10)
-                //                    .padding(.horizontal, 20)
             }
-        }
-        ScrollView(.horizontal) {
-            ScrollViewReader { scroll in
-                HStack {
-                    ForEach($library.photos) { $item in
-                        if item.status == .normal {
+            ScrollView(.horizontal) {
+                ScrollViewReader { scroll in
+                    HStack {
+                        ForEach($library.photos.filter({ $ph in
+                            ph.status == photosSelector
+                        })) { $item in
                             if let uiImage = item.uiImage {
                                 Button {
                                     self.selectedImage = item.id
@@ -101,18 +59,62 @@ struct ImageDetailedView: View {
                             }
                         }
                     }
-                }
-                .onAppear {
-                    scroll.scrollTo(selectedImage, anchor: .center)
-                }
-                .onChange(of: selectedImage) { newValue in
-                    withAnimation {
-                        scroll.scrollTo(selectedImage)
+                    .onAppear {
+                        scroll.scrollTo(selectedImage, anchor: .center)
                     }
-                    
+                    .onChange(of: selectedImage) { newValue in
+                        withAnimation {
+                            scroll.scrollTo(selectedImage)
+                        }
+                        
+                    }
                 }
             }
         }
-//        , alignment: .bottom)
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                if photosSelector == .deleted {
+                    Button {
+                        changePhotoStatus()
+                    } label: {
+                        Text("Recover")
+                    }
+                    
+                } else {
+                    Menu {
+                        Button(role: .destructive) {
+                            changePhotoStatus()
+                        } label: {
+                            Text("Confirm").foregroundColor(Color.red)
+                        }
+                        
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 20)
+        .foregroundColor(.blue)
+    }
+    
+    private func changePhotoStatus() {
+        let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
+        if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
+            if photosSelector == .normal {
+                library.removeImages([changedPhoto])
+            } else {
+                library.recoverImages([changedPhoto])
+            }
+            
+            if filteredPhotos.count == 0 {
+                dismiss()
+            } else if photoIndex == filteredPhotos.count {
+                selectedImage = filteredPhotos[photoIndex-1].id
+            } else {
+                selectedImage = filteredPhotos[photoIndex].id
+            }
+        }
     }
 }

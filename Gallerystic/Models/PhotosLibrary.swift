@@ -11,7 +11,6 @@ struct PhotosLibrary: Codable {
     mutating func addImages(_ imgs: [Photo]) {
         for item in imgs {
             photos.append(item)
-//            debugPrint(item)
         }
     }
     
@@ -19,8 +18,19 @@ struct PhotosLibrary: Codable {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
+                photos[photoIndex].deletionDate = Date()
             }
         }
+        saveLibrary(lib: self)
+    }
+    mutating func recoverImages(_ imgs: [Photo]) {
+        for item in imgs {
+            if let photoIndex = photos.firstIndex(of: item) {
+                photos[photoIndex].status = .normal
+                photos[photoIndex].deletionDate = nil
+            }
+        }
+        saveLibrary(lib: self)
     }
     
     func filterPhotos(status: PhotoStatus) -> [Photo] {
