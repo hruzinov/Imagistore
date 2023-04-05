@@ -32,8 +32,7 @@ struct ImageDetailedView: View {
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .padding(.top, 5)
-                    .padding(.bottom, 10)
+                    .padding(.vertical, 10)
                     .padding(.horizontal, 20)
                     .toolbar(.hidden, for: .tabBar)
                 }
@@ -45,9 +44,7 @@ struct ImageDetailedView: View {
                             ph.status == photosSelector
                         })) { $item in
                             if let uiImage = item.uiImage {
-                                Button {
-                                    self.selectedImage = item.id
-                                } label: {
+                                Button { self.selectedImage = item.id } label: {
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFit()
@@ -59,13 +56,9 @@ struct ImageDetailedView: View {
                             }
                         }
                     }
-                    .onAppear {
-                        scroll.scrollTo(selectedImage, anchor: .center)
-                    }
+                    .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
                     .onChange(of: selectedImage) { newValue in
-                        withAnimation {
-                            scroll.scrollTo(selectedImage)
-                        }
+                        withAnimation { scroll.scrollTo(selectedImage) }
                         
                     }
                 }
@@ -74,23 +67,11 @@ struct ImageDetailedView: View {
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 if photosSelector == .deleted {
-                    Button {
-                        changePhotoStatus()
-                    } label: {
-                        Text("Recover")
-                    }
-                    
+                    Button { changePhotoStatus() } label: { Text("Recover") }
                 } else {
                     Menu {
-                        Button(role: .destructive) {
-                            changePhotoStatus()
-                        } label: {
-                            Text("Confirm").foregroundColor(Color.red)
-                        }
-                        
-                    } label: {
-                        Image(systemName: "trash")
-                    }
+                        Button(role: .destructive) { changePhotoStatus() } label: { Text("Confirm").foregroundColor(Color.red) }
+                    } label: { Image(systemName: "trash") }
                 }
             }
         }
@@ -102,19 +83,12 @@ struct ImageDetailedView: View {
     private func changePhotoStatus() {
         let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
-            if photosSelector == .normal {
-                library.removeImages([changedPhoto])
-            } else {
-                library.recoverImages([changedPhoto])
-            }
+            if photosSelector == .normal { library.removeImages([changedPhoto]) }
+            else { library.recoverImages([changedPhoto]) }
             
-            if filteredPhotos.count == 0 {
-                dismiss()
-            } else if photoIndex == filteredPhotos.count {
-                selectedImage = filteredPhotos[photoIndex-1].id
-            } else {
-                selectedImage = filteredPhotos[photoIndex].id
-            }
+            if filteredPhotos.count == 0 { dismiss() }
+            else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }
+            else { selectedImage = filteredPhotos[photoIndex].id }
         }
     }
 }
