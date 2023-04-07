@@ -34,7 +34,7 @@ struct PhotosGalleryView: View {
                             if let uiImage = item.uiImage {
                                 GeometryReader { gr in
                                     NavigationLink {
-                                        ImageDetailedView(selectedImage: item.id, library: $library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
+                                        ImageDetailedView(photosSelector: photosSelector, library: $library, sortingSelector: $sortingSelector, selectedImage: item.id)
                                     } label: {
                                         Image(uiImage: uiImage)
                                             .resizable()

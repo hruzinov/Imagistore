@@ -6,10 +6,12 @@ import SwiftUI
 
 struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
-    @State var selectedImage: UUID
-    @Binding var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
+    @Binding var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
+    
+    @State var selectedImage: UUID
+    @State var isPresentingConfirm: Bool = false
     
     var filteredPhotos: [Photo] {
         library.photos
@@ -92,14 +94,26 @@ struct ImageDetailedView: View {
                 }
             }
         }
+        .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
+            Button("Delete photo", role: .destructive) {
+                if photosSelector == .deleted {
+                    changePhotoStatus(to: "permanentRemove")
+                } else {
+                    changePhotoStatus(to: "bin")
+                }
+            }
+        } message: {
+            if photosSelector == .deleted {
+                Text("You cannot undo this action")
+            }
+        }
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 if photosSelector == .deleted {
-                    Button { changePhotoStatus() } label: { Text("Recover") }
+                    Button { isPresentingConfirm.toggle() } label: { Text("Delete permanently") }
+                    Button { changePhotoStatus(to: "recover") } label: { Text("Recover") }
                 } else {
-                    Menu {
-                        Button(role: .destructive) { changePhotoStatus() } label: { Text("Confirm").foregroundColor(Color.red) }
-                    } label: { Image(systemName: "trash") }
+                    Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
                 }
             }
         }
@@ -108,11 +122,12 @@ struct ImageDetailedView: View {
         .foregroundColor(.blue)
     }
     
-    private func changePhotoStatus() {
+    private func changePhotoStatus(to: String) {
         let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
-            if photosSelector == .normal { library.removeImages([changedPhoto]) }
-            else { library.recoverImages([changedPhoto]) }
+            if to == "bin" { library.toBin([changedPhoto]) }
+            else if to == "recover" { library.recoverImages([changedPhoto]) }
+            else if to == "permanentRemove" { library.permanentRemove([changedPhoto]) }
             
             if filteredPhotos.count == 0 { DispatchQueue.main.async { dismiss() }}
             else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }

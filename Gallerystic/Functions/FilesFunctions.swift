@@ -60,3 +60,13 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
     }
     return nil
 }
+func removeImageFile(id: UUID) -> Bool {
+    let filepath = getDocumentsDirectory().appendingPathComponent(id.uuidString + ".jpg")
+    do {
+        try FileManager.default.removeItem(atPath: filepath.path)
+        return true
+    } catch {
+        print(error)
+        return false
+    }
+}

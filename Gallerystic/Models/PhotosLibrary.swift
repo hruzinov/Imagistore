@@ -14,7 +14,7 @@ struct PhotosLibrary: Codable {
         }
     }
     
-    mutating func removeImages(_ imgs: [Photo]) {
+    mutating func toBin(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
@@ -28,6 +28,16 @@ struct PhotosLibrary: Codable {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
+            }
+        }
+        saveLibrary(lib: self)
+    }
+    mutating func permanentRemove(_ imgs: [Photo]) {
+        for item in imgs {
+            if let photoIndex = photos.firstIndex(of: item) {
+                if removeImageFile(id: item.id) {
+                    photos.remove(at: photoIndex)
+                }
             }
         }
         saveLibrary(lib: self)

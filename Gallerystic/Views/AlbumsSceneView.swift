@@ -52,7 +52,9 @@ struct AlbumsSceneView: View {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
                             Spacer()
-                            Image(systemName: "lock.fill").foregroundColor(Color.secondary)
+                            Text(String(library.photos.filter({ img in
+                                img.status == .deleted
+                            }).count)).foregroundColor(Color.secondary)
                             Image(systemName: "chevron.forward").foregroundColor(Color.secondary)
                         }
                         .padding(.horizontal, 15)
