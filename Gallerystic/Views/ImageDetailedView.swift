@@ -30,34 +30,31 @@ struct ImageDetailedView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack {
-                    TabView(selection: $selectedImage) {
-                        ForEach($library.photos
-                            .sorted(by: { ph1, ph2 in
-                                switch sortingSelector {
-                                case .importDate:
-                                    return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                                case .creationDate:
-                                    return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+            VStack {
+                TabView(selection: $selectedImage) {
+                    ForEach($library.photos
+                        .sorted(by: { ph1, ph2 in
+                            switch sortingSelector {
+                            case .importDate:
+                                return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
+                            case .creationDate:
+                                return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+                            }
+                        })
+                            .filter({ $ph in
+                                ph.status == photosSelector
+                            })) { $item in
+                                if let uiImage = item.uiImage {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .pinchToZoom()
                                 }
-                            })
-                                .filter({ $ph in
-                                    ph.status == photosSelector
-                                })) { $item in
-                                    if let uiImage = item.uiImage {
-                                        Image(uiImage: uiImage)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .pinchToZoom()
-                                    }
-                                }
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 20)
-                    .toolbar(.hidden, for: .tabBar)
+                            }
                 }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .padding(.vertical, 10)
+                .toolbar(.hidden, for: .tabBar)
             }
             ScrollView(.horizontal) {
                 ScrollViewReader { scroll in
@@ -93,6 +90,7 @@ struct ImageDetailedView: View {
                     }
                 }
             }
+            .padding(.horizontal, 10)
         }
         .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
             Button("Delete photo", role: .destructive) {
@@ -118,7 +116,6 @@ struct ImageDetailedView: View {
             }
         }
         .padding(.vertical, 10)
-        .padding(.horizontal, 20)
         .foregroundColor(.blue)
     }
     
