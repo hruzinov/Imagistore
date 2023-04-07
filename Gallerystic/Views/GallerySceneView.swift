@@ -9,7 +9,7 @@ struct GallerySceneView: View {
     @Binding var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
-    @State var sortingSelector: PhotosSortArgument = .creationDate
+    @State var sortingSelector: PhotosSortArgument = .importDate
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
     
@@ -26,19 +26,16 @@ struct GallerySceneView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem {
-                    Button {
-                        switch sortingSelector {
-                        case .importDate:
-                            sortingSelector = .creationDate
-                        case .creationDate:
-                            sortingSelector = .importDate
-                        }
-                    } label: {
-                        Image(systemName: "arrow.up.arrow.down")
-                    }
-
-                }
+                //                ToolbarItem {
+                //                    Menu {
+                ////                    Picker(selection: $sortingSelector) {
+                //                        Text("By creation date").tag(PhotosSortArgument.creationDate)
+                //                        Text("By importing date").tag(PhotosSortArgument.importDate)
+                //
+                //                    } label: {
+                //                        Image(systemName: "arrow.up.arrow.down")
+                //                    }
+                //                }
                 if canAddNewPhotos {
                     ToolbarItem(placement: .navigationBarLeading) {
                         PhotosPicker(
@@ -75,17 +72,19 @@ struct GallerySceneView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup (placement: .navigationBarTrailing) {
                     Menu {
-                        
+                        Picker(selection: $sortingSelector.animation()) {
+                            Text("Creation date").tag(PhotosSortArgument.creationDate)
+                            Text("Importing date").tag(PhotosSortArgument.importDate)
+                        } label: {}
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "arrow.up.arrow.down")
                     }
                 }
             }
-            
         }
-
+        
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
