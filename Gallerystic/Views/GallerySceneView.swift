@@ -6,12 +6,14 @@ import SwiftUI
 import PhotosUI
 
 struct GallerySceneView: View {
+    @Environment(\.dismiss) var dismiss
     @Binding var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
+    @Binding var navToRoot: Bool
     
     var body: some View {
         NavigationStack {
@@ -26,16 +28,6 @@ struct GallerySceneView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                //                ToolbarItem {
-                //                    Menu {
-                ////                    Picker(selection: $sortingSelector) {
-                //                        Text("By creation date").tag(PhotosSortArgument.creationDate)
-                //                        Text("By importing date").tag(PhotosSortArgument.importDate)
-                //
-                //                    } label: {
-                //                        Image(systemName: "arrow.up.arrow.down")
-                //                    }
-                //                }
                 if canAddNewPhotos {
                     ToolbarItem(placement: .navigationBarLeading) {
                         PhotosPicker(
@@ -68,7 +60,6 @@ struct GallerySceneView: View {
                                 saveLibrary(lib: library)
                                 importSelectedItems = []
                             }
-                            
                         }
                     }
                 }
@@ -88,6 +79,10 @@ struct GallerySceneView: View {
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
+        }
+        .onChange(of: navToRoot) { _ in
+            dismiss()
+            navToRoot = false
         }
     }
 }

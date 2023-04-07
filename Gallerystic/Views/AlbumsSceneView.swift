@@ -7,6 +7,7 @@ import SwiftUI
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var library: PhotosLibrary
+    @Binding var navToRoot: Bool
     
     var albums: [String] = []
     
@@ -29,7 +30,7 @@ struct AlbumsSceneView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
-                            GallerySceneView(library: $library, photosSelector: .normal)
+                            GallerySceneView(library: $library, photosSelector: .normal, navToRoot: $navToRoot)
                         }, label: {
                             AlbumBlockView(library: $library)
                         })
@@ -47,7 +48,7 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: $library, photosSelector: .deleted)
+                        GallerySceneView(library: $library, photosSelector: .deleted, navToRoot: $navToRoot)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
