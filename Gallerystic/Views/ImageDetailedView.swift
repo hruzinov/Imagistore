@@ -114,7 +114,7 @@ struct ImageDetailedView: View {
             if photosSelector == .normal { library.removeImages([changedPhoto]) }
             else { library.recoverImages([changedPhoto]) }
             
-            if filteredPhotos.count == 0 { dismiss() }
+            if filteredPhotos.count == 0 { DispatchQueue.main.async { dismiss() }}
             else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }
             else { selectedImage = filteredPhotos[photoIndex].id }
         }
