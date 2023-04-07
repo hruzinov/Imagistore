@@ -40,7 +40,7 @@ func loadLibrary() -> PhotosLibrary {
 //        saveLibrary(lib: library)
 //    }
         
-    return library.withSortedPhotos(by: .creationDate)
+    return library
 }
 
 func readImageFromFile(id: UUID) -> UIImage? {

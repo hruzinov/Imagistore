@@ -9,10 +9,21 @@ struct ImageDetailedView: View {
     @State var selectedImage: UUID
     @Binding var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
+    @Binding var sortingSelector: PhotosSortArgument
+    
     var filteredPhotos: [Photo] {
-        library.photos.filter { ph in
-            ph.status == photosSelector
-        }
+        library.photos
+            .sorted(by: { ph1, ph2 in
+                switch sortingSelector {
+                case .importDate:
+                    return ph1.importDate < ph2.importDate
+                case .creationDate:
+                    return ph1.creationDate < ph2.creationDate
+                }
+            })
+            .filter { ph in
+                ph.status == photosSelector
+            }
     }
     
     var body: some View {
@@ -20,16 +31,25 @@ struct ImageDetailedView: View {
             ZStack {
                 VStack {
                     TabView(selection: $selectedImage) {
-                        ForEach($library.photos.filter({ $ph in
-                            ph.status == photosSelector
-                        })) { $item in
-                            if let uiImage = item.uiImage {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .pinchToZoom()
-                            }
-                        }
+                        ForEach($library.photos
+                            .sorted(by: { ph1, ph2 in
+                                switch sortingSelector {
+                                case .importDate:
+                                    return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
+                                case .creationDate:
+                                    return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+                                }
+                            })
+                                .filter({ $ph in
+                                    ph.status == photosSelector
+                                })) { $item in
+                                    if let uiImage = item.uiImage {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .pinchToZoom()
+                                    }
+                                }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .padding(.vertical, 10)
@@ -40,26 +60,34 @@ struct ImageDetailedView: View {
             ScrollView(.horizontal) {
                 ScrollViewReader { scroll in
                     HStack {
-                        ForEach($library.photos.filter({ $ph in
-                            ph.status == photosSelector
-                        })) { $item in
-                            if let uiImage = item.uiImage {
-                                Button { self.selectedImage = item.id } label: {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 75, height: 75)
-                                        .overlay(selectedImage == item.id ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:3) : nil)
-                                        .padding(2)
-                                        .id(item.id)
+                        ForEach($library.photos
+                            .sorted(by: { ph1, ph2 in
+                                switch sortingSelector {
+                                case .importDate:
+                                    return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
+                                case .creationDate:
+                                    return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
                                 }
-                            }
-                        }
+                            })
+                                .filter({ $ph in
+                                    ph.status == photosSelector
+                                })) { $item in
+                                    if let uiImage = item.uiImage {
+                                        Button { self.selectedImage = item.id } label: {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 75, height: 75)
+                                                .overlay(selectedImage == item.id ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:3) : nil)
+                                                .padding(2)
+                                                .id(item.id)
+                                        }
+                                    }
+                                }
                     }
                     .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
                     .onChange(of: selectedImage) { newValue in
                         withAnimation { scroll.scrollTo(selectedImage) }
-                        
                     }
                 }
             }

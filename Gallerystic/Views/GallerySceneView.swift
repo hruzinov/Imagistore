@@ -9,7 +9,7 @@ struct GallerySceneView: View {
     @Binding var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
-//    @State var selectedImage: Photo?
+    @State var sortingSelector: PhotosSortArgument = .creationDate
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
     
@@ -19,13 +19,26 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    PhotosGalleryView(library: $library, photosSelector: photosSelector)
+                    PhotosGalleryView(library: $library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem {
+                    Button {
+                        switch sortingSelector {
+                        case .importDate:
+                            sortingSelector = .creationDate
+                        case .creationDate:
+                            sortingSelector = .importDate
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+
+                }
                 if canAddNewPhotos {
                     ToolbarItem(placement: .navigationBarLeading) {
                         PhotosPicker(

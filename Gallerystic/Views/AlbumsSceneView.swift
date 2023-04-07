@@ -45,17 +45,6 @@ struct AlbumsSceneView: View {
                 .padding(.horizontal, 15)
                 .padding(.vertical, 5)
                 VStack(spacing: 10) {
-                    //                Button {
-                    //                } label: {
-                    //                    HStack {
-                    //                        Label("Favorite", systemImage: "heart.fill")
-                    //                        Spacer()
-                    //                        Text("123").foregroundColor(Color.secondary)
-                    //                        Image(systemName: "chevron.forward").foregroundColor(Color.secondary)
-                    //                    }
-                    //                    .font(.title3)
-                    //                    .padding(.horizontal, 15)
-                    //                }
                     Divider()
                     NavigationLink {
                         GallerySceneView(library: $library, photosSelector: .deleted)
