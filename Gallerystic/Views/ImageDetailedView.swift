@@ -6,6 +6,8 @@ import SwiftUI
 
 struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var dispayingSettings: DispayingSettings
+    
     @State var photosSelector: PhotoStatus
     @Binding var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
@@ -54,7 +56,6 @@ struct ImageDetailedView: View {
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .padding(.vertical, 10)
-                .toolbar(.hidden, for: .tabBar)
             }
             ScrollView(.horizontal) {
                 ScrollViewReader { scroll in
@@ -104,6 +105,10 @@ struct ImageDetailedView: View {
             if photosSelector == .deleted {
                 Text("You cannot undo this action")
             }
+        }
+        .onAppear { dispayingSettings.isShowingTabBar = false }
+        .onDisappear {
+            withAnimation { dispayingSettings.isShowingTabBar = true }
         }
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {

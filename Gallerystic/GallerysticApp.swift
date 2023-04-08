@@ -7,10 +7,10 @@ import SwiftUI
 @main
 struct GallerysticApp: App {
     @State var photosLibrary = loadLibrary()
-    @State var selectedTab = "library"
+    @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
     
-    var handler: Binding<String> { Binding(
+    var handler: Binding<Tab> { Binding(
         get: { self.selectedTab },
         set: {
             if $0 == self.selectedTab {
@@ -20,21 +20,30 @@ struct GallerysticApp: App {
         }
     )}
     
+    init() {
+        UITabBar.appearance().isHidden = true
+    }
+    
     var body: some Scene {
         WindowGroup {
-            TabView(selection: handler) {
-                GallerySceneView(library: $photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
-                    .tabItem {
-                        Label("Library", systemImage: "photo.artframe")
-                    }
-                    .tag("library")
-                AlbumsSceneView(library: $photosLibrary, navToRoot: $navToRoot)
-                    .tabItem {
-                        Label("Albums", systemImage: "sparkles.rectangle.stack")
-                    }
-                    .tag("albums")
-                    
+            VStack {
+                TabView(selection: handler) {
+                    GallerySceneView(library: $photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
+                        .tabItem {
+                            Label("Library", systemImage: "photo.artframe")
+                        }
+                        .tag(Tab.library)
+                    AlbumsSceneView(library: $photosLibrary, navToRoot: $navToRoot)
+                        .tabItem {
+                            Label("Albums", systemImage: "sparkles.rectangle.stack")
+                        }
+                        .tag(Tab.albums)
+                }
+                .overlay(alignment: .bottom){
+                    CustomTabBar(selection: handler)
+                }
             }
+            .environmentObject(DispayingSettings())
         }
     }
 }
