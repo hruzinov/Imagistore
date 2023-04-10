@@ -51,9 +51,17 @@ struct GallerySceneView: View {
                                             } else {
                                                 creationDate = Date()
                                             }
-                                            let uuid = writeImageToFile(uiImage: uiImage)
+                                            
+                                            let fileExtention: PhotoExtention
+                                            if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
+                                                fileExtention = .png
+                                            } else {
+                                                fileExtention = .jpg
+                                            }
+                                            
+                                            let uuid = writeImageToFile(uiImage: uiImage, fileExtention: fileExtention.rawValue)
                                             if let uuid {
-                                                newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), keywords: []))
+                                                newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
                                             }
                                         }
                                     }

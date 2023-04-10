@@ -47,10 +47,24 @@ struct ImageDetailedView: View {
                                 ph.status == photosSelector
                             })) { $item in
                                 if let uiImage = item.uiImage {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .pinchToZoom()
+                                    ZStack {
+                                        
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .pinchToZoom()
+                                    }
+                                    .frame(maxHeight: .infinity)
+                                    .overlay(alignment: .bottomTrailing) {
+                                        if item.fileExtention == .png {
+                                            Text("PNG")
+                                                .foregroundColor(.none)
+                                                .padding(.horizontal, 10)
+                                                .background(Color(UIColor.lightGray))
+                                                .cornerRadius(10)
+                                                .padding(.horizontal, 10)
+                                        }
+                                    }
                                 }
                             }
                 }

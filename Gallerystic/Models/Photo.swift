@@ -6,14 +6,20 @@ import SwiftUI
 
 struct Photo: Identifiable, Hashable, Codable {
     var id: UUID
-    lazy var uiImage: UIImage? = readImageFromFile(id: id)
+    lazy var uiImage: UIImage? = readImageFromFile(id: id, fileExtention: fileExtention)
     var status: PhotoStatus
     var creationDate: Date
-    var deletionDate: Date?
     var importDate: Date
+    var deletionDate: Date?
+    var fileExtention: PhotoExtention
     var keywords: [String]
 }
 
 enum PhotoStatus: Codable {
     case normal, deleted
+}
+
+enum PhotoExtention: String, Codable {
+    case jpg
+    case png
 }

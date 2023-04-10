@@ -27,36 +27,51 @@ func loadLibrary() -> PhotosLibrary {
     }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
     
-    // For Future versions
-//    if library.libraryVersion < nowLibVersion {
+    // For future versions
+//    if library.libraryVersion < ApplicationSettings.actualLibraryVersion {
+//        var allOk = true
+//
 //        switch library.libraryVersion {
+//
 //        case 1:
-//            Some func
+//            // SOME CODE
+//
 //        default:
 //            print("Unknown library version: \(String(describing: library.libraryVersion))")
+//            allOk = false
 //        }
 //
-//        saveLibrary(lib: library)
+//        if allOk {
+//            print("Library updated to version \(ApplicationSettings.actualLibraryVersion)")
+//            library.libraryVersion = ApplicationSettings.actualLibraryVersion
+//            saveLibrary(lib: library)
+//        }
 //    }
         
     return library
 }
 
-func readImageFromFile(id: UUID) -> UIImage? {
-    let filepath = getDocumentsDirectory().appendingPathComponent(id.uuidString + ".jpg")
+func readImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
+    let filepath = getDocumentsDirectory().appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     return uiImage
 }
 
-func writeImageToFile(uiImage: UIImage) -> UUID? {
-    if let data = uiImage.jpegData(compressionQuality: 0.8) {
+func writeImageToFile(uiImage: UIImage, fileExtention: String) -> UUID? {
+    var data: Data?
+    if fileExtention == "png" {
+        data = uiImage.pngData()
+    } else {
+        data = uiImage.jpegData(compressionQuality: 1)
+    }
+    if let data {
         let uuid = UUID()
-        let filepath = getDocumentsDirectory().appendingPathComponent(uuid.uuidString + ".jpg")
-
+        let filepath = getDocumentsDirectory().appendingPathComponent(uuid.uuidString + ".\(fileExtention)")
         try? data.write(to: filepath)
 
         return uuid
     }
+    
     return nil
 }
 func removeImageFile(id: UUID) -> Bool {

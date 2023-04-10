@@ -47,7 +47,6 @@ struct PhotosGalleryView: View {
                             }
                         }
             }
-            Spacer()
         }
     }
 }
