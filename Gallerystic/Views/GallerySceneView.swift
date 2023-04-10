@@ -39,6 +39,7 @@ struct GallerySceneView: View {
                         }
                         .onChange(of: importSelectedItems) { _ in
                             Task {
+                                var newPhotos: [Photo] = []
                                 for item in importSelectedItems {
                                     if let data = try? await item.loadTransferable(type: Data.self) {
                                         let uiImage = UIImage(data: data)
@@ -52,12 +53,12 @@ struct GallerySceneView: View {
                                             }
                                             let uuid = writeImageToFile(uiImage: uiImage)
                                             if let uuid {
-                                                library.addImages([Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), keywords: [])])
+                                                newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), keywords: []))
                                             }
                                         }
                                     }
                                 }
-                                saveLibrary(lib: library)
+                                library.addImages(newPhotos)
                                 importSelectedItems = []
                             }
                         }

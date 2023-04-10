@@ -108,7 +108,7 @@ struct ImageDetailedView: View {
         }
         .onAppear { dispayingSettings.isShowingTabBar = false }
         .onDisappear {
-            withAnimation { dispayingSettings.isShowingTabBar = true }
+            withAnimation(Animation.easeInOut(duration: 0.3)) { dispayingSettings.isShowingTabBar = true }
         }
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {

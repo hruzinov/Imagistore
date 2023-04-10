@@ -4,6 +4,10 @@
 
 import Foundation
 
+struct ApplicationSettings {
+    static var actualLibraryVersion = 1
+}
+
 class DispayingSettings: ObservableObject {
     @Published var isShowingTabBar: Bool = true
 }
