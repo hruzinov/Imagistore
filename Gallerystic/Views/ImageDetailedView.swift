@@ -46,10 +46,10 @@ struct ImageDetailedView: View {
                             .filter({ $ph in
                                 ph.status == photosSelector
                             })) { $item in
-                                if let uiImage = item.uiImage {
+                                if item.uiImage != nil {
                                     ZStack {
                                         
-                                        Image(uiImage: uiImage)
+                                        Image(uiImage: item.uiImage!)
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
@@ -86,9 +86,9 @@ struct ImageDetailedView: View {
                                 .filter({ $ph in
                                     ph.status == photosSelector
                                 })) { $item in
-                                    if let uiImage = item.uiImage {
+                                    if item.uiImage != nil {
                                         Button { self.selectedImage = item.id } label: {
-                                            Image(uiImage: uiImage)
+                                            Image(uiImage: item.uiImage!)
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(width: 75, height: 75)

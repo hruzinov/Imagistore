@@ -31,12 +31,12 @@ struct PhotosGalleryView: View {
                         .filter({ $ph in
                             ph.status == photosSelector
                         })) { $item in
-                            if let uiImage = item.uiImage {
+                            if item.uiImage != nil {
                                 GeometryReader { gr in
                                     NavigationLink {
                                         ImageDetailedView(photosSelector: photosSelector, library: $library, sortingSelector: $sortingSelector, selectedImage: item.id)
                                     } label: {
-                                        Image(uiImage: uiImage)
+                                        Image(uiImage: item.uiImage!)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(height: gr.size.width)

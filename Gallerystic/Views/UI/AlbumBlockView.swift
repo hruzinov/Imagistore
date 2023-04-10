@@ -13,7 +13,7 @@ struct AlbumBlockView: View {
     var body: some View {
         VStack {
             if allPhotos.last != nil {
-                var lastImage: Photo = allPhotos.last!
+                let lastImage: Photo = allPhotos.last!
                 if let uiImage = lastImage.uiImage {
                     Image(uiImage: uiImage)
                         .resizable()
