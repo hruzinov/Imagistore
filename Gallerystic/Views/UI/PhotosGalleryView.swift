@@ -5,7 +5,7 @@
 import SwiftUI
 
 struct PhotosGalleryView: View {
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
     @State var selectedImage: Photo?
@@ -34,7 +34,7 @@ struct PhotosGalleryView: View {
                             if item.uiImage != nil {
                                 GeometryReader { gr in
                                     NavigationLink {
-                                        ImageDetailedView(photosSelector: photosSelector, library: $library, sortingSelector: $sortingSelector, selectedImage: item.id)
+                                        ImageDetailedView(photosSelector: photosSelector, library: library, sortingSelector: $sortingSelector, selectedImage: item.id)
                                     } label: {
                                         Image(uiImage: item.uiImage!)
                                             .resizable()

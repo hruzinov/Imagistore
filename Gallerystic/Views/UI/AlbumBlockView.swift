@@ -5,7 +5,7 @@
 import SwiftUI
 
 struct AlbumBlockView: View {
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     var allPhotos: [Photo] { library.photos.filter({ img in
         img.status == .normal
     })}

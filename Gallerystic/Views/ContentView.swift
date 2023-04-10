@@ -5,7 +5,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Binding var photosLibrary: PhotosLibrary
+    @StateObject var photosLibrary = loadLibrary()
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
     
@@ -22,12 +22,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: $photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
+                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
                     .tabItem {
                         Label("Library", systemImage: "photo.artframe")
                     }
                     .tag(Tab.library)
-                AlbumsSceneView(library: $photosLibrary, navToRoot: $navToRoot)
+                AlbumsSceneView(library: photosLibrary, navToRoot: $navToRoot)
                     .tabItem {
                         Label("Albums", systemImage: "sparkles.rectangle.stack")
                     }
@@ -37,6 +37,5 @@ struct ContentView: View {
                 CustomTabBar(selection: handler)
             }
         }
-        .environmentObject(DispayingSettings())
     }
 }

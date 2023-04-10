@@ -7,7 +7,7 @@ import PhotosUI
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
     @State var sortingSelector: PhotosSortArgument = .importDate
@@ -21,7 +21,7 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    PhotosGalleryView(library: $library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
+                    PhotosGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
                     Rectangle()
                         .frame(height: 50)
                         .opacity(0)

@@ -9,7 +9,7 @@ struct ImageDetailedView: View {
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
     @State var photosSelector: PhotoStatus
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
     
     @State var selectedImage: UUID
@@ -120,10 +120,12 @@ struct ImageDetailedView: View {
                 Text("You cannot undo this action")
             }
         }
+        
         .onAppear { dispayingSettings.isShowingTabBar = false }
         .onDisappear {
             withAnimation(Animation.easeInOut(duration: 0.3)) { dispayingSettings.isShowingTabBar = true }
         }
+        
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 if photosSelector == .deleted {

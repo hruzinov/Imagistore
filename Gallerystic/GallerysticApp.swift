@@ -6,15 +6,14 @@ import SwiftUI
 
 @main
 struct GallerysticApp: App {
-    @State var photosLibrary = loadLibrary()
-    
     init() {
         UITabBar.appearance().isHidden = true
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(photosLibrary: $photosLibrary)
+            ContentView()
+                .environmentObject(DispayingSettings())
         }
     }
 }

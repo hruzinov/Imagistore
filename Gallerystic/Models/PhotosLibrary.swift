@@ -4,36 +4,43 @@
 
 import Foundation
 
-struct PhotosLibrary: Codable {
+class PhotosLibrary: Codable, ObservableObject {
     var libraryVersion: Int
     var photos: [Photo]
     
-    mutating func addImages(_ imgs: [Photo]) {
+    init(libraryVersion: Int, photos: [Photo]) {
+        self.libraryVersion = libraryVersion
+        self.photos = photos
+    }
+    
+    func addImages(_ imgs: [Photo]) {
         for item in imgs {
             photos.append(item)
         }
         saveLibrary(lib: self)
     }
     
-    mutating func toBin(_ imgs: [Photo]) {
+    func toBin(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
                 photos[photoIndex].deletionDate = Date()
             }
         }
+        self.objectWillChange.send()
         saveLibrary(lib: self)
     }
-    mutating func recoverImages(_ imgs: [Photo]) {
+    func recoverImages(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
             }
         }
+        self.objectWillChange.send()
         saveLibrary(lib: self)
     }
-    mutating func permanentRemove(_ imgs: [Photo]) {
+    func permanentRemove(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 if removeImageFile(id: item.id, fileExtention: item.fileExtention) {
@@ -41,6 +48,7 @@ struct PhotosLibrary: Codable {
                 }
             }
         }
+        self.objectWillChange.send()
         saveLibrary(lib: self)
     }
     
