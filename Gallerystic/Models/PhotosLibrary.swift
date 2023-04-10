@@ -36,7 +36,7 @@ struct PhotosLibrary: Codable {
     mutating func permanentRemove(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
-                if removeImageFile(id: item.id) {
+                if removeImageFile(id: item.id, fileExtention: item.fileExtention) {
                     photos.remove(at: photoIndex)
                 }
             }
