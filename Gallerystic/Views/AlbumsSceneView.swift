@@ -6,7 +6,8 @@ import SwiftUI
 
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
+    @Binding var navToRoot: Bool
     
     var albums: [String] = []
     
@@ -29,9 +30,9 @@ struct AlbumsSceneView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
-                            GallerySceneView(library: $library, photosSelector: .normal)
+                            GallerySceneView(library: library, photosSelector: .normal, navToRoot: $navToRoot)
                         }, label: {
-                            AlbumBlockView(library: $library)
+                            AlbumBlockView(library: library)
                         })
                         
                     }
@@ -45,25 +46,16 @@ struct AlbumsSceneView: View {
                 .padding(.horizontal, 15)
                 .padding(.vertical, 5)
                 VStack(spacing: 10) {
-                    //                Button {
-                    //                } label: {
-                    //                    HStack {
-                    //                        Label("Favorite", systemImage: "heart.fill")
-                    //                        Spacer()
-                    //                        Text("123").foregroundColor(Color.secondary)
-                    //                        Image(systemName: "chevron.forward").foregroundColor(Color.secondary)
-                    //                    }
-                    //                    .font(.title3)
-                    //                    .padding(.horizontal, 15)
-                    //                }
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: $library, photosSelector: .deleted)
+                        GallerySceneView(library: library, photosSelector: .deleted, navToRoot: $navToRoot)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
                             Spacer()
-                            Image(systemName: "lock.fill").foregroundColor(Color.secondary)
+                            Text(String(library.photos.filter({ img in
+                                img.status == .deleted
+                            }).count)).foregroundColor(Color.secondary)
                             Image(systemName: "chevron.forward").foregroundColor(Color.secondary)
                         }
                         .padding(.horizontal, 15)

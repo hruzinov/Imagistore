@@ -5,7 +5,7 @@
 import SwiftUI
 
 struct AlbumBlockView: View {
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     var allPhotos: [Photo] { library.photos.filter({ img in
         img.status == .normal
     })}
@@ -13,7 +13,7 @@ struct AlbumBlockView: View {
     var body: some View {
         VStack {
             if allPhotos.last != nil {
-                var lastImage: Photo = allPhotos.last!
+                let lastImage: Photo = allPhotos.last!
                 if let uiImage = lastImage.uiImage {
                     Image(uiImage: uiImage)
                         .resizable()

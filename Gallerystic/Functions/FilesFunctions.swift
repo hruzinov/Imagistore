@@ -4,59 +4,142 @@
 
 import SwiftUI
 
-private let libraryPath = getDocumentsDirectory().appendingPathComponent("library.json")
-private let nowLibVersion = 1
+fileprivate let libraryPath = getDocumentsDirectory().appendingPathComponent("library.json")
+fileprivate let photosFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
 
-func getDocumentsDirectory() -> URL {
+fileprivate func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     return paths[0]
 }
+
+fileprivate func directoryExistsAtPath(_ path: String) -> Bool {
+    var isDirectory: ObjCBool = true
+    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+    return exists && isDirectory.boolValue
+}
+
 
 func saveLibrary(lib: PhotosLibrary) {
     if let stringData = try? JSONEncoder().encode(lib) {
         try? stringData.write(to: libraryPath)
     }
+    print("Library saved")
 }
 
 func loadLibrary() -> PhotosLibrary {
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
+    print("Library loaded in path \(libraryPath)")
     
     guard let stringData else {
-        let newLibrary = PhotosLibrary(libraryVersion: nowLibVersion, photos: [])
+        let newLibrary = PhotosLibrary(libraryVersion: ApplicationSettings.actualLibraryVersion, photos: [])
         saveLibrary(lib: newLibrary)
         return newLibrary
     }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
     
-    // For Future versions
-//    if library.libraryVersion < nowLibVersion {
+    // For future versions
+//    if library.libraryVersion < ApplicationSettings.actualLibraryVersion {
+//        var allOk = true
+//
 //        switch library.libraryVersion {
+//
 //        case 1:
-//            Some func
+//            // SOME CODE
+//
 //        default:
 //            print("Unknown library version: \(String(describing: library.libraryVersion))")
+//            allOk = false
 //        }
 //
-//        saveLibrary(lib: library)
+//        if allOk {
+//            print("Library updated to version \(ApplicationSettings.actualLibraryVersion)")
+//            library.libraryVersion = ApplicationSettings.actualLibraryVersion
+//            saveLibrary(lib: library)
+//        }
 //    }
         
-    return library.withSortedPhotos(by: .creationDate)
+    return library
 }
 
-func readImageFromFile(id: UUID) -> UIImage? {
-    let filepath = getDocumentsDirectory().appendingPathComponent(id.uuidString + ".jpg")
+func readImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
+    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     return uiImage
 }
 
-func writeImageToFile(uiImage: UIImage) -> UUID? {
-    if let data = uiImage.jpegData(compressionQuality: 0.8) {
-        let uuid = UUID()
-        let filepath = getDocumentsDirectory().appendingPathComponent(uuid.uuidString + ".jpg")
+func readCompressedImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
+    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
+    let uiImage = downsample(imageAt: filepath)
+    return uiImage
+}
 
+func writeImageToFile(uiImage: UIImage, fileExtention: String) -> UUID? {
+    
+    var data: Data?
+    if fileExtention == "png" {
+        data = uiImage.pngData()
+    } else {
+        data = uiImage.jpegData(compressionQuality: 1)
+    }
+    
+    if !directoryExistsAtPath(photosFilePath.path()) {
+        do {
+            try FileManager().createDirectory(at: photosFilePath, withIntermediateDirectories: true)
+            print("Created directory for photos")
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
+    if let data {
+        let uuid = UUID()
+        let filepath = photosFilePath.appendingPathComponent(uuid.uuidString + ".\(fileExtention)")
         try? data.write(to: filepath)
+        
+        print("New image file created in path \(filepath)")
 
         return uuid
     }
+    
     return nil
+}
+func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> Bool {
+    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention)")
+    do {
+        try FileManager.default.removeItem(atPath: filepath.path)
+        print("Image file deleted from path \(filepath)")
+        return true
+    } catch {
+        print(error)
+        return false
+    }
+}
+
+func downsample(imageAt imageURL: URL,
+                to pointSize: CGSize = UIScreen.main.bounds.size,
+                scale: CGFloat = UIScreen.main.scale) -> UIImage? {
+    
+    // Create an CGImageSource that represent an image
+    let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+    guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else {
+        return nil
+    }
+    
+    // Calculate the desired dimension
+    let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
+    
+    // Perform downsampling
+    let downsampleOptions = [
+        kCGImageSourceCreateThumbnailFromImageAlways: true,
+        kCGImageSourceShouldCacheImmediately: true,
+        kCGImageSourceCreateThumbnailWithTransform: true,
+        kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
+    ] as [CFString : Any] as CFDictionary
+    guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
+        return nil
+    }
+    
+    // Return the downsampled image as UIImage
+    return UIImage(cgImage: downsampledImage)
 }

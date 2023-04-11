@@ -6,12 +6,14 @@ import SwiftUI
 import PhotosUI
 
 struct GallerySceneView: View {
-    @Binding var library: PhotosLibrary
+    @Environment(\.dismiss) var dismiss
+    @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
-//    @State var selectedImage: Photo?
+    @State var sortingSelector: PhotosSortArgument = .importDate
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
+    @Binding var navToRoot: Bool
     
     var body: some View {
         NavigationStack {
@@ -19,7 +21,10 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    PhotosGalleryView(library: $library, photosSelector: photosSelector)
+                    PhotosGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
+                    Rectangle()
+                        .frame(height: 50)
+                        .opacity(0)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
@@ -37,6 +42,7 @@ struct GallerySceneView: View {
                         }
                         .onChange(of: importSelectedItems) { _ in
                             Task {
+                                var newPhotos: [Photo] = []
                                 for item in importSelectedItems {
                                     if let data = try? await item.loadTransferable(type: Data.self) {
                                         let uiImage = UIImage(data: data)
@@ -48,34 +54,47 @@ struct GallerySceneView: View {
                                             } else {
                                                 creationDate = Date()
                                             }
-                                            let uuid = writeImageToFile(uiImage: uiImage)
+                                            
+                                            let fileExtention: PhotoExtention
+                                            if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
+                                                fileExtention = .png
+                                            } else {
+                                                fileExtention = .jpg
+                                            }
+                                            
+                                            let uuid = writeImageToFile(uiImage: uiImage, fileExtention: fileExtention.rawValue)
                                             if let uuid {
-                                                library.addImages([Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), keywords: [])])
+                                                newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
                                             }
                                         }
                                     }
                                 }
-                                saveLibrary(lib: library)
+                                library.addImages(newPhotos)
                                 importSelectedItems = []
                             }
-                            
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup (placement: .navigationBarTrailing) {
                     Menu {
-                        
+                        Picker(selection: $sortingSelector.animation()) {
+                            Text("Creation date").tag(PhotosSortArgument.creationDate)
+                            Text("Importing date").tag(PhotosSortArgument.importDate)
+                        } label: {}
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "arrow.up.arrow.down")
                     }
                 }
             }
-            
         }
-
+        
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
+        }
+        .onChange(of: navToRoot) { _ in
+            dismiss()
+            navToRoot = false
         }
     }
 }

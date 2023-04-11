@@ -5,8 +5,9 @@
 import SwiftUI
 
 struct PhotosGalleryView: View {
-    @Binding var library: PhotosLibrary
+    @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
+    @Binding var sortingSelector: PhotosSortArgument
     @State var selectedImage: Photo?
     
     let columns = [
@@ -18,26 +19,34 @@ struct PhotosGalleryView: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                ForEach($library.photos.filter({ $ph in
-                    ph.status == photosSelector
-                })) { $item in
-                    if let uiImage = item.uiImage {
-                        GeometryReader { gr in
-                            NavigationLink {
-                                ImageDetailedView(selectedImage: item.id, library: $library, photosSelector: photosSelector)
-                            } label: {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: gr.size.width)
+                ForEach($library.photos
+                    .sorted(by: { ph1, ph2 in
+                        switch sortingSelector {
+                        case .importDate:
+                            return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
+                        case .creationDate:
+                            return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+                        }
+                    })
+                        .filter({ $ph in
+                            ph.status == photosSelector
+                        })) { $item in
+                            if item.uiImage != nil {
+                                GeometryReader { gr in
+                                    NavigationLink {
+                                        ImageDetailedView(photosSelector: photosSelector, library: library, sortingSelector: $sortingSelector, selectedImage: item.id)
+                                    } label: {
+                                        Image(uiImage: item.uiImage!)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(height: gr.size.width)
+                                    }
+                                }
+                                .clipped()
+                                .aspectRatio(1, contentMode: .fit)
                             }
                         }
-                        .clipped()
-                        .aspectRatio(1, contentMode: .fit)
-                    }
-                }
             }
-            Spacer()
         }
     }
 }

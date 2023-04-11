@@ -20,6 +20,9 @@
 		497647F529C0C102001C3FE4 /* PhotosGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */; };
 		4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */; };
 		49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */; };
+		49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */; };
+		49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */; };
+		49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +41,9 @@
 		497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosGalleryView.swift; sourceTree = "<group>"; };
 		4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsSceneView.swift; sourceTree = "<group>"; };
 		49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumBlockView.swift; sourceTree = "<group>"; };
+		49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +60,7 @@
 		491289AA29C080F1000D138A /* Functions */ = {
 			isa = PBXGroup;
 			children = (
+				49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */,
 				491289AB29C080FF000D138A /* FilesFunctions.swift */,
 			);
 			path = Functions;
@@ -120,6 +127,7 @@
 			children = (
 				497647F329C0C0EE001C3FE4 /* UI */,
 				4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */,
+				49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */,
 				493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */,
 				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
 			);
@@ -130,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */,
+				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
 			);
@@ -214,11 +223,14 @@
 				49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */,
 				491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* PhotosGalleryView.swift in Sources */,
+				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
+				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
 				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,
+				49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */,
 				493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */,
 				493752F729BE2F7F006F9CD8 /* GallerysticApp.swift in Sources */,
 			);
@@ -347,27 +359,31 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Gallerystic/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -377,27 +393,31 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Gallerystic/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

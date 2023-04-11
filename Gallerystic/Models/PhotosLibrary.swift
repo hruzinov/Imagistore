@@ -4,32 +4,51 @@
 
 import Foundation
 
-struct PhotosLibrary: Codable {
+class PhotosLibrary: Codable, ObservableObject {
     var libraryVersion: Int
     var photos: [Photo]
     
-    mutating func addImages(_ imgs: [Photo]) {
+    init(libraryVersion: Int, photos: [Photo]) {
+        self.libraryVersion = libraryVersion
+        self.photos = photos
+    }
+    
+    func addImages(_ imgs: [Photo]) {
         for item in imgs {
             photos.append(item)
         }
+        saveLibrary(lib: self)
     }
     
-    mutating func removeImages(_ imgs: [Photo]) {
+    func toBin(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
                 photos[photoIndex].deletionDate = Date()
             }
         }
+        self.objectWillChange.send()
         saveLibrary(lib: self)
     }
-    mutating func recoverImages(_ imgs: [Photo]) {
+    func recoverImages(_ imgs: [Photo]) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
             }
         }
+        self.objectWillChange.send()
+        saveLibrary(lib: self)
+    }
+    func permanentRemove(_ imgs: [Photo]) {
+        for item in imgs {
+            if let photoIndex = photos.firstIndex(of: item) {
+                if removeImageFile(id: item.id, fileExtention: item.fileExtention) {
+                    photos.remove(at: photoIndex)
+                }
+            }
+        }
+        self.objectWillChange.send()
         saveLibrary(lib: self)
     }
     
@@ -42,26 +61,8 @@ struct PhotosLibrary: Codable {
         }
         return newArray
     }
-    
-    func withSortedPhotos(by: PhotosSortArgument) -> PhotosLibrary {
-        var newPhotos = photos
-        switch by {
-        case .importDate:
-            newPhotos.sort { p1, p2 in
-                p1.importDate < p2.importDate
-            }
-        case .creationDate:
-            newPhotos.sort { p1, p2 in
-                p1.creationDate < p2.creationDate
-            }
-        }
-        var sortedLibrary = self
-        sortedLibrary.photos = newPhotos
-        return sortedLibrary
-    }
-    
-    enum PhotosSortArgument {
-        case importDate, creationDate
-    }
-    
+}
+
+enum PhotosSortArgument {
+    case importDate, creationDate
 }
