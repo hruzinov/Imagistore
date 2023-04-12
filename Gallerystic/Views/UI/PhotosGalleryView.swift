@@ -48,6 +48,7 @@ struct PhotosGalleryView: View {
                                                         VStack(alignment: .center) {
                                                             Spacer()
                                                             Text(TimeFunctions.daysLeftString(deletionDate))
+                                                                .font(.caption)
                                                                 .padding(5)
                                                                 .foregroundColor(TimeFunctions.daysLeft(deletionDate) < 3 ? .red : .white)
                                                         }
@@ -61,6 +62,9 @@ struct PhotosGalleryView: View {
                             }
                         }
             }
+            Rectangle()
+                .frame(height: 50)
+                .opacity(0)
         }
     }
 }

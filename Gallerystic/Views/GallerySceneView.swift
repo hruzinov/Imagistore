@@ -23,9 +23,6 @@ struct GallerySceneView: View {
                     ph.status == photosSelector
                 }).count > 0 {
                     PhotosGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
-                    Rectangle()
-                        .frame(height: 50)
-                        .opacity(0)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
