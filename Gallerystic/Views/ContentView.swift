@@ -30,6 +30,17 @@ struct ContentView: View {
                 CustomTabBar(selection: handler)
             }
         }
+        .overlay(alignment: .top) {
+            if dispayingSettings.isShowingInfoBar {
+                VStack(alignment: .center) {
+                    Text(dispayingSettings.infoBarData)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 10)
+                }
+                .frame(maxWidth: .infinity)
+                .background(.black)
+            }
+        }
         .onAppear {
             photosLibrary.clearBin() { err in
                 if let err {

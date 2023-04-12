@@ -13,4 +13,7 @@ class DispayingSettings: ObservableObject {
     
     @Published var isShowingErrorAlert: Bool = false
     @Published var errorAlertData: String = ""
+    
+    @Published var isShowingInfoBar: Bool = false
+    @Published var infoBarData: String = ""
 }

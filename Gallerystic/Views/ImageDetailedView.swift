@@ -151,25 +151,32 @@ struct ImageDetailedView: View {
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
             switch to {
             case .bin:
-                library.toBin([changedPhoto]) { _, err in
+                library.toBin([changedPhoto]) { err in
                     if let err {
                         dispayingSettings.errorAlertData = err.localizedDescription
                         dispayingSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .recover:
-                library.recoverImages([changedPhoto]) { _, err in
+                library.recoverImages([changedPhoto]) { err in
                     if let err {
                         dispayingSettings.errorAlertData = err.localizedDescription
                         dispayingSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .permanent:
-                library.permanentRemove([changedPhoto]) { _, err in
+//                dispayingSettings.infoBarData = "Removing photos..."
+                withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+                
+                library.permanentRemove([changedPhoto]) { err in
                     if let err {
                         dispayingSettings.errorAlertData = err.localizedDescription
                         dispayingSettings.isShowingErrorAlert.toggle()
                     }
+//                    else {
+//                        withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+//                        dispayingSettings.infoBarData = ""
+//                    }
                 }
             }
             

@@ -42,41 +42,51 @@ struct GallerySceneView: View {
                             Image(systemName: "plus")
                         }
                         .onChange(of: importSelectedItems) { _ in
-                            Task {
-                                var newPhotos: [Photo] = []
-                                for item in importSelectedItems {
-                                    if let data = try? await item.loadTransferable(type: Data.self) {
-                                        let uiImage = UIImage(data: data)
-                                        if let uiImage {
-                                            let creationDate: Date
-                                            if let localID = item.itemIdentifier {
-                                                let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
-                                                creationDate = asset?.creationDate ?? Date()
-                                            } else {
-                                                creationDate = Date()
-                                            }
-                                            
-                                            let fileExtention: PhotoExtention
-                                            if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
-                                                fileExtention = .png
-                                            } else {
-                                                fileExtention = .jpg
-                                            }
-                                            
-                                            let uuid = writeImageToFile(uiImage: uiImage, fileExtention: fileExtention.rawValue)
-                                            if let uuid {
-                                                newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
+                            if importSelectedItems.count > 0 {
+                                Task {
+                                    dispayingSettings.infoBarData = "Importing photos..."
+                                    withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+                                    
+                                    var newPhotos: [Photo] = []
+                                    for item in importSelectedItems {
+                                        if let data = try? await item.loadTransferable(type: Data.self) {
+                                            let uiImage = UIImage(data: data)
+                                            if let uiImage {
+                                                let creationDate: Date
+                                                if let localID = item.itemIdentifier {
+                                                    let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
+                                                    creationDate = asset?.creationDate ?? Date()
+                                                } else {
+                                                    creationDate = Date()
+                                                }
+                                                
+                                                let fileExtention: PhotoExtention
+                                                if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
+                                                    fileExtention = .png
+                                                } else {
+                                                    fileExtention = .jpg
+                                                }
+                                                
+                                                let uuid = writeImageToFile(uiImage: uiImage, fileExtention: fileExtention.rawValue)
+                                                if let uuid {
+                                                    newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                library.addImages(newPhotos) { _, err in
-                                    if let err {
-                                        dispayingSettings.errorAlertData = err.localizedDescription
-                                        dispayingSettings.isShowingErrorAlert.toggle()
+                                    library.addImages(newPhotos) { count, err in
+                                        if let err {
+                                            dispayingSettings.errorAlertData = err.localizedDescription
+                                            dispayingSettings.isShowingErrorAlert.toggle()
+                                        } else {
+                                            dispayingSettings.infoBarData = "\(count) photos imported"
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                                withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+                                            }
+                                        }
                                     }
+                                    importSelectedItems = []
                                 }
-                                importSelectedItems = []
                             }
                         }
                     }

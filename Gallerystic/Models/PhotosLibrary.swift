@@ -15,55 +15,51 @@ class PhotosLibrary: Codable, ObservableObject {
     
     
     func addImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+        var count = 0
         for item in imgs {
             photos.append(item)
+            count += 1
         }
         let e = saveLibrary(lib: self)
-        competition(imgs.count, e)
+        competition(count, e)
     }
     
-    func toBin(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
-        var count = 0
+    func toBin(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
                 photos[photoIndex].deletionDate = Date()
-                count += 1
             }
         }
         self.objectWillChange.send()
         let e = saveLibrary(lib: self)
-        competition(count, e)
+        competition(e)
     }
-    func recoverImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
-        var count = 0
+    func recoverImages(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
-                count += 1
             }
         }
         self.objectWillChange.send()
         let e = saveLibrary(lib: self)
-        competition(count, e)
+        competition(e)
     }
-    func permanentRemove(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
-        var count = 0
+    func permanentRemove(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 let (completed, error) = removeImageFile(id: item.id, fileExtention: item.fileExtention)
                 if completed {
                     photos.remove(at: photoIndex)
-                    count += 1
                 } else {
-                    competition(count, error)
+                    competition(error)
                 }
             }
         }
         self.objectWillChange.send()
         let e = saveLibrary(lib: self)
-        competition(count, e)
+        competition(e)
     }
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
@@ -72,7 +68,7 @@ class PhotosLibrary: Codable, ObservableObject {
                 forDeletion.append(item)
             }
         }
-        permanentRemove(forDeletion) { _, error in
+        permanentRemove(forDeletion) { error in
             competition(error)
         }
     }
