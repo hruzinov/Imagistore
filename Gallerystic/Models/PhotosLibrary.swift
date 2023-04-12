@@ -13,6 +13,7 @@ class PhotosLibrary: Codable, ObservableObject {
         self.photos = photos
     }
     
+    
     func addImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
         for item in imgs {
             photos.append(item)
@@ -63,6 +64,17 @@ class PhotosLibrary: Codable, ObservableObject {
         self.objectWillChange.send()
         let e = saveLibrary(lib: self)
         competition(count, e)
+    }
+    func clearBin(competition: @escaping (Error?) -> Void) {
+        var forDeletion = [Photo]()
+        for item in photos {
+            if item.status == .deleted, let deletionDate = item.deletionDate, TimeFunctions.daysLeft(deletionDate) < 0 {
+                forDeletion.append(item)
+            }
+        }
+        permanentRemove(forDeletion) { _, error in
+            competition(error)
+        }
     }
     
     func filterPhotos(status: PhotoStatus) -> [Photo] {

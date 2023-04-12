@@ -30,6 +30,14 @@ struct ContentView: View {
                 CustomTabBar(selection: handler)
             }
         }
+        .onAppear {
+            photosLibrary.clearBin() { err in
+                if let err {
+                    dispayingSettings.errorAlertData = err.localizedDescription
+                    dispayingSettings.isShowingErrorAlert.toggle()
+                }
+            }
+        }
         .alert(dispayingSettings.errorAlertData, isPresented: $dispayingSettings.isShowingErrorAlert){}
     }
 }

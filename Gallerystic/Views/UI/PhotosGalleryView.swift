@@ -33,13 +33,27 @@ struct PhotosGalleryView: View {
                         })) { $item in
                             if item.uiImage != nil {
                                 GeometryReader { gr in
+                                    let size = gr.size
                                     NavigationLink {
                                         ImageDetailedView(photosSelector: photosSelector, library: library, sortingSelector: $sortingSelector, selectedImage: item.id)
                                     } label: {
                                         Image(uiImage: item.uiImage!)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(height: gr.size.width)
+                                            .frame(width: size.height, height: size.width, alignment: .center)
+                                            .overlay(
+                                                ZStack {
+                                                    if let deletionDate = item.deletionDate {
+                                                        LinearGradient(colors: [.black.opacity(0), .black], startPoint: .center, endPoint: .bottom)
+                                                        VStack(alignment: .center) {
+                                                            Spacer()
+                                                            Text(TimeFunctions.daysLeftString(deletionDate))
+                                                                .padding(5)
+                                                                .foregroundColor(TimeFunctions.daysLeft(deletionDate) < 3 ? .red : .white)
+                                                        }
+                                                    }
+                                                }
+                                            )
                                     }
                                 }
                                 .clipped()
