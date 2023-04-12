@@ -2,7 +2,7 @@
 //  Created by Evhen Gruzinov on 14.03.2023.
 //
 
-import Foundation
+import SwiftUI
 
 class PhotosLibrary: Codable, ObservableObject {
     var libraryVersion: Int
@@ -13,43 +13,56 @@ class PhotosLibrary: Codable, ObservableObject {
         self.photos = photos
     }
     
-    func addImages(_ imgs: [Photo]) {
+    func addImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
         for item in imgs {
             photos.append(item)
         }
-        saveLibrary(lib: self)
+        let e = saveLibrary(lib: self)
+        competition(imgs.count, e)
     }
     
-    func toBin(_ imgs: [Photo]) {
+    func toBin(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+        var count = 0
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
                 photos[photoIndex].deletionDate = Date()
+                count += 1
             }
         }
         self.objectWillChange.send()
-        saveLibrary(lib: self)
+        let e = saveLibrary(lib: self)
+        competition(count, e)
     }
-    func recoverImages(_ imgs: [Photo]) {
+    func recoverImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+        var count = 0
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
+                count += 1
             }
         }
         self.objectWillChange.send()
-        saveLibrary(lib: self)
+        let e = saveLibrary(lib: self)
+        competition(count, e)
     }
-    func permanentRemove(_ imgs: [Photo]) {
+    func permanentRemove(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+        var count = 0
         for item in imgs {
             if let photoIndex = photos.firstIndex(of: item) {
-                if removeImageFile(id: item.id, fileExtention: item.fileExtention) {
+                let (completed, error) = removeImageFile(id: item.id, fileExtention: item.fileExtention)
+                if completed {
                     photos.remove(at: photoIndex)
+                    count += 1
+                } else {
+                    competition(count, error)
                 }
             }
         }
         self.objectWillChange.send()
-        saveLibrary(lib: self)
+        let e = saveLibrary(lib: self)
+        competition(count, e)
     }
     
     func filterPhotos(status: PhotoStatus) -> [Photo] {

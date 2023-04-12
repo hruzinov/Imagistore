@@ -19,11 +19,21 @@ fileprivate func directoryExistsAtPath(_ path: String) -> Bool {
 }
 
 
-func saveLibrary(lib: PhotosLibrary) {
-    if let stringData = try? JSONEncoder().encode(lib) {
-        try? stringData.write(to: libraryPath)
+func saveLibrary(lib: PhotosLibrary) -> Error? {
+    do {
+        let stringData = try JSONEncoder().encode(lib)
+        do {
+            try stringData.write(to: libraryPath)
+            print("Library saved")
+        } catch {
+            print(error)
+            return error
+        }
+    } catch {
+        print(error)
+        return error
     }
-    print("Library saved")
+    return nil
 }
 
 func loadLibrary() -> PhotosLibrary {
@@ -32,7 +42,7 @@ func loadLibrary() -> PhotosLibrary {
     
     guard let stringData else {
         let newLibrary = PhotosLibrary(libraryVersion: ApplicationSettings.actualLibraryVersion, photos: [])
-        saveLibrary(lib: newLibrary)
+        _ = saveLibrary(lib: newLibrary)
         return newLibrary
     }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
@@ -104,15 +114,15 @@ func writeImageToFile(uiImage: UIImage, fileExtention: String) -> UUID? {
     
     return nil
 }
-func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> Bool {
+func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) {
     let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention)")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         print("Image file deleted from path \(filepath)")
-        return true
+        return (true, nil)
     } catch {
         print(error)
-        return false
+        return (false, error)
     }
 }
 

@@ -110,9 +110,9 @@ struct ImageDetailedView: View {
         .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
             Button("Delete photo", role: .destructive) {
                 if photosSelector == .deleted {
-                    changePhotoStatus(to: "permanentRemove")
+                    changePhotoStatus(to: .permanent)
                 } else {
-                    changePhotoStatus(to: "bin")
+                    changePhotoStatus(to: .bin)
                 }
             }
         } message: {
@@ -130,7 +130,7 @@ struct ImageDetailedView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 if photosSelector == .deleted {
                     Button { isPresentingConfirm.toggle() } label: { Text("Delete permanently") }
-                    Button { changePhotoStatus(to: "recover") } label: { Text("Recover") }
+                    Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
                 } else {
                     Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
                 }
@@ -140,12 +140,38 @@ struct ImageDetailedView: View {
         .foregroundColor(.blue)
     }
     
-    private func changePhotoStatus(to: String) {
+    private enum RemovingDirection {
+        case bin
+        case recover
+        case permanent
+    }
+    
+    private func changePhotoStatus(to: RemovingDirection) {
         let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
-            if to == "bin" { library.toBin([changedPhoto]) }
-            else if to == "recover" { library.recoverImages([changedPhoto]) }
-            else if to == "permanentRemove" { library.permanentRemove([changedPhoto]) }
+            switch to {
+            case .bin:
+                library.toBin([changedPhoto]) { _, err in
+                    if let err {
+                        dispayingSettings.errorAlertData = err.localizedDescription
+                        dispayingSettings.isShowingErrorAlert.toggle()
+                    }
+                }
+            case .recover:
+                library.recoverImages([changedPhoto]) { _, err in
+                    if let err {
+                        dispayingSettings.errorAlertData = err.localizedDescription
+                        dispayingSettings.isShowingErrorAlert.toggle()
+                    }
+                }
+            case .permanent:
+                library.permanentRemove([changedPhoto]) { _, err in
+                    if let err {
+                        dispayingSettings.errorAlertData = err.localizedDescription
+                        dispayingSettings.isShowingErrorAlert.toggle()
+                    }
+                }
+            }
             
             if filteredPhotos.count == 0 { DispatchQueue.main.async { dismiss() }}
             else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }

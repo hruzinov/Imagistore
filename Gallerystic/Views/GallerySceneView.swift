@@ -7,6 +7,7 @@ import PhotosUI
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var dispayingSettings: DispayingSettings
     @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     @State var canAddNewPhotos: Bool = false
@@ -69,7 +70,12 @@ struct GallerySceneView: View {
                                         }
                                     }
                                 }
-                                library.addImages(newPhotos)
+                                library.addImages(newPhotos) { _, err in
+                                    if let err {
+                                        dispayingSettings.errorAlertData = err.localizedDescription
+                                        dispayingSettings.isShowingErrorAlert.toggle()
+                                    }
+                                }
                                 importSelectedItems = []
                             }
                         }

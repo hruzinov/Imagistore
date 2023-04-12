@@ -10,4 +10,7 @@ struct ApplicationSettings {
 
 class DispayingSettings: ObservableObject {
     @Published var isShowingTabBar: Bool = true
+    
+    @Published var isShowingErrorAlert: Bool = false
+    @Published var errorAlertData: String = ""
 }
