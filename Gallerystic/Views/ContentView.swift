@@ -29,6 +29,7 @@ struct ContentView: View {
             .overlay(alignment: .bottom){
                 CustomTabBar(selection: handler)
             }
+            .toolbar(.hidden, for: .tabBar)
         }
         .overlay(alignment: .top) {
             if dispayingSettings.isShowingInfoBar {

@@ -28,6 +28,10 @@ struct GallerySceneView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("")
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            
             .toolbar {
                 if canAddNewPhotos {
                     ToolbarItem(placement: .navigationBarLeading) {

@@ -15,7 +15,6 @@ struct CustomTabBar: View {
     var body: some View {
         if dispayingSettings.isShowingTabBar {
             HStack {
-                
                 Button {
                     withAnimation(.easeInOut) {
                         selection = .library

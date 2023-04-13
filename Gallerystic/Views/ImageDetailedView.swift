@@ -90,11 +90,11 @@ struct ImageDetailedView: View {
                                         Button { self.selectedImage = item.id } label: {
                                             Image(uiImage: item.uiImage!)
                                                 .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 75, height: 75)
-                                                .overlay(selectedImage == item.id ? RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth:3) : nil)
-                                                .padding(2)
+                                                .scaledToFill()
+                                                .frame(width: 75, height: 75, alignment: .center)
+                                                .overlay(selectedImage == item.id ? Rectangle().fill(.black).opacity(0.75) : nil)
                                                 .id(item.id)
+                                                .clipped()
                                         }
                                     }
                                 }
@@ -122,10 +122,10 @@ struct ImageDetailedView: View {
         }
         
         .onAppear { dispayingSettings.isShowingTabBar = false }
-        .onDisappear {
-            withAnimation(Animation.easeInOut(duration: 0.3)) { dispayingSettings.isShowingTabBar = true }
-        }
+        .onDisappear { dispayingSettings.isShowingTabBar = true }
         
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 if photosSelector == .deleted {
