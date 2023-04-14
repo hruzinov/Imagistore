@@ -31,17 +31,27 @@ struct ContentView: View {
             }
             .toolbar(.hidden, for: .tabBar)
         }
-        .overlay(alignment: .top) {
+        .overlay(alignment: .center, content: {
             if dispayingSettings.isShowingInfoBar {
-                VStack(alignment: .center) {
-                    Text(dispayingSettings.infoBarData)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 10)
-                }
-                .frame(maxWidth: .infinity)
-                .background(.black)
+                CircleProgressPupup(progressText: $dispayingSettings.infoBarData, progressValue: $dispayingSettings.infoBarProgress)
+
+                
+//                RoundedRectangle(cornerRadius: 25)
             }
-        }
+        })
+//        .overlay(alignment: .top) {
+//            if dispayingSettings.isShowingInfoBar {
+//                VStack(alignment: .center) {
+//                    ProgressView(value: dispayingSettings.infoBarProgress) {
+//                        Text(dispayingSettings.infoBarData)
+//                    }
+//                    .padding(.vertical, 10)
+//                    .padding(.horizontal, 7)
+//                }
+//                .frame(maxWidth: .infinity)
+//                .background(.ultraThinMaterial)
+//            }
+//        }
         .onAppear {
             photosLibrary.clearBin() { err in
                 if let err {

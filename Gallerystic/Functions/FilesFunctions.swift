@@ -74,12 +74,14 @@ func loadLibrary() -> PhotosLibrary {
 func readImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
     let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
     let uiImage = UIImage(contentsOfFile: filepath.path)
+    if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
 }
 
 func readCompressedImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
     let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
     let uiImage = downsample(imageAt: filepath)
+    if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
 }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		49097FF029E9718A0023E36F /* CircleProgressPupup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */; };
 		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
 		491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AE29C0942F000D138A /* PhotosLibrary.swift */; };
 		49273B5F29BE378E00ECF488 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B5E29BE378E00ECF488 /* Photo.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleProgressPupup.swift; sourceTree = "<group>"; };
 		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
 		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		491289AE29C0942F000D138A /* PhotosLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosLibrary.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
+				49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
 				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
+				49097FF029E9718A0023E36F /* CircleProgressPupup.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
 				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,

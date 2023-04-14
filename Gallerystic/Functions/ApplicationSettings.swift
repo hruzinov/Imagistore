@@ -16,4 +16,5 @@ class DispayingSettings: ObservableObject {
     
     @Published var isShowingInfoBar: Bool = false
     @Published var infoBarData: String = ""
+    @Published var infoBarProgress: Double = 0
 }
