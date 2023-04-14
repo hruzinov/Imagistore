@@ -14,6 +14,7 @@ struct GallerySceneView: View {
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var showGalleryOverlay: Bool = false
+    @State var scrollToImage: UUID?
     @Binding var navToRoot: Bool
     
     var body: some View {
@@ -22,7 +23,7 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    PhotosGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector)
+                    PhotosGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, scrollTo: $scrollToImage)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
@@ -85,6 +86,7 @@ struct GallerySceneView: View {
                                             dispayingSettings.errorAlertData = err.localizedDescription
                                             dispayingSettings.isShowingErrorAlert.toggle()
                                         } else {
+                                            scrollToImage = newPhotos.last?.id
                                             withAnimation {
                                                 dispayingSettings.infoBarData = "\(finalCount) photos saved"
                                                 dispayingSettings.infoBarProgress = Double(finalCount) / Double(importSelectedItems.count)

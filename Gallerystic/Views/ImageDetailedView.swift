@@ -71,8 +71,9 @@ struct ImageDetailedView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .padding(.vertical, 10)
             }
-            ScrollView(.horizontal) {
-                ScrollViewReader { scroll in
+            
+            ScrollViewReader { scroll in
+                ScrollView(.horizontal) {
                     HStack {
                         ForEach($library.photos
                             .sorted(by: { ph1, ph2 in
@@ -100,7 +101,7 @@ struct ImageDetailedView: View {
                                 }
                     }
                     .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
-                    .onChange(of: selectedImage) { newValue in
+                    .onChange(of: selectedImage) { _ in
                         withAnimation { scroll.scrollTo(selectedImage) }
                     }
                 }

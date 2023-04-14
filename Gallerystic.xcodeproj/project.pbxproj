@@ -146,10 +146,10 @@
 			isa = PBXGroup;
 			children = (
 				49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */,
+				49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */,
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				497647F429C0C102001C3FE4 /* PhotosGalleryView.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
-				49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
