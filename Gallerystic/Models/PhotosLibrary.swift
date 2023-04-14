@@ -72,16 +72,6 @@ class PhotosLibrary: Codable, ObservableObject {
             competition(error)
         }
     }
-    
-    func filterPhotos(status: PhotoStatus) -> [Photo] {
-        var newArray = [Photo]()
-        for item in photos {
-            if item.status == status {
-                newArray.append(item)
-            }
-        }
-        return newArray
-    }
 }
 
 enum PhotosSortArgument {

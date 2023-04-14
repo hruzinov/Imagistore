@@ -6,7 +6,10 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var dispayingSettings: DispayingSettings
+    
     @StateObject var photosLibrary = loadLibrary()
+    
+    @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
     
@@ -21,9 +24,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
+                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, navToRoot: $navToRoot)
+                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.albums)
             }
             .overlay(alignment: .bottom){
@@ -34,24 +37,8 @@ struct ContentView: View {
         .overlay(alignment: .center, content: {
             if dispayingSettings.isShowingInfoBar {
                 CircleProgressPupup(progressText: $dispayingSettings.infoBarData, progressValue: $dispayingSettings.infoBarProgress)
-
-                
-//                RoundedRectangle(cornerRadius: 25)
             }
         })
-//        .overlay(alignment: .top) {
-//            if dispayingSettings.isShowingInfoBar {
-//                VStack(alignment: .center) {
-//                    ProgressView(value: dispayingSettings.infoBarProgress) {
-//                        Text(dispayingSettings.infoBarData)
-//                    }
-//                    .padding(.vertical, 10)
-//                    .padding(.horizontal, 7)
-//                }
-//                .frame(maxWidth: .infinity)
-//                .background(.ultraThinMaterial)
-//            }
-//        }
         .onAppear {
             photosLibrary.clearBin() { err in
                 if let err {

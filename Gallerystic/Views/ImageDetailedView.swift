@@ -8,11 +8,31 @@ struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
-    @State var photosSelector: PhotoStatus
     @ObservedObject var library: PhotosLibrary
+    var photos: [Binding<Photo>] {
+        $library.photos
+            .sorted(by: { ph1, ph2 in
+                if photosSelector == .deleted, let delDate1 = ph1.deletionDate.wrappedValue, let delDate2 = ph2.deletionDate.wrappedValue {
+                    return delDate1 < delDate2
+                } else {
+                    switch sortingSelector {
+                    case .importDate:
+                        return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
+                    case .creationDate:
+                        return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+                    }
+                }
+            })
+            .filter({ $ph in
+                ph.status == photosSelector
+            })
+    }
+    
+    @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
     
     @State var selectedImage: UUID
+    @Binding var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
     
     var filteredPhotos: [Photo] {
@@ -34,39 +54,28 @@ struct ImageDetailedView: View {
         NavigationStack {
             VStack {
                 TabView(selection: $selectedImage) {
-                    ForEach($library.photos
-                        .sorted(by: { ph1, ph2 in
-                            switch sortingSelector {
-                            case .importDate:
-                                return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                            case .creationDate:
-                                return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
+                    ForEach(photos) { $item in
+                        if item.uiImage != nil {
+                            ZStack {
+                                
+                                Image(uiImage: item.uiImage!)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .pinchToZoom()
                             }
-                        })
-                            .filter({ $ph in
-                                ph.status == photosSelector
-                            })) { $item in
-                                if item.uiImage != nil {
-                                    ZStack {
-                                        
-                                        Image(uiImage: item.uiImage!)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .pinchToZoom()
-                                    }
-                                    .frame(maxHeight: .infinity)
-                                    .overlay(alignment: .bottomTrailing) {
-                                        if item.fileExtention == .png {
-                                            Text("PNG")
-                                                .foregroundColor(.none)
-                                                .padding(.horizontal, 10)
-                                                .background(Color(UIColor.lightGray))
-                                                .cornerRadius(10)
-                                                .padding(.horizontal, 10)
-                                        }
-                                    }
+                            .frame(maxHeight: .infinity)
+                            .overlay(alignment: .bottomTrailing) {
+                                if item.fileExtention == .png {
+                                    Text("PNG")
+                                        .foregroundColor(.none)
+                                        .padding(.horizontal, 10)
+                                        .background(Color(UIColor.lightGray))
+                                        .cornerRadius(10)
+                                        .padding(.horizontal, 10)
                                 }
                             }
+                        }
+                    }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .padding(.vertical, 10)
@@ -74,39 +83,41 @@ struct ImageDetailedView: View {
             
             ScrollViewReader { scroll in
                 ScrollView(.horizontal) {
-                    HStack {
-                        ForEach($library.photos
-                            .sorted(by: { ph1, ph2 in
-                                switch sortingSelector {
-                                case .importDate:
-                                    return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                                case .creationDate:
-                                    return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
-                                }
-                            })
-                                .filter({ $ph in
-                                    ph.status == photosSelector
-                                })) { $item in
-                                    if item.uiImage != nil {
-                                        Button { self.selectedImage = item.id } label: {
-                                            Image(uiImage: item.uiImage!)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 75, height: 75, alignment: .center)
-                                                .overlay(selectedImage == item.id ? Rectangle().fill(.black).opacity(0.75) : nil)
-                                                .id(item.id)
-                                                .clipped()
-                                        }
+                    HStack(spacing: 0) {
+                        ForEach(photos) { $item in
+                            if item.uiImage != nil {
+                                Button {
+                                    self.selectedImage = item.id
+                                    scrollTo = selectedImage
+                                } label: {
+                                    if selectedImage == item.id {
+                                        Image(uiImage: item.uiImage!)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(maxWidth: .infinity, maxHeight: 75, alignment: .center)
+                                            .padding(5)
+                                            .border(Color.primary, width: 5)
+                                            .padding(20)
+                                            .clipped()
+                                            .id(item.id)
+                                    } else {
+                                        Image(uiImage: item.uiImage!)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 50, height: 75, alignment: .center)
+                                            .clipped()
+                                            .id(item.id)
                                     }
                                 }
+                            }
+                        }
                     }
                     .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
                     .onChange(of: selectedImage) { _ in
-                        withAnimation { scroll.scrollTo(selectedImage) }
+                        withAnimation { scroll.scrollTo(selectedImage, anchor: .center) }
                     }
                 }
             }
-            .padding(.horizontal, 10)
         }
         .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
             Button("Delete photo", role: .destructive) {
@@ -166,7 +177,6 @@ struct ImageDetailedView: View {
                     }
                 }
             case .permanent:
-//                dispayingSettings.infoBarData = "Removing photos..."
                 withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                 
                 library.permanentRemove([changedPhoto]) { err in
@@ -174,10 +184,6 @@ struct ImageDetailedView: View {
                         dispayingSettings.errorAlertData = err.localizedDescription
                         dispayingSettings.isShowingErrorAlert.toggle()
                     }
-//                    else {
-//                        withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
-//                        dispayingSettings.infoBarData = ""
-//                    }
                 }
             }
             
