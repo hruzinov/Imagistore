@@ -18,6 +18,7 @@
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
 		4937530729BE3202006F9CD8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4937530629BE3202006F9CD8 /* GoogleService-Info.plist */; };
 		493E5CEB29EAD2BE008A1A38 /* UIBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E5CEA29EAD2BE008A1A38 /* UIBottomToolbar.swift */; };
+		493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */; };
 		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
 		496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */; };
 		497647F529C0C102001C3FE4 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* GalleryView.swift */; };
@@ -26,7 +27,6 @@
 		49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */; };
 		49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */; };
 		49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */; };
-		49DEB46F29E8179600B4D86F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -222,7 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */,
-				49DEB46F29E8179600B4D86F /* LaunchScreen.storyboard in Resources */,
+				493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */,
 				493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */,
 				4937530729BE3202006F9CD8 /* GoogleService-Info.plist in Resources */,
 			);
@@ -387,9 +387,8 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -399,7 +398,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -423,9 +422,8 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -435,7 +433,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

@@ -6,7 +6,7 @@ import SwiftUI
 
 class Photo: Identifiable, Codable {
     var id: UUID
-    lazy var uiImage: UIImage? = readCompressedImageFromFile(id: id, fileExtention: fileExtention)
+    lazy var uiImage: UIImage? = readImageFromFile(id: id, fileExtention: fileExtention)
     var status: PhotoStatus
     var creationDate: Date
     var importDate: Date

@@ -67,7 +67,7 @@ struct ImageDetailedView: View {
             
             ScrollViewReader { scroll in
                 ScrollView(.horizontal) {
-                    HStack(spacing: 0) {
+                    LazyHStack(spacing: 2) {
                         ForEach(photos) { $item in
                             if item.uiImage != nil {
                                 Button {
@@ -78,10 +78,10 @@ struct ImageDetailedView: View {
                                         Image(uiImage: item.uiImage!)
                                             .resizable()
                                             .scaledToFill()
-                                            .frame(maxWidth: .infinity, maxHeight: 75, alignment: .center)
+                                            .frame(maxHeight: 75, alignment: .center)
                                             .padding(5)
                                             .border(Color.primary, width: 5)
-                                            .padding(20)
+                                            .padding(.horizontal, 20)
                                             .clipped()
                                             .id(item.id)
                                     } else {
@@ -96,6 +96,7 @@ struct ImageDetailedView: View {
                             }
                         }
                     }
+                    .frame(height: 80)
                     .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
                     .onChange(of: selectedImage) { _ in
                         withAnimation { scroll.scrollTo(selectedImage, anchor: .center) }

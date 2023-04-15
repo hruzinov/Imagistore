@@ -45,7 +45,7 @@ struct CustomTabBar: View {
                 .padding(.top, 10)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 28)
+            .frame(height: 32)
             .padding(.vertical, 10)
             .background(.ultraThickMaterial)
         }

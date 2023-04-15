@@ -78,13 +78,6 @@ func readImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
     return uiImage
 }
 
-func readCompressedImageFromFile(id: UUID, fileExtention: PhotoExtention) -> UIImage? {
-    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".\(fileExtention.rawValue)")
-    let uiImage = downsample(imageAt: filepath)
-    if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    return uiImage
-}
-
 func writeImageToFile(uiImage: UIImage, fileExtention: String) -> UUID? {
     
     var data: Data?
@@ -126,32 +119,4 @@ func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) 
         print(error)
         return (false, error)
     }
-}
-
-func downsample(imageAt imageURL: URL,
-                to pointSize: CGSize = UIScreen.main.bounds.size,
-                scale: CGFloat = UIScreen.main.scale) -> UIImage? {
-    
-    // Create an CGImageSource that represent an image
-    let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
-    guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else {
-        return nil
-    }
-    
-    // Calculate the desired dimension
-    let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
-    
-    // Perform downsampling
-    let downsampleOptions = [
-        kCGImageSourceCreateThumbnailFromImageAlways: true,
-        kCGImageSourceShouldCacheImmediately: true,
-        kCGImageSourceCreateThumbnailWithTransform: true,
-        kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
-    ] as [CFString : Any] as CFDictionary
-    guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-        return nil
-    }
-    
-    // Return the downsampled image as UIImage
-    return UIImage(cgImage: downsampledImage)
 }

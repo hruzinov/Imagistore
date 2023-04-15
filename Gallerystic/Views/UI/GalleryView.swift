@@ -8,9 +8,12 @@ struct GalleryView: View {
     @ObservedObject var library: PhotosLibrary
     var photos: [Binding<Photo>] {
         $library.photos
+            .filter({ $ph in
+                ph.status == photosSelector
+            })
             .sorted(by: { ph1, ph2 in
-                if photosSelector == .deleted, let delDate1 = ph1.deletionDate.wrappedValue, let delDate2 = ph2.deletionDate.wrappedValue {
-                    return delDate1 < delDate2
+                if photosSelector == .deleted {
+                    return ph1.deletionDate.wrappedValue! < ph2.deletionDate.wrappedValue!
                 } else {
                     switch sortingSelector {
                     case .importDate:
@@ -19,9 +22,6 @@ struct GalleryView: View {
                         return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
                     }
                 }
-            })
-            .filter({ $ph in
-                ph.status == photosSelector
             })
     }
     
@@ -105,10 +105,15 @@ struct GalleryView: View {
                 Rectangle()
                     .frame(height: 50)
                     .opacity(0)
+                    .id("bottomRectangle")
             }
             .onChange(of: scrollTo) { _ in
                 if let scrollTo {
-                    scroll.scrollTo(scrollTo, anchor: .leading)
+                    if sortingSelector == .importDate {
+                        scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                    } else {
+                        scroll.scrollTo(scrollTo, anchor: .center)
+                    }
                 }
             }
         }

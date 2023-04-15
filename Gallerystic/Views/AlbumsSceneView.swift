@@ -22,12 +22,7 @@ struct AlbumsSceneView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                HStack {
-                    Text("Albums").font(.title).bold()
-                    Spacer()
-                }
-                .padding(.horizontal, 15)
+            VStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
@@ -62,7 +57,19 @@ struct AlbumsSceneView: View {
                         .padding(.horizontal, 15)
                     }
                 }
+                Spacer()
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+
+                }
+            }
+            .navigationTitle("Albums")
         }
     }
 }
