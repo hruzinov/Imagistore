@@ -77,3 +77,9 @@ class PhotosLibrary: Codable, ObservableObject {
 enum PhotosSortArgument {
     case importDate, creationDate
 }
+
+enum RemovingDirection {
+    case bin
+    case recover
+    case permanent
+}

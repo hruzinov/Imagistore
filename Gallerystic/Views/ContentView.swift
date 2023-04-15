@@ -36,7 +36,7 @@ struct ContentView: View {
         }
         .overlay(alignment: .center, content: {
             if dispayingSettings.isShowingInfoBar {
-                CircleProgressPupup(progressText: $dispayingSettings.infoBarData, progressValue: $dispayingSettings.infoBarProgress)
+                UICircleProgressPupup(progressText: $dispayingSettings.infoBarData, progressValue: $dispayingSettings.infoBarProgress, progressFinal: $dispayingSettings.infoBarFinal)
             }
         })
         .onAppear {

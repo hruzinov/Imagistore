@@ -59,6 +59,7 @@ struct AlbumBlockView: View {
                     HStack {
                         Text("All images")
                             .padding(5)
+                            .bold()
                         Spacer()
                         Text(String(photos.count))
                     }
@@ -66,6 +67,6 @@ struct AlbumBlockView: View {
                 .font(.subheadline)
                 .padding(5)
             })
-        .foregroundColor(Color.primary)
+        .foregroundColor(Color.white)
     }
 }

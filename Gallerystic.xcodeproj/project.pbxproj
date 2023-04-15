@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		49097FF029E9718A0023E36F /* CircleProgressPupup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */; };
+		49097FF029E9718A0023E36F /* UICircleProgressPupup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */; };
 		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
 		491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AE29C0942F000D138A /* PhotosLibrary.swift */; };
 		49273B5F29BE378E00ECF488 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B5E29BE378E00ECF488 /* Photo.swift */; };
@@ -17,6 +17,7 @@
 		493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FA29BE2F81006F9CD8 /* Assets.xcassets */; };
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
 		4937530729BE3202006F9CD8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4937530629BE3202006F9CD8 /* GoogleService-Info.plist */; };
+		493E5CEB29EAD2BE008A1A38 /* UIBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E5CEA29EAD2BE008A1A38 /* UIBottomToolbar.swift */; };
 		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
 		496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */; };
 		497647F529C0C102001C3FE4 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* GalleryView.swift */; };
@@ -29,7 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleProgressPupup.swift; sourceTree = "<group>"; };
+		49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupup.swift; sourceTree = "<group>"; };
 		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
 		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		491289AE29C0942F000D138A /* PhotosLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosLibrary.swift; sourceTree = "<group>"; };
@@ -41,6 +42,7 @@
 		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4937530629BE3202006F9CD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		493E5CEA29EAD2BE008A1A38 /* UIBottomToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBottomToolbar.swift; sourceTree = "<group>"; };
 		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFunctions.swift; sourceTree = "<group>"; };
 		497647F429C0C102001C3FE4 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
@@ -146,10 +148,11 @@
 			isa = PBXGroup;
 			children = (
 				49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */,
-				49097FEF29E9718A0023E36F /* CircleProgressPupup.swift */,
+				49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */,
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				497647F429C0C102001C3FE4 /* GalleryView.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
+				493E5CEA29EAD2BE008A1A38 /* UIBottomToolbar.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -236,9 +239,10 @@
 				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
 				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
+				493E5CEB29EAD2BE008A1A38 /* UIBottomToolbar.swift in Sources */,
 				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
-				49097FF029E9718A0023E36F /* CircleProgressPupup.swift in Sources */,
+				49097FF029E9718A0023E36F /* UICircleProgressPupup.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
 				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,

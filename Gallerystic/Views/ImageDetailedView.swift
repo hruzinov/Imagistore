@@ -35,21 +35,6 @@ struct ImageDetailedView: View {
     @Binding var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
     
-    var filteredPhotos: [Photo] {
-        library.photos
-            .sorted(by: { ph1, ph2 in
-                switch sortingSelector {
-                case .importDate:
-                    return ph1.importDate < ph2.importDate
-                case .creationDate:
-                    return ph1.creationDate < ph2.creationDate
-                }
-            })
-            .filter { ph in
-                ph.status == photosSelector
-            }
-    }
-    
     var body: some View {
         NavigationStack {
             VStack {
@@ -57,7 +42,6 @@ struct ImageDetailedView: View {
                     ForEach(photos) { $item in
                         if item.uiImage != nil {
                             ZStack {
-                                
                                 Image(uiImage: item.uiImage!)
                                     .resizable()
                                     .scaledToFit()
@@ -152,13 +136,12 @@ struct ImageDetailedView: View {
         .foregroundColor(.blue)
     }
     
-    private enum RemovingDirection {
-        case bin
-        case recover
-        case permanent
-    }
-    
     private func changePhotoStatus(to: RemovingDirection) {
+        var filteredPhotos: [Photo] = []
+        photos.forEach { $ph in
+            filteredPhotos.append(ph)
+        }
+        
         let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
             switch to {
@@ -177,8 +160,6 @@ struct ImageDetailedView: View {
                     }
                 }
             case .permanent:
-                withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
-                
                 library.permanentRemove([changedPhoto]) { err in
                     if let err {
                         dispayingSettings.errorAlertData = err.localizedDescription
