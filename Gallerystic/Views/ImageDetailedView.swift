@@ -168,6 +168,8 @@ struct ImageDetailedView: View {
                 }
             }
             
+            filteredPhotos.remove(at: photoIndex)
+            
             if filteredPhotos.count == 0 { DispatchQueue.main.async { dismiss() }}
             else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }
             else { selectedImage = filteredPhotos[photoIndex].id }

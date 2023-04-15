@@ -38,7 +38,6 @@ struct GallerySceneView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-//            .navigationBarTitle(selectingMode ? "\(selectedImagesArray.count) selected" : "")
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             
@@ -70,6 +69,7 @@ struct GallerySceneView: View {
                             if importSelectedItems.count > 0 {
                                 Task {
                                     dispayingSettings.infoBarData = "Importing..."
+                                    dispayingSettings.infoBarFinal = false
                                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                                     var count = 0
                                     var newPhotos: [Photo] = []
@@ -111,10 +111,9 @@ struct GallerySceneView: View {
                                                 dispayingSettings.isShowingErrorAlert.toggle()
                                             } else {
                                                 scrollTo = newPhotos.last?.id
-                                                withAnimation {
-                                                    dispayingSettings.infoBarData = "\(finalCount) photos saved"
-                                                    dispayingSettings.infoBarProgress = Double(finalCount) / Double(importSelectedItems.count)
-                                                }
+                                                dispayingSettings.infoBarFinal = true
+                                                dispayingSettings.infoBarData = "\(finalCount) photos saved"
+                                                dispayingSettings.infoBarProgress = Double(finalCount) / Double(importSelectedItems.count)
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                                                 }
