@@ -5,9 +5,17 @@
 import Foundation
 
 struct ApplicationSettings {
-    static var actualLibraryVersion = 1
+    static var actualLibraryVersion = 2
 }
 
 class DispayingSettings: ObservableObject {
     @Published var isShowingTabBar: Bool = true
+    
+    @Published var isShowingErrorAlert: Bool = false
+    @Published var errorAlertData: String = ""
+    
+    @Published var isShowingInfoBar: Bool = false
+    @Published var infoBarData: String = ""
+    @Published var infoBarProgress: Double = 0
+    @Published var infoBarFinal: Bool = false
 }

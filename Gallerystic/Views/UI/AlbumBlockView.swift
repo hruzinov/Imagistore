@@ -6,14 +6,27 @@ import SwiftUI
 
 struct AlbumBlockView: View {
     @ObservedObject var library: PhotosLibrary
-    var allPhotos: [Photo] { library.photos.filter({ img in
-        img.status == .normal
-    })}
+    @Binding var sortingSelector: PhotosSortArgument
+    
+    var photos: [Photo] {
+        library.photos
+            .sorted(by: { ph1, ph2 in
+                switch sortingSelector {
+                case .importDate:
+                    return ph1.importDate < ph2.importDate
+                case .creationDate:
+                    return ph1.creationDate < ph2.creationDate
+                }
+            })
+            .filter({ ph in
+                ph.status == .normal
+            })
+    }
     
     var body: some View {
-        VStack {
-            if allPhotos.last != nil {
-                let lastImage: Photo = allPhotos.last!
+        HStack {
+            if photos.last != nil {
+                let lastImage = photos.last!
                 if let uiImage = lastImage.uiImage {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -23,17 +36,6 @@ struct AlbumBlockView: View {
                         .clipped()
                         .aspectRatio(1, contentMode: .fit)
                         .cornerRadius(5)
-                        .overlay(
-                            ZStack {
-                                Text(String(library.photos.filter({ img in
-                                    img.status == .normal
-                                }).count))
-                                .padding(5)
-                                .background {
-                                    Circle().fill(Color.white).opacity(0.7)
-                                }
-                            }.padding(3)
-                        , alignment: .bottomTrailing)
                 }
             } else {
                 VStack {
@@ -48,14 +50,23 @@ struct AlbumBlockView: View {
                 .background(Color(.init(gray: 0.8, alpha: 1)))
                 .cornerRadius(5)
             }
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("All images")
-                    
-                }
-                Spacer()
-            }
         }
-        .foregroundColor(.black)
+        .overlay(
+            ZStack {
+                LinearGradient(colors: [.black.opacity(0), .black], startPoint: .center, endPoint: .bottom)
+                VStack {
+                    Spacer()
+                    HStack {
+                        Text("All images")
+                            .padding(5)
+                            .bold()
+                        Spacer()
+                        Text(String(photos.count))
+                    }
+                }
+                .font(.subheadline)
+                .padding(5)
+            })
+        .foregroundColor(Color.white)
     }
 }

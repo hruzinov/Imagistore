@@ -5,16 +5,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var photosLibrary = loadLibrary()
+    @StateObject var photosLibrary: PhotosLibrary
+    
+    @EnvironmentObject var dispayingSettings: DispayingSettings
+    
+    @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
     
     var handler: Binding<Tab> { Binding(
         get: { self.selectedTab },
         set: {
-            if $0 == self.selectedTab {
-                navToRoot = true
-            }
+            if $0 == self.selectedTab { navToRoot = true }
             self.selectedTab = $0
         }
     )}
@@ -22,20 +24,29 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, navToRoot: $navToRoot)
-                    .tabItem {
-                        Label("Library", systemImage: "photo.artframe")
-                    }
+                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, navToRoot: $navToRoot)
-                    .tabItem {
-                        Label("Albums", systemImage: "sparkles.rectangle.stack")
-                    }
+                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.albums)
             }
             .overlay(alignment: .bottom){
                 CustomTabBar(selection: handler)
             }
+            .toolbar(.hidden, for: .tabBar)
         }
+        .overlay(alignment: .center, content: {
+            if dispayingSettings.isShowingInfoBar {
+                UICircleProgressPupup(progressText: $dispayingSettings.infoBarData, progressValue: $dispayingSettings.infoBarProgress, progressFinal: $dispayingSettings.infoBarFinal)
+            }
+        })
+        .onAppear {
+            photosLibrary.clearBin() { err in
+                if let err {
+                    dispayingSettings.errorAlertData = err.localizedDescription
+                    dispayingSettings.isShowingErrorAlert.toggle()
+                }
+            }
+        }
+        .alert(dispayingSettings.errorAlertData, isPresented: $dispayingSettings.isShowingErrorAlert){}
     }
 }

@@ -6,14 +6,11 @@ import SwiftUI
 
 @main
 struct GallerysticApp: App {
-    init() {
-        UITabBar.appearance().isHidden = true
-    }
-    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SceneNavigatorView()
                 .environmentObject(DispayingSettings())
         }
     }
 }
+    
