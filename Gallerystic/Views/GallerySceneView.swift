@@ -96,7 +96,7 @@ struct GallerySceneView: View {
                                                     fileExtention = .jpg
                                                 }
                                                 
-                                                let uuid = writeImageToFile(uiImage: uiImage, fileExtention: fileExtention.rawValue)
+                                                let uuid = writeImageToFile(uiImage: uiImage)
                                                 if let uuid {
                                                     newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
                                                     count += 1

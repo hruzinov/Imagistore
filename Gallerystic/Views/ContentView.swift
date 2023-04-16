@@ -5,9 +5,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var dispayingSettings: DispayingSettings
+    @StateObject var photosLibrary: PhotosLibrary
     
-    @StateObject var photosLibrary = loadLibrary()
+    @EnvironmentObject var dispayingSettings: DispayingSettings
     
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library

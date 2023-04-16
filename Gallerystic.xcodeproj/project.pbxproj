@@ -21,6 +21,8 @@
 		493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */; };
 		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
 		496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */; };
+		49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49737E5329EBE19600168A63 /* UIImage+heic.swift */; };
+		49737E5929EBF18E00168A63 /* SceneNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49737E5829EBF18E00168A63 /* SceneNavigatorView.swift */; };
 		497647F529C0C102001C3FE4 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* GalleryView.swift */; };
 		4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */; };
 		49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */; };
@@ -46,6 +48,9 @@
 		493E5CEC29EAE4B2008A1A38 /* Gallerystic.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Gallerystic.entitlements; sourceTree = "<group>"; };
 		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFunctions.swift; sourceTree = "<group>"; };
+		49737E5329EBE19600168A63 /* UIImage+heic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+heic.swift"; sourceTree = "<group>"; };
+		49737E5529EBE60800168A63 /* LibraryChangesLog.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LibraryChangesLog.md; sourceTree = "<group>"; };
+		49737E5829EBF18E00168A63 /* SceneNavigatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneNavigatorView.swift; sourceTree = "<group>"; };
 		497647F429C0C102001C3FE4 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsSceneView.swift; sourceTree = "<group>"; };
 		49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumBlockView.swift; sourceTree = "<group>"; };
@@ -72,6 +77,7 @@
 				49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */,
 				491289AB29C080FF000D138A /* FilesFunctions.swift */,
 				496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */,
+				49737E5329EBE19600168A63 /* UIImage+heic.swift */,
 			);
 			path = Functions;
 			sourceTree = "<group>";
@@ -129,6 +135,7 @@
 			children = (
 				493752FA29BE2F81006F9CD8 /* Assets.xcassets */,
 				493752FC29BE2F81006F9CD8 /* Preview Content */,
+				49737E5529EBE60800168A63 /* LibraryChangesLog.md */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -141,6 +148,7 @@
 				49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */,
 				493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */,
 				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
+				49737E5829EBF18E00168A63 /* SceneNavigatorView.swift */,
 				49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */,
 			);
 			path = Views;
@@ -238,7 +246,9 @@
 				49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */,
 				491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* GalleryView.swift in Sources */,
+				49737E5929EBF18E00168A63 /* SceneNavigatorView.swift in Sources */,
 				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
+				49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */,
 				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
 				493E5CEB29EAD2BE008A1A38 /* UIBottomToolbar.swift in Sources */,
