@@ -3,15 +3,17 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var library: PhotosLibrary
+    @ObservedRealmObject var library: PhotosLibrary
+    @Binding var uiImageHolder: UIImageHolder
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var navToRoot: Bool
-    
+
     var albums: [String] = []
-    
+
     let rows1 = [
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7))
     ]
@@ -19,22 +21,22 @@ struct AlbumsSceneView: View {
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7)),
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7))
     ]
-    
+
     var body: some View {
         NavigationStack {
             VStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
-                            GallerySceneView(library: library, photosSelector: .normal, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                            GallerySceneView(library: library, photosSelector: .normal, uiImageHolder: $uiImageHolder, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                         }, label: {
-                            AlbumBlockView(library: library, sortingSelector: $sortingSelector)
+                            AlbumBlockView(library: library, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder)
                         })
-                        
+
                     }
                 }
                 .padding(.horizontal, 15)
-                
+
                 HStack {
                     Text("Other").font(.title2).bold()
                     Spacer()
@@ -44,7 +46,7 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: library, photosSelector: .deleted, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                        GallerySceneView(library: library, photosSelector: .deleted, uiImageHolder: $uiImageHolder, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
@@ -62,7 +64,7 @@ struct AlbumsSceneView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        
+
                     } label: {
                         Image(systemName: "plus")
                     }

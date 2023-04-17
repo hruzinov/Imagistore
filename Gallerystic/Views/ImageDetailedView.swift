@@ -3,46 +3,35 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var dispayingSettings: DispayingSettings
-    
-    @ObservedObject var library: PhotosLibrary
-    var photos: [Binding<Photo>] {
-        $library.photos
-            .sorted(by: { ph1, ph2 in
-                if photosSelector == .deleted, let delDate1 = ph1.deletionDate.wrappedValue, let delDate2 = ph2.deletionDate.wrappedValue {
-                    return delDate1 < delDate2
-                } else {
-                    switch sortingSelector {
-                    case .importDate:
-                        return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                    case .creationDate:
-                        return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
-                    }
-                }
-            })
-            .filter({ $ph in
-                ph.status == photosSelector
-            })
+
+    @ObservedRealmObject var library: PhotosLibrary
+    var photos: RealmSwift.Results<Photo> {
+        library.photos
+            .where(( { $0.status == photosSelector } ))
+            .sorted(byKeyPath: photosSelector == .deleted ? "deletionDate" : sortingSelector.rawValue)
     }
-    
+
+    @Binding var uiImageHolder: UIImageHolder
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    
+
     @State var selectedImage: UUID
     @Binding var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
-    
+
     var body: some View {
         NavigationStack {
             VStack {
                 TabView(selection: $selectedImage) {
-                    ForEach(photos) { $item in
-                        if item.uiImage != nil {
+                    ForEach(photos) { item in
+                        if let uiImage = uiImageHolder.getUiImage(photo: item) {
                             ZStack {
-                                Image(uiImage: item.uiImage!)
+                                Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFit()
                                     .pinchToZoom()
@@ -64,18 +53,18 @@ struct ImageDetailedView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .padding(.vertical, 10)
             }
-            
+
             ScrollViewReader { scroll in
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 2) {
-                        ForEach(photos) { $item in
-                            if item.uiImage != nil {
+                        ForEach(photos) { item in
+                            if let uiImage = uiImageHolder.getUiImage(photo: item) {
                                 Button {
                                     self.selectedImage = item.id
                                     scrollTo = selectedImage
                                 } label: {
                                     if selectedImage == item.id {
-                                        Image(uiImage: item.uiImage!)
+                                        Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(maxHeight: 75, alignment: .center)
@@ -85,7 +74,7 @@ struct ImageDetailedView: View {
                                             .clipped()
                                             .id(item.id)
                                     } else {
-                                        Image(uiImage: item.uiImage!)
+                                        Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: 50, height: 75, alignment: .center)
@@ -117,10 +106,10 @@ struct ImageDetailedView: View {
                 Text("You cannot undo this action")
             }
         }
-        
+
         .onAppear { dispayingSettings.isShowingTabBar = false }
         .onDisappear { dispayingSettings.isShowingTabBar = true }
-        
+
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
@@ -136,13 +125,13 @@ struct ImageDetailedView: View {
         .padding(.vertical, 10)
         .foregroundColor(.blue)
     }
-    
+
     private func changePhotoStatus(to: RemovingDirection) {
         var filteredPhotos: [Photo] = []
-        photos.forEach { $ph in
+        photos.forEach { ph in
             filteredPhotos.append(ph)
         }
-        
+
         let changedPhoto = filteredPhotos.first(where: { $0.id == selectedImage })
         if let changedPhoto, let photoIndex = filteredPhotos.firstIndex(of: changedPhoto) {
             switch to {
@@ -168,9 +157,9 @@ struct ImageDetailedView: View {
                     }
                 }
             }
-            
+
             filteredPhotos.remove(at: photoIndex)
-            
+
             if filteredPhotos.count == 0 { DispatchQueue.main.async { dismiss() }}
             else if photoIndex == filteredPhotos.count { selectedImage = filteredPhotos[photoIndex-1].id }
             else { selectedImage = filteredPhotos[photoIndex].id }

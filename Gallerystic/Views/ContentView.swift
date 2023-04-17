@@ -3,12 +3,14 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct ContentView: View {
-    @StateObject var photosLibrary: PhotosLibrary
-    
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
+    @ObservedRealmObject var photosLibrary: PhotosLibrary
+    
+    @Binding var uiImageHolder: UIImageHolder
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
@@ -24,9 +26,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                GallerySceneView(library: photosLibrary, photosSelector: .normal, uiImageHolder: $uiImageHolder, canAddNewPhotos: true, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                AlbumsSceneView(library: photosLibrary, uiImageHolder: $uiImageHolder, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
                     .tag(Tab.albums)
             }
             .overlay(alignment: .bottom){

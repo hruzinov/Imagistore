@@ -3,64 +3,91 @@
 //
 
 import SwiftUI
+import RealmSwift
 
-class PhotosLibrary: Codable, ObservableObject {
-    var libraryVersion: Int
-    var photos: [Photo]
-    
-    init(libraryVersion: Int, photos: [Photo]) {
-        self.libraryVersion = libraryVersion
-        self.photos = photos
-    }
-    
-    
-    func addImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+class PhotosLibrary: Object, ObjectKeyIdentifiable {
+    @Persisted(primaryKey: true) var name: String = "library"
+    @Persisted var photos = RealmSwift.List<Photo>()
+}
+
+extension PhotosLibrary {
+    func addImages(_ imgs: RealmSwift.List<Photo>, competition: @escaping (Int, Error?) -> Void) {
+        let realm = self.realm?.thaw()
+        let thawed = self.thaw()
         var count = 0
         for item in imgs {
-            photos.append(item)
-            count += 1
+            if let thawed {
+                do {
+                    try realm?.write({
+                        thawed.photos.append(item)
+                        count += 1
+                    })
+                } catch {
+                    competition(count, error)
+                }
+            }
         }
-        let e = saveLibrary(lib: self)
-        competition(count, e)
+        competition(count, nil)
     }
     
     func toBin(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
+        let realm = self.realm?.thaw()
+        let thawed = self.thaw()
         for item in imgs {
-            if let photoIndex = photos.firstIndex(of: item) {
-                photos[photoIndex].status = .deleted
-                photos[photoIndex].deletionDate = Date()
+            if let thawed, let realm, let photoIndex = photos.firstIndex(of: item) {
+                do {
+                    try realm.write({
+                        thawed.photos[photoIndex].status = .deleted
+                        thawed.photos[photoIndex].deletionDate = Date()
+                    })
+                } catch {
+                    competition(error)
+                }
             }
         }
-        self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        competition(nil)
     }
     func recoverImages(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
+        let realm = self.realm?.thaw()
+        let thawed = self.thaw()
         for item in imgs {
-            if let photoIndex = photos.firstIndex(of: item) {
-                photos[photoIndex].status = .normal
-                photos[photoIndex].deletionDate = nil
+            if let thawed, let realm, let photoIndex = photos.firstIndex(of: item) {
+                do {
+                    try realm.write({
+                        thawed.photos[photoIndex].status = .normal
+                        thawed.photos[photoIndex].deletionDate = nil
+                    })
+                } catch {
+                    competition(error)
+                }
             }
         }
-        self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        competition(nil)
     }
     func permanentRemove(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
+        let realm = self.realm?.thaw()
         for item in imgs {
-            if let photoIndex = photos.firstIndex(of: item) {
+            if let realm {
                 let (completed, error) = removeImageFile(id: item.id, fileExtention: item.fileExtention)
                 if completed {
-                    photos.remove(at: photoIndex)
+                    do {
+                        try realm.write({
+                            let photo = realm.objects(Photo.self).where({
+                                $0.id == item.id
+                            })
+                            realm.delete(photo)
+                        })
+                    } catch {
+                        competition(error)
+                    }
                 } else {
                     competition(error)
                 }
             }
         }
-        self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        competition(nil)
     }
+    
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
         for item in photos {
@@ -74,7 +101,7 @@ class PhotosLibrary: Codable, ObservableObject {
     }
 }
 
-enum PhotosSortArgument {
+enum PhotosSortArgument: String {
     case importDate, creationDate
 }
 

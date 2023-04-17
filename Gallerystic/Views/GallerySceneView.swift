@@ -4,13 +4,15 @@
 
 import SwiftUI
 import PhotosUI
+import RealmSwift
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
-    @ObservedObject var library: PhotosLibrary
+    @ObservedRealmObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
+    @Binding var uiImageHolder: UIImageHolder
     
     @State var canAddNewPhotos: Bool = false
     @Binding var sortingSelector: PhotosSortArgument
@@ -32,7 +34,7 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    GalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, scrollTo: $scrollTo, selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
+                    GalleryView(library: library, uiImageHolder: $uiImageHolder, photosSelector: photosSelector, sortingSelector: $sortingSelector, scrollTo: $scrollTo, selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
@@ -72,7 +74,7 @@ struct GallerySceneView: View {
                                     dispayingSettings.infoBarFinal = false
                                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                                     var count = 0
-                                    var newPhotos: [Photo] = []
+                                    let newPhotos = RealmSwift.List<Photo>()
                                     for item in importSelectedItems {
                                         withAnimation {
                                             dispayingSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
@@ -98,7 +100,7 @@ struct GallerySceneView: View {
                                                 
                                                 let uuid = writeImageToFile(uiImage: uiImage)
                                                 if let uuid {
-                                                    newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
+                                                    newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: List<String>()))
                                                     count += 1
                                                 }
                                             }

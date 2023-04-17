@@ -3,31 +3,23 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct AlbumBlockView: View {
-    @ObservedObject var library: PhotosLibrary
+    @ObservedRealmObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
-    
-    var photos: [Photo] {
+    @Binding var uiImageHolder: UIImageHolder
+    var photos: RealmSwift.Results<Photo> {
         library.photos
-            .sorted(by: { ph1, ph2 in
-                switch sortingSelector {
-                case .importDate:
-                    return ph1.importDate < ph2.importDate
-                case .creationDate:
-                    return ph1.creationDate < ph2.creationDate
-                }
-            })
-            .filter({ ph in
-                ph.status == .normal
-            })
+            .where(( { $0.status == .normal } ))
+            .sorted(byKeyPath: sortingSelector.rawValue)
     }
     
     var body: some View {
         HStack {
             if photos.last != nil {
                 let lastImage = photos.last!
-                if let uiImage = lastImage.uiImage {
+                if let uiImage = uiImageHolder.getUiImage(photo: lastImage) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)

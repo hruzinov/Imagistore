@@ -3,49 +3,38 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct GalleryView: View {
-    @ObservedObject var library: PhotosLibrary
-    var photos: [Binding<Photo>] {
-        $library.photos
-            .filter({ $ph in
-                ph.status == photosSelector
-            })
-            .sorted(by: { ph1, ph2 in
-                if photosSelector == .deleted {
-                    return ph1.deletionDate.wrappedValue! < ph2.deletionDate.wrappedValue!
-                } else {
-                    switch sortingSelector {
-                    case .importDate:
-                        return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                    case .creationDate:
-                        return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
-                    }
-                }
-            })
+    @ObservedRealmObject var library: PhotosLibrary
+    var photos: RealmSwift.Results<Photo> {
+        library.photos
+            .where(( { $0.status == photosSelector } ))
+            .sorted(byKeyPath: photosSelector == .deleted ? "deletionDate" : sortingSelector.rawValue)
     }
-    
+
+    @Binding var uiImageHolder: UIImageHolder
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
-    
+
     @State var openedImage: UUID = UUID()
     @State var goToDetailedView: Bool = false
-    
+
     let columns = [
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1)
     ]
-    
+
     var body: some View {
         ScrollViewReader { scroll in
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                    ForEach(photos) { $item in
-                        if item.uiImage != nil {
+                    ForEach(photos) { item in
+                        if let uiImage = uiImageHolder.getUiImage(photo: item) {
                             GeometryReader { gr in
                                 let size = gr.size
                                 VStack {
@@ -61,7 +50,7 @@ struct GalleryView: View {
                                             openedImage = item.id
                                         }
                                     } label: {
-                                        Image(uiImage: item.uiImage!)
+                                        Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
@@ -91,10 +80,10 @@ struct GalleryView: View {
                                                 }
                                             })
                                     }
-                                    
+
                                 }
                                 .navigationDestination(isPresented: $goToDetailedView) {
-                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, selectedImage: openedImage, scrollTo: $scrollTo)
+                                    ImageDetailedView(library: library, uiImageHolder: $uiImageHolder, photosSelector: photosSelector, sortingSelector: $sortingSelector, selectedImage: openedImage, scrollTo: $scrollTo)
                                 }
                             }
                             .clipped()

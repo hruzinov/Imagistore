@@ -3,10 +3,12 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct SceneNavigatorView: View {
-    @State var photosLibrary: PhotosLibrary?
+    @ObservedResults(PhotosLibrary.self) var photosLibrary
     @EnvironmentObject var dispayingSettings: DispayingSettings
+    @State var uiImageHolder: UIImageHolder = UIImageHolder()
     
     init() {
         UITabBar.appearance().isHidden = true
@@ -14,17 +16,15 @@ struct SceneNavigatorView: View {
     
     var body: some View {
         ZStack {
-            if let photosLibrary {
-                ContentView(photosLibrary: photosLibrary)
+            if let photosLibrary = photosLibrary.first {
+                ContentView(photosLibrary: photosLibrary, uiImageHolder: $uiImageHolder)
             } else {
                 ProgressView("Loading library")
                     .progressViewStyle(.circular)
                     .padding(50)
-            }
-        }
-        .onAppear {
-            DispatchQueue.main.async {
-                photosLibrary = loadLibrary()
+                    .onAppear {
+                        $photosLibrary.append(PhotosLibrary())
+                    }
             }
         }
     }

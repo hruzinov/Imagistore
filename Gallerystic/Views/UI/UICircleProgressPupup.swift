@@ -34,9 +34,3 @@ struct UICircleProgressPupup: View {
         }
     }
 }
-
-struct CircleProgressPupup_Previews: PreviewProvider {
-    static var previews: some View {
-        UICircleProgressPupup(progressText: .constant("test text"), progressValue: .constant(0.5), progressFinal: .constant(true))
-    }
-}

@@ -6,6 +6,8 @@ import SwiftUI
 
 @main
 struct GallerysticApp: App {
+    @State var uiImageHolder: UIImageHolder = UIImageHolder()
+    
     var body: some Scene {
         WindowGroup {
             SceneNavigatorView()

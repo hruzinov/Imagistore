@@ -3,43 +3,45 @@
 //
 
 import SwiftUI
+import RealmSwift
 
-class Photo: Identifiable, Codable {
-    var id: UUID
-    lazy var uiImage: UIImage? = readImageFromFile(id: id)
-    var status: PhotoStatus
-    var creationDate: Date
-    var importDate: Date
-    var deletionDate: Date?
-    var fileExtention: PhotoExtention
-    var keywords: [String]
+class Photo: Object, ObjectKeyIdentifiable {
+    @Persisted(primaryKey: true) var id: UUID = UUID()
+    @Persisted var fileExtention: PhotoExtention
+    @Persisted var status: PhotoStatus
+    @Persisted var creationDate: Date
+    @Persisted var importDate: Date
+    @Persisted var deletionDate: Date?
+    @Persisted var keywords: RealmSwift.List<String>
     
-    init(id: UUID, status: PhotoStatus, creationDate: Date, importDate: Date, deletionDate: Date? = nil, fileExtention: PhotoExtention, keywords: [String]) {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case fileExtention
+        case status
+        case creationDate
+        case importDate
+        case deletionDate
+        case keywords
+    }
+    
+    convenience init(id: UUID, status: PhotoStatus, creationDate: Date, importDate: Date, deletionDate: Date? = nil, fileExtention: PhotoExtention, keywords: RealmSwift.List<String>) {
+        self.init()
         self.id = id
-        self.status = status
+        self.status = .normal
         self.creationDate = creationDate
         self.importDate = importDate
         self.deletionDate = deletionDate
         self.fileExtention = fileExtention
         self.keywords = keywords
     }
-    
-    static func == (lhs: Photo, rhs: Photo) -> Bool {
-        lhs.uiImage == rhs.uiImage
-    }
 }
 
-extension Photo: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(self)
-    }
+enum PhotoStatus: String, Codable, PersistableEnum {
+    case normal
+    case deleted
 }
 
-enum PhotoStatus: Codable {
-    case normal, deleted
-}
-
-enum PhotoExtention: String, Codable {
+enum PhotoExtention: String, Codable, PersistableEnum {
     case jpg
     case png
 }
