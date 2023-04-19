@@ -15,18 +15,24 @@ struct SceneNavigatorView: View {
     
     var body: some View {
         ZStack {
-            if let photosLibrary {
-                ContentView(photosLibrary: photosLibrary)
+            if applicationSettings.isFirstLaunch {
+                LoginSceneView(applicationSettings: $applicationSettings)
             } else {
-                ProgressView("Loading library")
-                    .progressViewStyle(.circular)
-                    .padding(50)
+                if let photosLibrary {
+                    ContentView(photosLibrary: photosLibrary)
+                } else {
+                    ProgressView("Loading library")
+                        .progressViewStyle(.circular)
+                        .padding(50)
+                }
             }
         }
         .onAppear {
+            applicationSettings.load()
             DispatchQueue.main.async {
                 photosLibrary = loadLibrary()
             }
+            applicationSettings.isFirstLaunch.toggle()
         }
     }
 }
