@@ -27,8 +27,17 @@
 		4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */; };
 		49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */; };
 		49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */; };
+		49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */; };
+		49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */; };
+		49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */; };
+		49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCD29F050DD00C8687F /* ContentViewController.swift */; };
 		49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */; };
 		49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */; };
+		49DA592729F04CBB00E5AB34 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 49DA592629F04CBB00E5AB34 /* FirebaseAuth */; };
+		49DA592929F04CBB00E5AB34 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 49DA592829F04CBB00E5AB34 /* FirebaseFirestore */; };
+		49DA592B29F04CBB00E5AB34 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 49DA592A29F04CBB00E5AB34 /* FirebaseFirestoreSwift */; };
+		49DA592D29F04CBB00E5AB34 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 49DA592C29F04CBB00E5AB34 /* FirebaseStorage */; };
+		49DA593129F0506000E5AB34 /* LoginSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DA592F29F0506000E5AB34 /* LoginSceneView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,8 +64,13 @@
 		4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsSceneView.swift; sourceTree = "<group>"; };
 		49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumBlockView.swift; sourceTree = "<group>"; };
 		49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Modifiers.swift"; sourceTree = "<group>"; };
+		49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlwaysPopoverModifier.swift; sourceTree = "<group>"; };
+		49CB4CCD29F050DD00C8687F /* ContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 		49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettings.swift; sourceTree = "<group>"; };
+		49DA592F29F0506000E5AB34 /* LoginSceneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginSceneView.swift; sourceTree = "<group>"; };
 		49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,6 +79,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49DA592729F04CBB00E5AB34 /* FirebaseAuth in Frameworks */,
+				49DA592D29F04CBB00E5AB34 /* FirebaseStorage in Frameworks */,
+				49DA592929F04CBB00E5AB34 /* FirebaseFirestore in Frameworks */,
+				49DA592B29F04CBB00E5AB34 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +175,8 @@
 		497647F329C0C0EE001C3FE4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				49DA593029F0506000E5AB34 /* CustomPopover */,
+				49DA592E29F0506000E5AB34 /* LoginScreens */,
 				49A5CFB529DAD0100072C43B /* AlbumBlockView.swift */,
 				49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */,
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
@@ -165,6 +185,25 @@
 				493E5CEA29EAD2BE008A1A38 /* UIBottomToolbar.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		49DA592E29F0506000E5AB34 /* LoginScreens */ = {
+			isa = PBXGroup;
+			children = (
+				49DA592F29F0506000E5AB34 /* LoginSceneView.swift */,
+			);
+			path = LoginScreens;
+			sourceTree = "<group>";
+		};
+		49DA593029F0506000E5AB34 /* CustomPopover */ = {
+			isa = PBXGroup;
+			children = (
+				49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */,
+				49CB4CCD29F050DD00C8687F /* ContentViewController.swift */,
+				49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */,
+				49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */,
+			);
+			path = CustomPopover;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,6 +223,10 @@
 			);
 			name = Gallerystic;
 			packageProductDependencies = (
+				49DA592629F04CBB00E5AB34 /* FirebaseAuth */,
+				49DA592829F04CBB00E5AB34 /* FirebaseFirestore */,
+				49DA592A29F04CBB00E5AB34 /* FirebaseFirestoreSwift */,
+				49DA592C29F04CBB00E5AB34 /* FirebaseStorage */,
 			);
 			productName = Gallerystic;
 			productReference = 493752F329BE2F7F006F9CD8 /* Gallerystic.app */;
@@ -214,6 +257,7 @@
 			);
 			mainGroup = 493752EA29BE2F7F006F9CD8;
 			packageReferences = (
+				49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 493752F429BE2F7F006F9CD8 /* Products */;
 			projectDirPath = "";
@@ -244,18 +288,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */,
+				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
+				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
 				491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* GalleryView.swift in Sources */,
+				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,
 				49737E5929EBF18E00168A63 /* SceneNavigatorView.swift in Sources */,
 				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
 				49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */,
 				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
+				49DA593129F0506000E5AB34 /* LoginSceneView.swift in Sources */,
 				493E5CEB29EAD2BE008A1A38 /* UIBottomToolbar.swift in Sources */,
 				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
 				49097FF029E9718A0023E36F /* UICircleProgressPupup.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
+				49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
 				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,
 				49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */,
@@ -473,6 +522,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		49DA592629F04CBB00E5AB34 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		49DA592829F04CBB00E5AB34 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		49DA592A29F04CBB00E5AB34 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		49DA592C29F04CBB00E5AB34 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 49DA592529F04CBB00E5AB34 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 493752EB29BE2F7F006F9CD8 /* Project object */;
 }

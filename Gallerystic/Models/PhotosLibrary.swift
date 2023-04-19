@@ -5,6 +5,7 @@
 import SwiftUI
 
 class PhotosLibrary: Codable, ObservableObject {
+    static var actualLibraryVersion = 2
     var libraryVersion: Int
     var photos: [Photo]
     

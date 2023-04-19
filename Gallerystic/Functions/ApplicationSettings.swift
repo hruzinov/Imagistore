@@ -4,8 +4,10 @@
 
 import Foundation
 
+
+
 struct ApplicationSettings {
-    static var actualLibraryVersion = 2
+    
 }
 
 class DispayingSettings: ObservableObject {

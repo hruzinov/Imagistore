@@ -41,13 +41,13 @@ func loadLibrary() -> PhotosLibrary {
     print("Library loaded in path \(libraryPath)")
     
     guard let stringData else {
-        let newLibrary = PhotosLibrary(libraryVersion: ApplicationSettings.actualLibraryVersion, photos: [])
+        let newLibrary = PhotosLibrary(libraryVersion: PhotosLibrary.actualLibraryVersion, photos: [])
         _ = saveLibrary(lib: newLibrary)
         return newLibrary
     }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
     
-    if library.libraryVersion < ApplicationSettings.actualLibraryVersion {
+    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
         var allOk = true
         
         
@@ -77,9 +77,9 @@ func loadLibrary() -> PhotosLibrary {
         }
 
         if allOk {
-            print("Library updated to version \(ApplicationSettings.actualLibraryVersion)")
-            library.libraryVersion = ApplicationSettings.actualLibraryVersion
-            saveLibrary(lib: library)
+            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
+            library.libraryVersion = PhotosLibrary.actualLibraryVersion
+            _ = saveLibrary(lib: library)
         }
     }
         

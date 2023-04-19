@@ -6,6 +6,7 @@ import SwiftUI
 
 struct SceneNavigatorView: View {
     @State var photosLibrary: PhotosLibrary?
+    @State var applicationSettings = ApplicationSettings()
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
     init() {
