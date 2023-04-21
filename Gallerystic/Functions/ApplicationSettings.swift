@@ -8,7 +8,8 @@ import Foundation
 struct ApplicationSettings: Codable {
     var isFirstLaunch: Bool
     var isOnlineMode: Bool?
-    var userUid: String = ""
+    var userUid: String?
+    var lastSelectedLibrary: UUID?
     
     init(isFirstLaunch: Bool, isOnlineMode: Bool? = nil) {
         self.isFirstLaunch = isFirstLaunch

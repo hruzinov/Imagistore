@@ -4,14 +4,28 @@
 
 import SwiftUI
 
-class PhotosLibrary: Codable, ObservableObject {
-    static var actualLibraryVersion = 2
+class PhotosLibrariesCollection: Codable {
+    var libraries: [UUID]
+    
+    init() {
+        self.libraries = []
+    }
+}
+
+class PhotosLibrary: Identifiable, Codable, ObservableObject {
+    static var actualLibraryVersion = 1
+    var id: UUID
+    var name: String
     var libraryVersion: Int
+    var lastChangeDate: Date
     var photos: [Photo]
     
-    init(libraryVersion: Int, photos: [Photo]) {
+    init(id: UUID, name: String, libraryVersion: Int = actualLibraryVersion, lastChangeDate: Date = Date(), photos: [Photo] = []) {
+        self.id = id
+        self.name = name
         self.libraryVersion = libraryVersion
         self.photos = photos
+        self.lastChangeDate = lastChangeDate
     }
     
     

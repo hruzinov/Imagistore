@@ -3,11 +3,14 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary
     
     @EnvironmentObject var dispayingSettings: DispayingSettings
+    @Binding var applicationSettings: ApplicationSettings
     
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library

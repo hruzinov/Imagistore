@@ -5,6 +5,12 @@
 import Foundation
 
 class TimeFunctions {
+    static func dateToString(_ date: Date) -> String {
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "dd.MM.YYYY, HH:mm"
+        return dateFormater.string(from: date)
+    }
+    
     static func daysLeft(_ date: Date) -> Double {
         var dateComponent = DateComponents()
         dateComponent.day = 30

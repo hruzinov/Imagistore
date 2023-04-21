@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-fileprivate let libraryPath = getDocumentsDirectory().appendingPathComponent("library.json")
+fileprivate let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
 fileprivate let photosFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
 
 fileprivate func getDocumentsDirectory() -> URL {
@@ -18,8 +18,28 @@ fileprivate func directoryExistsAtPath(_ path: String) -> Bool {
     return exists && isDirectory.boolValue
 }
 
+extension PhotosLibrariesCollection {
+    func saveLibraryCollection() -> Error? {
+        do {
+            let stringData = try JSONEncoder().encode(self)
+            do {
+                try stringData.write(to: librariesStoragePath)
+                print("Libraries collection saved")
+            } catch {
+                print(error)
+                return error
+            }
+        } catch {
+            print(error)
+            return error
+        }
+        return nil
+    }
+}
+
 
 func saveLibrary(lib: PhotosLibrary) -> Error? {
+    let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(lib.id.uuidString).json")
     do {
         let stringData = try JSONEncoder().encode(lib)
         do {
@@ -36,52 +56,57 @@ func saveLibrary(lib: PhotosLibrary) -> Error? {
     return nil
 }
 
-func loadLibrary() -> PhotosLibrary {
+func loadLibrariesCollection() -> PhotosLibrariesCollection? {
+    let generalLibrariesPath = getDocumentsDirectory().appendingPathComponent("/libraries/")
+    if !directoryExistsAtPath(generalLibrariesPath.path()) {
+        do {
+            try FileManager().createDirectory(at: generalLibrariesPath, withIntermediateDirectories: true)
+            print("Created directory for libraries")
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
+    let stringData = try? String(contentsOf: librariesStoragePath).data(using: .utf8)
+    guard let stringData else {
+        let newLibrariesCollection = PhotosLibrariesCollection()
+        _ = newLibrariesCollection.saveLibraryCollection()
+        return newLibrariesCollection
+    }
+    
+    let librariesCollection = try! JSONDecoder().decode(PhotosLibrariesCollection.self, from: stringData)
+    
+    return librariesCollection
+}
+
+func loadLibrary(id: UUID) -> PhotosLibrary? {
+    let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(id.uuidString).json")
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
     print("Library loaded in path \(libraryPath)")
     
-    guard let stringData else {
-        let newLibrary = PhotosLibrary(libraryVersion: PhotosLibrary.actualLibraryVersion, photos: [])
-        _ = saveLibrary(lib: newLibrary)
-        return newLibrary
-    }
+    guard let stringData else { return nil }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
     
-    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
-        var allOk = true
-        
-        
-
-        switch library.libraryVersion {
-
-        case 1:
-            library.photos.forEach { ph in
-                let filepath = photosFilePath.appendingPathComponent(ph.id.uuidString + "." + ph.fileExtention.rawValue)
-                let uiImage = UIImage(contentsOfFile: filepath.path)
-                let heicData = uiImage?.heic()
-                
-                let newFilePath = photosFilePath.appendingPathComponent(ph.id.uuidString + ".heic")
-                do {
-                    try heicData?.write(to: newFilePath)
-                    try FileManager.default.removeItem(atPath: filepath.path)
-                } catch {
-                    print(error)
-                }
-            }
-            
-            library.libraryVersion = 2
-
-        default:
-            print("Unknown library version: \(String(describing: library.libraryVersion))")
-            allOk = false
-        }
-
-        if allOk {
-            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
-            library.libraryVersion = PhotosLibrary.actualLibraryVersion
-            _ = saveLibrary(lib: library)
-        }
-    }
+//    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
+//        var allOk = true
+//
+//        switch library.libraryVersion {
+//
+//        case 1:
+//            ///
+//
+//        default:
+//            print("Unknown library version: \(String(describing: library.libraryVersion))")
+//            allOk = false
+//        }
+//
+//        if allOk {
+//            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
+//            library.libraryVersion = PhotosLibrary.actualLibraryVersion
+//            _ = saveLibrary(lib: library)
+//        }
+//    }
         
     return library
 }

@@ -5,8 +5,10 @@
 import SwiftUI
 
 struct SceneNavigatorView: View {
+    @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
+    @State var loaded = false
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
     init() {
@@ -15,24 +17,36 @@ struct SceneNavigatorView: View {
     
     var body: some View {
         ZStack {
-            if applicationSettings.isFirstLaunch {
-                LoginSceneView(applicationSettings: $applicationSettings)
-            } else {
-                if let photosLibrary {
-                    ContentView(photosLibrary: photosLibrary)
+            if loaded {
+                if applicationSettings.isFirstLaunch {
+                    LoginSceneView(applicationSettings: $applicationSettings)
+                } else if let photosLibrary {
+                    ContentView(photosLibrary: photosLibrary, applicationSettings: $applicationSettings)
+                } else if librariesCollection != nil {
+                    LibrariesSelectorView(applicationSettings: $applicationSettings, librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
                 } else {
-                    ProgressView("Loading library")
+                    ProgressView("Loading...")
                         .progressViewStyle(.circular)
                         .padding(50)
                 }
+            } else {
+                ProgressView("Loading...")
+                    .progressViewStyle(.circular)
+                    .padding(50)
             }
         }
         .onAppear {
             applicationSettings.load()
             DispatchQueue.main.async {
-                photosLibrary = loadLibrary()
+                withAnimation {
+//                    if let libId = applicationSettings.lastSelectedLibrary {
+//                        photosLibrary = loadLibrary(id: libId)
+//                    } else {
+                        librariesCollection = loadLibrariesCollection()
+//                    }
+                    loaded.toggle()
+                }
             }
-            applicationSettings.isFirstLaunch.toggle()
         }
     }
 }
