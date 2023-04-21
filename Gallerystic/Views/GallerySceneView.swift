@@ -70,6 +70,7 @@ struct GallerySceneView: View {
                                 Task {
                                     dispayingSettings.infoBarData = "Importing..."
                                     dispayingSettings.infoBarFinal = false
+                                    let importCount = importSelectedItems.count
                                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                                     var count = 0
                                     var newPhotos: [Photo] = []
@@ -113,7 +114,7 @@ struct GallerySceneView: View {
                                                 scrollTo = newPhotos.last?.id
                                                 dispayingSettings.infoBarFinal = true
                                                 dispayingSettings.infoBarData = "\(finalCount) photos saved"
-                                                dispayingSettings.infoBarProgress = Double(finalCount) / Double(importSelectedItems.count)
+                                                dispayingSettings.infoBarProgress = Double(finalCount) / Double(importCount)
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
                                                 }

@@ -8,3 +8,11 @@ class DBUser: Codable {
     let username: String
     let libraries: [String]
 }
+
+class DBLibrary: Codable {
+    var id: String
+    var name: String
+    var libraryVersion: Int
+    var lastChangeDate: Date
+    var photos: [String]
+}

@@ -86,11 +86,15 @@ struct LibrariesSelectorView: View {
                                 } else {
                                     let onlineLibraryRef = db.collection("libraries").document(id.uuidString)
                                     
-                                    onlineLibraryRef.getDocument(as: PhotosLibrary.self) { result in
+                                    onlineLibraryRef.getDocument(as: DBLibrary.self) { result in
                                         switch result {
                                         case .success(let library):
-                                            librariesArray.append(library)
-                                            libraryAvailable[id] = .online
+                                            if let uuid = UUID(uuidString: library.id) {
+                                                var locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
+                                                                               photos: [])
+                                                librariesArray.append(locLibrary)
+                                                libraryAvailable[id] = .online
+                                            }
                                         case .failure(let error):
                                             debugPrint(error)
                                         }

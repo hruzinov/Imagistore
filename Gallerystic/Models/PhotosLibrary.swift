@@ -35,8 +35,12 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             photos.append(item)
             count += 1
         }
-        let e = saveLibrary(lib: self)
-        competition(count, e)
+        if let e = saveLibrary(lib: self) {
+            competition(count, e)
+        }
+        OnlineFunctions.addPhotos(imgs, lib: self) { err in
+            competition(count, err)
+        }
     }
     
     func toBin(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
@@ -47,8 +51,12 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        if let e = saveLibrary(lib: self) {
+            competition(e)
+        }
+        OnlineFunctions.toBin(imgs, lib: self) { err in
+            competition(err)
+        }
     }
     func recoverImages(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
         for item in imgs {
@@ -58,8 +66,12 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        if let e = saveLibrary(lib: self) {
+            competition(e)
+        }
+        OnlineFunctions.recoverImages(imgs, lib: self) { err in
+            competition(err)
+        }
     }
     func permanentRemove(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
         for item in imgs {
@@ -73,8 +85,12 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        let e = saveLibrary(lib: self)
-        competition(e)
+        if let e = saveLibrary(lib: self) {
+            competition(e)
+        }
+        OnlineFunctions.permanentRemove(imgs, lib: self) { err in
+            competition(err)
+        }
     }
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
@@ -89,11 +105,11 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
     }
 }
 
-enum PhotosSortArgument {
+enum PhotosSortArgument: String {
     case importDate, creationDate
 }
 
-enum RemovingDirection {
+enum RemovingDirection: String {
     case bin
     case recover
     case permanent

@@ -39,11 +39,11 @@ struct SceneNavigatorView: View {
             applicationSettings.load()
             DispatchQueue.main.async {
                 withAnimation {
-//                    if let libId = applicationSettings.lastSelectedLibrary {
-//                        photosLibrary = loadLibrary(id: libId)
-//                    } else {
+                    if let libId = applicationSettings.lastSelectedLibrary {
+                        photosLibrary = loadLibrary(id: libId)
+                    } else {
                         librariesCollection = loadLibrariesCollection()
-//                    }
+                    }
                     loaded.toggle()
                 }
             }

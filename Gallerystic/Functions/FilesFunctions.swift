@@ -41,6 +41,7 @@ extension PhotosLibrariesCollection {
 func saveLibrary(lib: PhotosLibrary) -> Error? {
     let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(lib.id.uuidString).json")
     do {
+        lib.lastChangeDate = Date()
         let stringData = try JSONEncoder().encode(lib)
         do {
             try stringData.write(to: libraryPath)

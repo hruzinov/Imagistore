@@ -41,6 +41,7 @@
 		49DA592D29F04CBB00E5AB34 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 49DA592C29F04CBB00E5AB34 /* FirebaseStorage */; };
 		49DA593129F0506000E5AB34 /* LoginSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DA592F29F0506000E5AB34 /* LoginSceneView.swift */; };
 		49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */; };
+		49F9934D29F2D33300F46ECA /* OnlineFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F9934C29F2D33300F46ECA /* OnlineFunctions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +79,7 @@
 		49DA592F29F0506000E5AB34 /* LoginSceneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginSceneView.swift; sourceTree = "<group>"; };
 		49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrariesSelectorView.swift; sourceTree = "<group>"; };
+		49F9934C29F2D33300F46ECA /* OnlineFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineFunctions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 				491289AB29C080FF000D138A /* FilesFunctions.swift */,
 				496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */,
 				49737E5329EBE19600168A63 /* UIImage+heic.swift */,
+				49F9934C29F2D33300F46ECA /* OnlineFunctions.swift */,
 			);
 			path = Functions;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49F9934D29F2D33300F46ECA /* OnlineFunctions.swift in Sources */,
 				49A5CFB629DAD0100072C43B /* AlbumBlockView.swift in Sources */,
 				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
 				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,

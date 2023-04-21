@@ -35,7 +35,7 @@ extension Photo: Hashable {
     }
 }
 
-enum PhotoStatus: Codable {
+enum PhotoStatus: String, Codable {
     case normal, deleted
 }
 
