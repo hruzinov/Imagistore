@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 class DBUser: Codable {
     let username: String
@@ -14,5 +15,5 @@ class DBLibrary: Codable {
     var name: String
     var libraryVersion: Int
     var lastChangeDate: Date
-    var photos: [String]
+    var photos: [DocumentReference]
 }

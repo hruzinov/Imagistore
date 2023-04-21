@@ -90,7 +90,7 @@ struct LibrariesSelectorView: View {
                                         switch result {
                                         case .success(let library):
                                             if let uuid = UUID(uuidString: library.id) {
-                                                var locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
+                                                let locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
                                                                                photos: [])
                                                 librariesArray.append(locLibrary)
                                                 libraryAvailable[id] = .online
