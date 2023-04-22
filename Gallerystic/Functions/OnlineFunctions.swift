@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import FirebaseStorage
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
@@ -21,6 +22,9 @@ class OnlineFunctions {
                 case .success(let library):
                     var newPhotosArr = library.photos
                     
+                    let storage = Storage.storage()
+                    let photosRef = storage.reference().child("photos")
+                    
                     imgs.forEach { ph in
                         onlineLibraryRef.collection("photos").document(ph.id.uuidString).setData([
                             "id": ph.id.uuidString,
@@ -36,8 +40,19 @@ class OnlineFunctions {
                             }
                         }
                         newPhotosArr.append(onlineLibraryRef.collection("photos").document(ph.id.uuidString))
+                        
+                        let filename = "\(ph.id.uuidString).heic"
+                        let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+                        let uploadTask = photosRef.child(filename).putFile(from: filepath) { metadata, error in
+                            if let error {
+                                print(error)
+                                competition(error)
+                            } else {
+                                print(metadata?.name as Any)
+                            }
+                        }
                     }
-                    
+
                     onlineLibraryRef.updateData([
                         "photos": FieldValue.arrayUnion(newPhotosArr),
                         "lastChangeDate": Date()
@@ -93,11 +108,24 @@ class OnlineFunctions {
             let onlineLibraryRef = db.collection("libraries").document(lib.id.uuidString)
             
             var removedRefs = [DocumentReference]()
+            let storage = Storage.storage()
+            let photosRef = storage.reference().child("photos")
             
             imgs.forEach { ph in
                 let phRef = onlineLibraryRef.collection("photos").document(ph.id.uuidString)
                 phRef.delete()
                 removedRefs.append(phRef)
+                
+                let filename = "\(ph.id.uuidString).heic"
+                let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+                photosRef.child(filename).delete { error in
+                    if let error {
+                        print(error)
+                        competition(error)
+                    } else {
+                        print("File \(filename) deleted online")
+                    }
+                }
             }
             
             onlineLibraryRef.updateData([

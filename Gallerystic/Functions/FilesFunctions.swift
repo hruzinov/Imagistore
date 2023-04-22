@@ -4,8 +4,11 @@
 
 import SwiftUI
 
-fileprivate let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
-fileprivate let photosFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
+class FileSettings {
+    static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
+    static let photosFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
+}
+
 
 fileprivate func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -23,7 +26,7 @@ extension PhotosLibrariesCollection {
         do {
             let stringData = try JSONEncoder().encode(self)
             do {
-                try stringData.write(to: librariesStoragePath)
+                try stringData.write(to: FileSettings.librariesStoragePath)
                 print("Libraries collection saved")
             } catch {
                 print(error)
@@ -69,7 +72,7 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
         }
     }
     
-    let stringData = try? String(contentsOf: librariesStoragePath).data(using: .utf8)
+    let stringData = try? String(contentsOf: FileSettings.librariesStoragePath).data(using: .utf8)
     guard let stringData else {
         let newLibrariesCollection = PhotosLibrariesCollection()
         _ = newLibrariesCollection.saveLibraryCollection()
@@ -113,7 +116,7 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
 }
 
 func readImageFromFile(id: UUID) -> UIImage? {
-    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".heic")
+    let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
@@ -123,9 +126,9 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
     
     let data = uiImage.heic()
     
-    if !directoryExistsAtPath(photosFilePath.path()) {
+    if !directoryExistsAtPath(FileSettings.photosFilePath.path()) {
         do {
-            try FileManager().createDirectory(at: photosFilePath, withIntermediateDirectories: true)
+            try FileManager().createDirectory(at: FileSettings.photosFilePath, withIntermediateDirectories: true)
             print("Created directory for photos")
         } catch {
             print(error)
@@ -135,7 +138,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
     
     if let data {
         let uuid = UUID()
-        let filepath = photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
+        let filepath = FileSettings.photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
         
         do {
             try data.write(to: filepath)
@@ -151,7 +154,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
     return nil
 }
 func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) {
-    let filepath = photosFilePath.appendingPathComponent(id.uuidString + ".heic")
+    let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         print("Image file deleted from path \(filepath)")

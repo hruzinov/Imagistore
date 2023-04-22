@@ -99,8 +99,10 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
                 forDeletion.append(item)
             }
         }
-        permanentRemove(forDeletion) { error in
-            competition(error)
+        if forDeletion.count > 0 {
+            permanentRemove(forDeletion) { error in
+                competition(error)
+            }
         }
     }
 }
