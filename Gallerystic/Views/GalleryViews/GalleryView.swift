@@ -5,6 +5,7 @@
 import SwiftUI
 
 struct GalleryView: View {
+    @EnvironmentObject var dispayingSettings: DispayingSettings
     @ObservedObject var library: PhotosLibrary
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
     
@@ -31,7 +32,6 @@ struct GalleryView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                     ForEach(photos) { item in
                         if let uiImage = uiImageHolder.getUiImage(photo: item) {
-//                        if item.uiImage != nil {
                             GeometryReader { gr in
                                 let size = gr.size
                                 VStack {
@@ -88,13 +88,18 @@ struct GalleryView: View {
                         }
                     }
                 }
-                
-                if isMainLibraryScreen {
-                    VStack {
+                VStack {
+                    if isMainLibraryScreen {
                         Text("\(photos.count) Photos").bold()
-                        Text("All synced")
-                    } .padding(.vertical, 10)
+                        if dispayingSettings.syncProgress == 1.0 {
+                            Text("All synced")
+                        } else {
+                            ProgressView(value: dispayingSettings.syncProgress).padding(.horizontal, 50)
+                        }
+                    }
+                    
                 }
+                .padding(.vertical, 10)
                 
                 Rectangle()
                     .frame(height: 50)

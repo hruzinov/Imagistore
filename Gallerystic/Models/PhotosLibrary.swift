@@ -18,6 +18,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
     var name: String
     var libraryVersion: Int
     var lastChangeDate: Date
+    var lastSyncDate: Date?
     var photos: [Photo]
     
     init(id: UUID, name: String, libraryVersion: Int = actualLibraryVersion, lastChangeDate: Date = Date(), photos: [Photo] = []) {

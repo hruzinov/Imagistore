@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import FirebaseStorage
 
 class FileSettings {
     static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
@@ -42,10 +43,11 @@ extension PhotosLibrariesCollection {
 }
 
 
-func saveLibrary(lib: PhotosLibrary) -> Error? {
+func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
     let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(lib.id.uuidString).json")
     do {
-        lib.lastChangeDate = Date()
+        
+        lib.lastChangeDate = changeDate
         let stringData = try JSONEncoder().encode(lib)
         do {
             try stringData.write(to: libraryPath)
@@ -202,5 +204,91 @@ func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) 
     } catch {
         print(error)
         return (false, error)
+    }
+}
+
+
+// Cloud functions
+
+extension OnlineFunctions {
+    static func uploadImage(photo ph: Photo, competition: @escaping (StorageUploadTask?, Error?) -> Void) {
+        let storage = Storage.storage()
+        let photosFullRef = storage.reference().child("photos")
+        let photosRef = storage.reference().child("miniatures")
+        
+        let filename = "\(ph.id.uuidString).heic"
+        let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+        let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(filename)
+        let uploadTask = photosRef.child(filename).putFile(from: filepath) { metadata, error in
+            if let error {
+                print(error)
+                competition(nil, error)
+            } else {
+                print("\(String(describing: metadata?.name)) (miniature)")
+            }
+        }
+        let uploadFullTask = photosFullRef.child(filename).putFile(from: filepathFull) { metadata, error in
+            if let error {
+                print(error)
+                competition(nil, error)
+            }
+            else {
+                print("\(String(describing: metadata?.name))")
+//                competition(nil)
+            }
+            
+        }
+        competition(uploadFullTask, nil)
+        
+    }
+    static func downloadImage(id: UUID, fullSize: Bool, competition: @escaping (StorageDownloadTask?, Error?) -> Void) {
+        let storage = Storage.storage()
+        let photosRef: StorageReference
+        let filepath: URL
+        
+        let filename = "\(id.uuidString).heic"
+        
+        if fullSize {
+            photosRef = storage.reference().child("photos/\(filename)")
+            filepath = FileSettings.photosFullFilePath.appendingPathComponent(filename)
+        } else {
+            photosRef = storage.reference().child("miniatures/\(filename)")
+            filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+        }
+        
+        let downloadTask = photosRef.write(toFile: filepath) { url, error in
+            if let error {
+                print(error)
+                competition(nil, error)
+            } else {
+                print("Image downloaded to \(String(describing: url))")
+            }
+        }
+        competition(downloadTask, nil)
+    }
+    static func removeOnlineImage(photo ph: Photo, competition: @escaping (Error?) -> Void) {
+        let storage = Storage.storage()
+        
+        let photosFullRef = storage.reference().child("photos")
+        let photosRef = storage.reference().child("miniatures")
+        
+        let filename = "\(ph.id.uuidString).heic"
+        photosRef.child(filename).delete { error in
+            if let error {
+                print(error)
+                competition(error)
+            } else {
+                print("File \(filename) (miniature) deleted online")
+            }
+        }
+        photosFullRef.child(filename).delete { error in
+            if let error {
+                print(error)
+                competition(error)
+            } else {
+                print("File \(filename) deleted online")
+            }
+        }
+        competition(nil)
     }
 }

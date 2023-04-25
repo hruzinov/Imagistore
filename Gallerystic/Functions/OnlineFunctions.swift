@@ -10,8 +10,126 @@ import FirebaseFirestoreSwift
 class OnlineFunctions {
     static var applicationSettings = ApplicationSettings()
     
-    static func syncLibrary(lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
+    static func getSyncData(lib: PhotosLibrary, competition: @escaping ([Photo], [Photo], Error?) -> Void) {
+        let db = Firestore.firestore()
+        let onlineLibraryRef = db.collection("libraries").document(lib.id.uuidString)
         
+        onlineLibraryRef.getDocument { document, error in
+            if let document, document.exists {
+                let onlineLib = try! document.data(as: DBLibrary.self)
+                if let lastSyncDate = onlineLib.lastSyncDate, lastSyncDate.timeIntervalSince1970 == lib.lastChangeDate.timeIntervalSince1970 {
+                    competition([], [], error)
+                    return
+                }
+                
+                let onlinePhotosRef = db.collection("libraries").document(lib.id.uuidString).collection("photos")
+                onlinePhotosRef.getDocuments { querySnapshot, error in
+                    if let error {
+                        competition([], [], error)
+                    } else if let querySnapshot {
+                        var onlinePhotosArray = [Photo]()
+                        let offlinePhotosArray = lib.photos
+                        
+                        var listToUpload = [Photo]()
+                        var listToDownload = [Photo]()
+                        
+                        let photosDocArr = querySnapshot.documents
+                        photosDocArr.forEach { phDoc in
+                            do {
+                                let ph = try phDoc.data(as: Photo.self)
+                                onlinePhotosArray.append(ph)
+                            } catch {
+                                print(error)
+                            }
+                        }
+                        
+                        let localPriority: Bool
+                        if onlineLib.lastSyncDate ?? Date() < lib.lastSyncDate ?? Date() {
+                            localPriority = true
+                        } else {
+                            localPriority = false
+                        }
+                        
+                        // check if local photo exist in cloud
+                        offlinePhotosArray.forEach { ph in
+                            if let onlinePhoto = onlinePhotosArray.first(where: { $0.id == ph.id }) {
+                                let onlinePhotoRef = onlineLibraryRef.collection("photos").document(ph.id.uuidString)
+                                if onlinePhoto.status != ph.status {
+                                    if localPriority {
+                                        onlinePhotoRef.updateData(["status": ph.status, "deletionDate": ph.deletionDate])
+                                    } else {
+                                        lib.photos.first(where: {$0.id == ph.id})?.status = onlinePhoto.status
+                                        lib.photos.first(where: {$0.id == ph.id})?.deletionDate = onlinePhoto.deletionDate
+                                    }
+                                }
+                            } else {
+                                listToUpload.append(ph)
+                            }
+                        }
+                        // check if cloud photo exist in local
+                        onlinePhotosArray.forEach { ph in
+                            if !offlinePhotosArray.contains(where: { $0.id == ph.id }) {
+                                listToDownload.append(ph)
+                            }
+                        }
+                        
+                        if listToUpload.count > 0 || listToDownload.count > 0 {
+                            let syncDate = Date()
+                            onlineLibraryRef.updateData(["lastSyncDate": syncDate])
+                            let err = saveLibrary(lib: lib, changeDate: syncDate)
+                            competition(listToUpload, listToDownload, err)
+                        } else {
+                            competition([], [], nil)
+                        }
+                        
+                        
+                    }
+                }
+            } else {
+                db.collection("libraries").document(lib.id.uuidString).setData([
+                    "id":lib.id.uuidString,
+                    "lastChangeDate": lib.lastChangeDate,
+                    "libraryVersion": lib.libraryVersion,
+                    "name": lib.name,
+                    "photos": [DocumentReference]()
+                ]) { error in
+                    if let error {
+                        competition([], [], error)
+                    } else {
+//                        let onlineUserRef = db.collection("users").document(userUid)
+                        
+                        getSyncData(lib: lib) { toUpload, toDownload, err in
+                            competition(toUpload, toDownload, err)
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+            //                onlineLibraryRef.getDocuments { querySnapshot, error in
+//                                if let error {
+//                                    dispayingSettings.errorAlertData = error.localizedDescription
+//                                    dispayingSettings.isShowingErrorAlert.toggle()
+//                                } else if let querySnapshot {
+//                                    print(querySnapshot.documents)
+//                                }
+            //                }
+//            switch result {
+//            case .success(let onlineLibrary):
+//
+//                print(onlineLibrary.name)
+//
+//                //                        var onlinePhotos = onlineLibrary.photos
+//                //                        var offlinePhotos = library.photos
+//                //
+//                //                        var toUpload = [Photo]()
+//                //                        var toDownload = [DocumentReference]()
+//
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
     }
     
     static func addPhotos(_ imgs: [Photo], lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
@@ -25,11 +143,7 @@ class OnlineFunctions {
                 switch result {
                 case .success(let library):
                     var newPhotosArr = library.photos
-                    
-                    let storage = Storage.storage()
-                    let photosFullRef = storage.reference().child("photos")
-                    let photosRef = storage.reference().child("miniatures")
-                    
+                                        
                     imgs.forEach { ph in
                         onlineLibraryRef.collection("photos").document(ph.id.uuidString).setData([
                             "id": ph.id.uuidString,
@@ -45,28 +159,8 @@ class OnlineFunctions {
                             }
                         }
                         newPhotosArr.append(onlineLibraryRef.collection("photos").document(ph.id.uuidString))
-                        
-                        let filename = "\(ph.id.uuidString).heic"
-                        let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
-                        let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(filename)
-                        let uploadTask = photosRef.child(filename).putFile(from: filepath) { metadata, error in
-                            if let error {
-                                print(error)
-                                competition(error)
-                            } else {
-                                print("\(metadata?.name) (miniature)")
-                            }
-                        }
-                        let uploadFullTask = photosFullRef.child(filename).putFile(from: filepathFull) { metadata, error in
-                            if let error {
-                                print(error)
-                                competition(error)
-                            } else {
-                                print("\(metadata?.name)")
-                            }
-                        }
                     }
-
+                    
                     onlineLibraryRef.updateData([
                         "photos": FieldValue.arrayUnion(newPhotosArr),
                         "lastChangeDate": lib.lastChangeDate
@@ -87,7 +181,7 @@ class OnlineFunctions {
             let db = Firestore.firestore()
             imgs.forEach { ph in
                 let onlinePhotoRef = db.collection("libraries").document(lib.id.uuidString).collection("photos").document(ph.id.uuidString)
-                onlinePhotoRef.updateData(["status": "deleted"]) { error in
+                onlinePhotoRef.updateData(["status": "deleted", "deletionDate": ph.deletionDate!]) { error in
                     if let error { competition(error) }
                 }
             }
@@ -104,7 +198,7 @@ class OnlineFunctions {
             
             imgs.forEach { ph in
                 let onlinePhotoRef = db.collection("libraries").document(lib.id.uuidString).collection("photos").document(ph.id.uuidString)
-                onlinePhotoRef.updateData(["status": "normal"]) { error in
+                onlinePhotoRef.updateData(["status": "normal", "deletionDate": nil]) { error in
                     if let error { competition(error) }
                 }
             }
@@ -121,30 +215,13 @@ class OnlineFunctions {
             let onlineLibraryRef = db.collection("libraries").document(lib.id.uuidString)
             
             var removedRefs = [DocumentReference]()
-            let storage = Storage.storage()
-            let photosFullRef = storage.reference().child("photos")
-            let photosRef = storage.reference().child("miniatures")
             
             imgs.forEach { ph in
                 let phRef = onlineLibraryRef.collection("photos").document(ph.id.uuidString)
-                phRef.delete()
                 removedRefs.append(phRef)
-                
-                let filename = "\(ph.id.uuidString).heic"
-                photosRef.child(filename).delete { error in
-                    if let error {
-                        print(error)
-                        competition(error)
-                    } else {
-                        print("File \(filename) (miniature) deleted online")
-                    }
-                }
-                photosFullRef.child(filename).delete { error in
-                    if let error {
-                        print(error)
-                        competition(error)
-                    } else {
-                        print("File \(filename) deleted online")
+                removeOnlineImage(photo: ph) { err in
+                    if let err {
+                        competition(err)
                     }
                 }
             }

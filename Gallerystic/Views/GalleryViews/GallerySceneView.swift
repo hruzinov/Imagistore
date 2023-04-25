@@ -4,6 +4,8 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
@@ -122,6 +124,21 @@ struct GallerySceneView: View {
                                                 }
                                             }
                                         }
+                                        newPhotos.forEach { ph in
+                                            OnlineFunctions.uploadImage(photo: ph) { task, error in
+                                                if let error {
+                                                    dispayingSettings.errorAlertData = error.localizedDescription
+                                                    dispayingSettings.isShowingErrorAlert.toggle()
+                                                } else {
+                                                    task?.observe(.progress, handler: { snapshot in
+                                                        let progress = snapshot.progress!
+                                                        withAnimation {
+                                                            dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
+                                                        }
+                                                    })
+                                                }
+                                            }
+                                        }
                                     }
                                     importSelectedItems = []
                                 }
@@ -177,6 +194,75 @@ struct GallerySceneView: View {
         
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
+            }
+            
+            if isMainLibraryScreen {
+                OnlineFunctions.getSyncData(lib: library, competition: { toUpload, toDownload, error in
+                    if let error {
+                        dispayingSettings.errorAlertData = error.localizedDescription
+                        dispayingSettings.isShowingErrorAlert.toggle()
+                    } else {
+                        
+                        if toUpload.count == 0 && toDownload.count == 0 {
+                            dispayingSettings.syncProgress = 1
+                        } else {
+                            
+                            // Adding data to online library and uploading
+                            
+                            if toUpload.count > 0 {
+                                OnlineFunctions.addPhotos(toUpload, lib: library) { error in
+                                    if let error {
+                                        dispayingSettings.errorAlertData = error.localizedDescription
+                                        dispayingSettings.isShowingErrorAlert.toggle()
+                                    } else {
+                                        toUpload.forEach { ph in
+                                            OnlineFunctions.uploadImage(photo: ph) { task, error in
+                                                if let error {
+                                                    dispayingSettings.errorAlertData = error.localizedDescription
+                                                    dispayingSettings.isShowingErrorAlert.toggle()
+                                                } else {
+                                                    task?.observe(.progress, handler: { snapshot in
+                                                        let progress = snapshot.progress!
+                                                        withAnimation {
+                                                            dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
+                                                        }
+                                                    })
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Adding data to local library and downloading
+                            if toDownload.count > 0 {
+                                toDownload.forEach { ph in
+                                    OnlineFunctions.downloadImage(id: ph.id, fullSize: false) { task, error in
+                                        if let error {
+                                            dispayingSettings.errorAlertData = error.localizedDescription
+                                            dispayingSettings.isShowingErrorAlert.toggle()
+                                        } else {
+                                            
+                                            library.addImages([ph]) { _, error in
+                                                if let error {
+                                                    dispayingSettings.errorAlertData = error.localizedDescription
+                                                    dispayingSettings.isShowingErrorAlert.toggle()
+                                                }
+                                            }
+                                            
+                                            task?.observe(.progress, handler: { snapshot in
+                                                let progress = snapshot.progress!
+                                                withAnimation {
+                                                    dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
+                                                }
+                                            })
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
             }
         }
         .onDisappear {

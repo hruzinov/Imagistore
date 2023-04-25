@@ -155,32 +155,34 @@ struct LibrariesSelectorView: View {
     private func librarySelected(_ library: PhotosLibrary) {
         if libraryAvailable[library.id] == .offline {
             if let isOnlineMode = applicationSettings.isOnlineMode, isOnlineMode, let userUid = applicationSettings.userUid {
-                
+//
                 let db = Firestore.firestore()
-                
-                db.collection("libraries").document(library.id.uuidString).setData([
-                    "id":library.id.uuidString,
-                    "lastChangeDate": library.lastChangeDate,
-                    "libraryVersion": library.libraryVersion,
-                    "name": library.name,
-                    "photos": [String]()
-                ])
-                
+//
+//                db.collection("libraries").document(library.id.uuidString).setData([
+//                    "id":library.id.uuidString,
+//                    "lastChangeDate": library.lastChangeDate,
+//                    "libraryVersion": library.libraryVersion,
+//                    "name": library.name,
+//                    "photos": [String]()
+//                ])
+//
                 let onlineUserRef = db.collection("users").document(userUid)
-                onlineUserRef.getDocument(as: DBUser.self) { result in
-                    switch result {
-                    case .success(let user):
-                        var userLibraries = user.libraries
-                        userLibraries.append(library.id.uuidString)
-                        
-                        db.collection("users").document(userUid).setData(["libraries" : userLibraries], merge: true) { err in
-                            if let err { print(err) }
-                        }
-                        
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
+                onlineUserRef.updateData(["libraries": FieldValue.arrayUnion([library.id.uuidString])])
+        
+//                onlineUserRef.getDocument(as: DBUser.self) { result in
+//                    switch result {
+//                    case .success(let user):
+//                        var userLibraries = user.libraries
+//                        userLibraries.append(library.id.uuidString)
+//
+//                        db.collection("users").document(userUid).setData(["libraries" : userLibraries], merge: true) { err in
+//                            if let err { print(err) }
+//                        }
+//
+//                    case .failure(let error):
+//                        print(error)
+//                    }
+//                }
             }
         } else if libraryAvailable[library.id] == .online {
             librariesCollection?.libraries.append(library.id)

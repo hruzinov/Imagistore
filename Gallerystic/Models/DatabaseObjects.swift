@@ -15,5 +15,6 @@ class DBLibrary: Codable {
     var name: String
     var libraryVersion: Int
     var lastChangeDate: Date
+    var lastSyncDate: Date?
     var photos: [DocumentReference]
 }
