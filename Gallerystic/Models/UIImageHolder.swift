@@ -22,7 +22,7 @@ class UIImageHolder {
                 print("err")
                 return nil
             }
-            data.updateValue(uiImage, forKey: photo.id)
+            data[photo.id] = uiImage
             return uiImage
         }
     }
@@ -30,6 +30,7 @@ class UIImageHolder {
     func getFullUiImage(photo: Photo) -> UIImage? {
         if fullsizeArr.contains(where: { $0 == photo.id }), let uiImage = data[photo.id] {
             return uiImage
+            
         } else {
             let uiImage = readFullImageFromFile(id: photo.id)
             guard let uiImage else {

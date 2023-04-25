@@ -24,7 +24,6 @@ struct ImageDetailedView: View {
             VStack {
                 TabView(selection: $selectedImage) {
                     ForEach(photos) { item in
-//                        if let uiImage = uiImageHolder.getUiImage(photo: item) {
                         if let uiImage = uiImageHolder.getFullUiImage(photo: item) {
                             ZStack {
                                 Image(uiImage: uiImage)

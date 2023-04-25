@@ -4,6 +4,7 @@
 
 import SwiftUI
 import Firebase
+import FirebaseFirestore
 
 struct SignInView: View {
     @Environment(\.dismiss) var dismiss
@@ -89,6 +90,20 @@ struct SignInView: View {
                     dispayingSettings.infoBarFinal = true
                     dispayingSettings.infoBarData = "Success Signing In"
                     dispayingSettings.infoBarProgress = 1
+                    
+                    let db = Firestore.firestore()
+                    let onlineUserRef = db.collection("users").document(result.user.uid)
+                    onlineUserRef.getDocument { document, err in
+                        if let document, document.exists {
+                        } else {
+                            onlineUserRef.setData([
+                                "username" : result.user.displayName as Any,
+                                "libraries": [String]()
+                            ])
+                        }
+                    }
+                    
+                    
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     withAnimation { dispayingSettings.isShowingInfoBar.toggle() }

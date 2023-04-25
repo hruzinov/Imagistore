@@ -92,7 +92,7 @@ struct GalleryView: View {
                     if isMainLibraryScreen {
                         Text("\(photos.count) Photos").bold()
                         if dispayingSettings.syncProgress == 1.0 {
-                            Text("All synced")
+                            Text("Synced").font(.caption)
                         } else {
                             ProgressView(value: dispayingSettings.syncProgress).padding(.horizontal, 50)
                         }

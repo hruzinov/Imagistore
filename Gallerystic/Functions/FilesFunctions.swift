@@ -241,19 +241,26 @@ extension OnlineFunctions {
         competition(uploadFullTask, nil)
         
     }
+    
     static func downloadImage(id: UUID, fullSize: Bool, competition: @escaping (StorageDownloadTask?, Error?) -> Void) {
         let storage = Storage.storage()
-        let photosRef: StorageReference
-        let filepath: URL
         
         let filename = "\(id.uuidString).heic"
         
-        if fullSize {
-            photosRef = storage.reference().child("photos/\(filename)")
-            filepath = FileSettings.photosFullFilePath.appendingPathComponent(filename)
-        } else {
-            photosRef = storage.reference().child("miniatures/\(filename)")
-            filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+        let photosRef = storage.reference().child("photos/\(filename)")
+        let filepath = FileSettings.photosFullFilePath.appendingPathComponent(filename)
+
+        let photosRefMini = storage.reference().child("miniatures/\(filename)")
+        let filepathMini = FileSettings.photosFilePath.appendingPathComponent(filename)
+        
+        
+        photosRefMini.write(toFile: filepathMini) { url, error in
+            if let error {
+                print(error)
+                competition(nil, error)
+            } else {
+                print("Image (mini) downloaded to \(String(describing: url))")
+            }
         }
         
         let downloadTask = photosRef.write(toFile: filepath) { url, error in
@@ -266,6 +273,35 @@ extension OnlineFunctions {
         }
         competition(downloadTask, nil)
     }
+    
+    
+    // For separate downloading
+//    static func downloadImage(id: UUID, fullSize: Bool, competition: @escaping (StorageDownloadTask?, Error?) -> Void) {
+//        let storage = Storage.storage()
+//        let photosRef: StorageReference
+//        let filepath: URL
+//
+//        let filename = "\(id.uuidString).heic"
+//
+//        if fullSize {
+//            photosRef = storage.reference().child("photos/\(filename)")
+//            filepath = FileSettings.photosFullFilePath.appendingPathComponent(filename)
+//        } else {
+//            photosRef = storage.reference().child("miniatures/\(filename)")
+//            filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+//        }
+//
+//        let downloadTask = photosRef.write(toFile: filepath) { url, error in
+//            if let error {
+//                print(error)
+//                competition(nil, error)
+//            } else {
+//                print("Image downloaded to \(String(describing: url))")
+//            }
+//        }
+//        competition(downloadTask, nil)
+//    }
+    
     static func removeOnlineImage(photo ph: Photo, competition: @escaping (Error?) -> Void) {
         let storage = Storage.storage()
         
