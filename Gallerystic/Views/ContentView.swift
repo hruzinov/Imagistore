@@ -12,6 +12,7 @@ struct ContentView: View {
     @EnvironmentObject var dispayingSettings: DispayingSettings
     @Binding var applicationSettings: ApplicationSettings
     
+    @Binding var uiImageHolder: UIImageHolder
     @State var sortingSelector: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
@@ -27,9 +28,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photosSelector: .normal, canAddNewPhotos: true, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                GallerySceneView(library: photosLibrary, photosSelector: .normal, isMainLibraryScreen: true, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, navToRoot: $navToRoot)
                     .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector, navToRoot: $navToRoot)
+                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector, navToRoot: $navToRoot, uiImageHolder: $uiImageHolder)
                     .tag(Tab.albums)
             }
             .overlay(alignment: .bottom){

@@ -6,7 +6,8 @@ import SwiftUI
 
 class FileSettings {
     static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
-    static let photosFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
+    static let photosFullFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
+    static let photosFilePath = getDocumentsDirectory().appendingPathComponent("miniatures/")
 }
 
 
@@ -121,10 +122,31 @@ func readImageFromFile(id: UUID) -> UIImage? {
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
 }
+func readFullImageFromFile(id: UUID) -> UIImage? {
+    let filepath = FileSettings.photosFullFilePath.appendingPathComponent(id.uuidString + ".heic")
+    let uiImage = UIImage(contentsOfFile: filepath.path)
+    if uiImage == nil {print("Image file not found in path: \(filepath)")}
+    return uiImage
+}
 
 func writeImageToFile(uiImage: UIImage) -> UUID? {
     
-    let data = uiImage.heic()
+    let dataFull = uiImage.heic()
+    
+    let size: CGSize
+    if uiImage.size.width > uiImage.size.height {
+        let coef = uiImage.size.width / 512
+        size = CGSize(width: 512, height: uiImage.size.height / coef)
+    } else {
+        let coef = uiImage.size.height / 512
+        size = CGSize(width: uiImage.size.width / coef, height: 512)
+    }
+    
+    let renderer = UIGraphicsImageRenderer(size: size)
+    let uiImageMini = renderer.image { (context) in
+        uiImage.draw(in: CGRect(origin: .zero, size: size))
+    }
+    let data = uiImageMini.heic(compressionQuality: 0.7)
     
     if !directoryExistsAtPath(FileSettings.photosFilePath.path()) {
         do {
@@ -135,28 +157,46 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
             return nil
         }
     }
-    
-    if let data {
+    if !directoryExistsAtPath(FileSettings.photosFullFilePath.path()) {
+        do {
+            try FileManager().createDirectory(at: FileSettings.photosFullFilePath, withIntermediateDirectories: true)
+            print("Created directory for full size photos")
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+
+    if let data, let dataFull {
         let uuid = UUID()
-        let filepath = FileSettings.photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
         
+        let filepath = FileSettings.photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
         do {
             try data.write(to: filepath)
         } catch {
             print(error)
         }
-
-        print("New image file created in path \(filepath)")
-
+        print("New image miniature file created in path \(filepath)")
+        
+        let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(uuid.uuidString + ".heic")
+        do {
+            try dataFull.write(to: filepathFull)
+        } catch {
+            print(error)
+        }
+        print("New image file created in path \(filepathFull)")
         return uuid
     }
+
     
     return nil
 }
 func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) {
     let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
+    let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(id.uuidString + ".heic")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
+        try FileManager.default.removeItem(atPath: filepathFull.path)
         print("Image file deleted from path \(filepath)")
         return (true, nil)
     } catch {

@@ -10,6 +10,10 @@ import FirebaseFirestoreSwift
 class OnlineFunctions {
     static var applicationSettings = ApplicationSettings()
     
+    static func syncLibrary(lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
+        
+    }
+    
     static func addPhotos(_ imgs: [Photo], lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
         applicationSettings.load()
         
@@ -23,7 +27,8 @@ class OnlineFunctions {
                     var newPhotosArr = library.photos
                     
                     let storage = Storage.storage()
-                    let photosRef = storage.reference().child("photos")
+                    let photosFullRef = storage.reference().child("photos")
+                    let photosRef = storage.reference().child("miniatures")
                     
                     imgs.forEach { ph in
                         onlineLibraryRef.collection("photos").document(ph.id.uuidString).setData([
@@ -43,19 +48,28 @@ class OnlineFunctions {
                         
                         let filename = "\(ph.id.uuidString).heic"
                         let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
+                        let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(filename)
                         let uploadTask = photosRef.child(filename).putFile(from: filepath) { metadata, error in
                             if let error {
                                 print(error)
                                 competition(error)
                             } else {
-                                print(metadata?.name as Any)
+                                print("\(metadata?.name) (miniature)")
+                            }
+                        }
+                        let uploadFullTask = photosFullRef.child(filename).putFile(from: filepathFull) { metadata, error in
+                            if let error {
+                                print(error)
+                                competition(error)
+                            } else {
+                                print("\(metadata?.name)")
                             }
                         }
                     }
 
                     onlineLibraryRef.updateData([
                         "photos": FieldValue.arrayUnion(newPhotosArr),
-                        "lastChangeDate": Date()
+                        "lastChangeDate": lib.lastChangeDate
                     ]) { err in
                         competition(err)
                     }
@@ -66,7 +80,6 @@ class OnlineFunctions {
             }
         }
     }
-    
     static func toBin(_ imgs: [Photo], lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
         applicationSettings.load()
         
@@ -109,7 +122,8 @@ class OnlineFunctions {
             
             var removedRefs = [DocumentReference]()
             let storage = Storage.storage()
-            let photosRef = storage.reference().child("photos")
+            let photosFullRef = storage.reference().child("photos")
+            let photosRef = storage.reference().child("miniatures")
             
             imgs.forEach { ph in
                 let phRef = onlineLibraryRef.collection("photos").document(ph.id.uuidString)
@@ -117,8 +131,15 @@ class OnlineFunctions {
                 removedRefs.append(phRef)
                 
                 let filename = "\(ph.id.uuidString).heic"
-                let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
                 photosRef.child(filename).delete { error in
+                    if let error {
+                        print(error)
+                        competition(error)
+                    } else {
+                        print("File \(filename) (miniature) deleted online")
+                    }
+                }
+                photosFullRef.child(filename).delete { error in
                     if let error {
                         print(error)
                         competition(error)
@@ -130,7 +151,7 @@ class OnlineFunctions {
             
             onlineLibraryRef.updateData([
                 "photos": FieldValue.arrayRemove(removedRefs),
-                "lastChangeDate": Date()
+                "lastChangeDate": lib.lastChangeDate
             ]) { err in
                 competition(err)
             }

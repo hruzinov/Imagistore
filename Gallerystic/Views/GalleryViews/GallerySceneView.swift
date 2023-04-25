@@ -12,8 +12,10 @@ struct GallerySceneView: View {
     @ObservedObject var library: PhotosLibrary
     @State var photosSelector: PhotoStatus
     
-    @State var canAddNewPhotos: Bool = false
+//    @State var canAddNewPhotos: Bool = false
+    @State var isMainLibraryScreen: Bool = false
     @Binding var sortingSelector: PhotosSortArgument
+    @Binding var uiImageHolder: UIImageHolder
     @State private var importSelectedItems = [PhotosPickerItem]()
     
     @State var showGalleryOverlay: Bool = false
@@ -32,7 +34,7 @@ struct GallerySceneView: View {
                 if library.photos.filter({ ph in
                     ph.status == photosSelector
                 }).count > 0 {
-                    GalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, scrollTo: $scrollTo, selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
+                    GalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, scrollTo: $scrollTo, selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray, isMainLibraryScreen: isMainLibraryScreen)
                 } else {
                     Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
                 }
@@ -56,7 +58,7 @@ struct GallerySceneView: View {
             }
             
             .toolbar {
-                if canAddNewPhotos, !selectingMode {
+                if isMainLibraryScreen, !selectingMode {
                     ToolbarItem(placement: .navigationBarLeading) {
                         PhotosPicker(
                             selection: $importSelectedItems,

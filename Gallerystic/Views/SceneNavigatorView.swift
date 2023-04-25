@@ -8,6 +8,7 @@ struct SceneNavigatorView: View {
     @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
+    @State var uiImageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
     @EnvironmentObject var dispayingSettings: DispayingSettings
     
@@ -21,7 +22,7 @@ struct SceneNavigatorView: View {
                 if applicationSettings.isFirstLaunch {
                     LoginSceneView(applicationSettings: $applicationSettings)
                 } else if let photosLibrary {
-                    ContentView(photosLibrary: photosLibrary, applicationSettings: $applicationSettings)
+                    ContentView(photosLibrary: photosLibrary, applicationSettings: $applicationSettings, uiImageHolder: $uiImageHolder)
                 } else if librariesCollection != nil {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
                 } else {
@@ -39,11 +40,11 @@ struct SceneNavigatorView: View {
             applicationSettings.load()
             DispatchQueue.main.async {
                 withAnimation {
-                    if let libId = applicationSettings.lastSelectedLibrary {
-                        photosLibrary = loadLibrary(id: libId)
-                    } else {
+//                    if let libId = applicationSettings.lastSelectedLibrary {
+//                        photosLibrary = loadLibrary(id: libId)
+//                    } else {
                         librariesCollection = loadLibrariesCollection()
-                    }
+//                    }
                     loaded.toggle()
                 }
             }

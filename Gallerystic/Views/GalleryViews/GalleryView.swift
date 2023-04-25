@@ -6,33 +6,18 @@ import SwiftUI
 
 struct GalleryView: View {
     @ObservedObject var library: PhotosLibrary
-    var photos: [Binding<Photo>] {
-        $library.photos
-            .filter({ $ph in
-                ph.status == photosSelector
-            })
-            .sorted(by: { ph1, ph2 in
-                if photosSelector == .deleted {
-                    return ph1.deletionDate.wrappedValue! < ph2.deletionDate.wrappedValue!
-                } else {
-                    switch sortingSelector {
-                    case .importDate:
-                        return ph1.importDate.wrappedValue < ph2.importDate.wrappedValue
-                    case .creationDate:
-                        return ph1.creationDate.wrappedValue < ph2.creationDate.wrappedValue
-                    }
-                }
-            })
-    }
+    var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
     
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
+    @Binding var uiImageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
     
     @State var openedImage: UUID = UUID()
     @State var goToDetailedView: Bool = false
+    @State var isMainLibraryScreen: Bool = false
     
     let columns = [
         GridItem(.flexible(), spacing: 1),
@@ -44,8 +29,9 @@ struct GalleryView: View {
         ScrollViewReader { scroll in
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                    ForEach(photos) { $item in
-                        if item.uiImage != nil {
+                    ForEach(photos) { item in
+                        if let uiImage = uiImageHolder.getUiImage(photo: item) {
+//                        if item.uiImage != nil {
                             GeometryReader { gr in
                                 let size = gr.size
                                 VStack {
@@ -61,7 +47,7 @@ struct GalleryView: View {
                                             openedImage = item.id
                                         }
                                     } label: {
-                                        Image(uiImage: item.uiImage!)
+                                        Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
@@ -94,7 +80,7 @@ struct GalleryView: View {
                                     
                                 }
                                 .navigationDestination(isPresented: $goToDetailedView) {
-                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, selectedImage: openedImage, scrollTo: $scrollTo)
+                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
                                 }
                             }
                             .clipped()
@@ -102,6 +88,14 @@ struct GalleryView: View {
                         }
                     }
                 }
+                
+                if isMainLibraryScreen {
+                    VStack {
+                        Text("\(photos.count) Photos").bold()
+                        Text("All synced")
+                    } .padding(.vertical, 10)
+                }
+                
                 Rectangle()
                     .frame(height: 50)
                     .opacity(0)

@@ -105,6 +105,25 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
     }
+    
+    func sortedPhotos(by: PhotosSortArgument, filter: PhotoStatus) -> [Photo]{
+        return self.photos
+            .sorted(by: { ph1, ph2 in
+                if filter == .deleted, let delDate1 = ph1.deletionDate, let delDate2 = ph2.deletionDate {
+                    return delDate1 < delDate2
+                } else {
+                    switch by {
+                    case .importDate:
+                        return ph1.importDate < ph2.importDate
+                    case .creationDate:
+                        return ph1.creationDate < ph2.creationDate
+                    }
+                }
+            })
+            .filter({ ph in
+                ph.status == filter
+            })
+    }
 }
 
 enum PhotosSortArgument: String {

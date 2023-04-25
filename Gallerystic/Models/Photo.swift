@@ -6,7 +6,7 @@ import SwiftUI
 
 class Photo: Identifiable, Codable {
     var id: UUID
-    lazy var uiImage: UIImage? = readImageFromFile(id: id)
+//    lazy var uiImage: UIImage? = readImageFromFile(id: id)
     var status: PhotoStatus
     var creationDate: Date
     var importDate: Date
@@ -25,7 +25,7 @@ class Photo: Identifiable, Codable {
     }
     
     static func == (lhs: Photo, rhs: Photo) -> Bool {
-        lhs.uiImage == rhs.uiImage
+        lhs.id == rhs.id
     }
 }
 
