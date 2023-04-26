@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct GalleryView: View {
+struct UIGalleryView: View {
     @EnvironmentObject var dispayingSettings: DispayingSettings
     @ObservedObject var library: PhotosLibrary
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
@@ -58,10 +58,10 @@ struct GalleryView: View {
                                                         LinearGradient(colors: [.black.opacity(0), .black], startPoint: .center, endPoint: .bottom)
                                                         VStack(alignment: .center) {
                                                             Spacer()
-                                                            Text(TimeFunctions.daysLeftString(deletionDate))
+                                                            Text(DateTimeFunctions.daysLeftString(deletionDate))
                                                                 .font(.caption)
                                                                 .padding(5)
-                                                                .foregroundColor(TimeFunctions.daysLeft(deletionDate) < 3 ? .red : .white)
+                                                                .foregroundColor(DateTimeFunctions.daysLeft(deletionDate) < 3 ? .red : .white)
                                                         }
                                                     }
                                                 }

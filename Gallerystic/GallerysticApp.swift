@@ -19,7 +19,7 @@ struct GallerysticApp: App {
     
     var body: some Scene {
         WindowGroup {
-            SceneNavigatorView()
+            AppNavigator()
                 .environmentObject(DispayingSettings())
         }
     }

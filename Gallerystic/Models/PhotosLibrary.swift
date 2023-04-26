@@ -96,7 +96,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
         for item in photos {
-            if item.status == .deleted, let deletionDate = item.deletionDate, TimeFunctions.daysLeft(deletionDate) < 0 {
+            if item.status == .deleted, let deletionDate = item.deletionDate, DateTimeFunctions.daysLeft(deletionDate) < 0 {
                 forDeletion.append(item)
             }
         }

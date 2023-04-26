@@ -29,7 +29,7 @@ struct AlbumsSceneView: View {
                         NavigationLink(destination: {
                             GallerySceneView(library: library, photosSelector: .normal, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, navToRoot: $navToRoot)
                         }, label: {
-                            AlbumBlockView(library: library, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder)
+                            UIAlbumBlockView(library: library, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder)
                         })
                         
                     }

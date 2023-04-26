@@ -44,12 +44,12 @@ struct LibrariesSelectorView: View {
                                             }
                                         }
                                         Text("ID: \(library.id.uuidString)").font(.caption)
-                                        Text("Last change: \(TimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
+                                        Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
                                     }
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                 }
-                                .foregroundColor(.black)
+                                .foregroundColor(Color.primary)
                             })
                             .padding(.horizontal, 15)
                             .padding(.vertical, 5)
@@ -67,45 +67,7 @@ struct LibrariesSelectorView: View {
                 }
                 
                 if let isOnlineMode = applicationSettings.isOnlineMode, isOnlineMode, let userUid = applicationSettings.userUid {
-                    let db = Firestore.firestore()
-                    let onlineLibrariesRef = db.collection("users").document(userUid)
-                    
-                    onlineLibrariesRef.getDocument(as: DBUser.self) { result in
-                        switch result {
-                        case .success(let user):
-                            let onlineLibrariesCollection = PhotosLibrariesCollection()
-                            user.libraries.forEach { str in
-                                if let uuid = UUID(uuidString: str) {
-                                    onlineLibrariesCollection.libraries.append(uuid)
-                                }
-                            }
-                                                        
-                            onlineLibrariesCollection.libraries.forEach({ id in
-                                if libraryAvailable[id] != nil {
-                                    libraryAvailable[id] = .both
-                                } else {
-                                    let onlineLibraryRef = db.collection("libraries").document(id.uuidString)
-                                    
-                                    onlineLibraryRef.getDocument(as: DBLibrary.self) { result in
-                                        switch result {
-                                        case .success(let library):
-                                            if let uuid = UUID(uuidString: library.id) {
-                                                let locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
-                                                                               photos: [])
-                                                librariesArray.append(locLibrary)
-                                                libraryAvailable[id] = .online
-                                            }
-                                        case .failure(let error):
-                                            debugPrint(error)
-                                        }
-                                    }
-                                }
-                            })
-                            
-                        case .failure(let error):
-                            print(error)
-                        }
-                    }
+                    getOnlineLibraries(userUid: userUid)
                 }
             }
             .toolbar {
@@ -152,37 +114,53 @@ struct LibrariesSelectorView: View {
         })
     }
     
+    private func getOnlineLibraries(userUid: String) {
+        let db = Firestore.firestore()
+        let onlineLibrariesRef = db.collection("users").document(userUid)
+        
+        onlineLibrariesRef.getDocument(as: DBUser.self) { result in
+            switch result {
+            case .success(let user):
+                let onlineLibrariesCollection = PhotosLibrariesCollection()
+                user.libraries.forEach { str in
+                    if let uuid = UUID(uuidString: str) {
+                        onlineLibrariesCollection.libraries.append(uuid)
+                    }
+                }
+                
+                onlineLibrariesCollection.libraries.forEach({ id in
+                    if libraryAvailable[id] != nil {
+                        libraryAvailable[id] = .both
+                    } else {
+                        let onlineLibraryRef = db.collection("libraries").document(id.uuidString)
+                        
+                        onlineLibraryRef.getDocument(as: DBLibrary.self) { result in
+                            switch result {
+                            case .success(let library):
+                                if let uuid = UUID(uuidString: library.id) {
+                                    let locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
+                                                                   photos: [])
+                                    librariesArray.append(locLibrary)
+                                    libraryAvailable[id] = .online
+                                }
+                            case .failure(let error):
+                                debugPrint(error)
+                            }
+                        }
+                    }
+                })
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
     private func librarySelected(_ library: PhotosLibrary) {
         if libraryAvailable[library.id] == .offline {
             if let isOnlineMode = applicationSettings.isOnlineMode, isOnlineMode, let userUid = applicationSettings.userUid {
-//
                 let db = Firestore.firestore()
-//
-//                db.collection("libraries").document(library.id.uuidString).setData([
-//                    "id":library.id.uuidString,
-//                    "lastChangeDate": library.lastChangeDate,
-//                    "libraryVersion": library.libraryVersion,
-//                    "name": library.name,
-//                    "photos": [String]()
-//                ])
-//
                 let onlineUserRef = db.collection("users").document(userUid)
                 onlineUserRef.updateData(["libraries": FieldValue.arrayUnion([library.id.uuidString])])
-        
-//                onlineUserRef.getDocument(as: DBUser.self) { result in
-//                    switch result {
-//                    case .success(let user):
-//                        var userLibraries = user.libraries
-//                        userLibraries.append(library.id.uuidString)
-//
-//                        db.collection("users").document(userUid).setData(["libraries" : userLibraries], merge: true) { err in
-//                            if let err { print(err) }
-//                        }
-//
-//                    case .failure(let error):
-//                        print(error)
-//                    }
-//                }
             }
         } else if libraryAvailable[library.id] == .online {
             librariesCollection?.libraries.append(library.id)

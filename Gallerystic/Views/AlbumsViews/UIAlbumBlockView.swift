@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct AlbumBlockView: View {
+struct UIAlbumBlockView: View {
     @ObservedObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var uiImageHolder: UIImageHolder

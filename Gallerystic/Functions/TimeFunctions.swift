@@ -4,7 +4,7 @@
 
 import Foundation
 
-class TimeFunctions {
+class DateTimeFunctions {
     static func dateToString(_ date: Date) -> String {
         let dateFormater = DateFormatter()
         dateFormater.dateFormat = "dd.MM.YYYY, HH:mm"

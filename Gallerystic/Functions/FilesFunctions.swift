@@ -211,7 +211,7 @@ func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) 
 // Cloud functions
 
 extension OnlineFunctions {
-    static func uploadImage(photo ph: Photo, competition: @escaping (StorageUploadTask?, Error?) -> Void) {
+    static func uploadImage(photo ph: Photo, competition: @escaping (StorageUploadTask?, StorageUploadTask?, Error?) -> Void) {
         let storage = Storage.storage()
         let photosFullRef = storage.reference().child("photos")
         let photosRef = storage.reference().child("miniatures")
@@ -222,7 +222,7 @@ extension OnlineFunctions {
         let uploadTask = photosRef.child(filename).putFile(from: filepath) { metadata, error in
             if let error {
                 print(error)
-                competition(nil, error)
+                competition(nil, nil, error)
             } else {
                 print("\(String(describing: metadata?.name)) (miniature)")
             }
@@ -230,15 +230,14 @@ extension OnlineFunctions {
         let uploadFullTask = photosFullRef.child(filename).putFile(from: filepathFull) { metadata, error in
             if let error {
                 print(error)
-                competition(nil, error)
+                competition(nil, nil, error)
             }
             else {
                 print("\(String(describing: metadata?.name))")
-//                competition(nil)
             }
             
         }
-        competition(uploadFullTask, nil)
+        competition(uploadTask, uploadFullTask, nil)
         
     }
     

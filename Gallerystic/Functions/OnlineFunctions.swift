@@ -96,8 +96,6 @@ class OnlineFunctions {
                     if let error {
                         competition([], [], error)
                     } else {
-//                        let onlineUserRef = db.collection("users").document(userUid)
-                        
                         getSyncData(lib: lib) { toUpload, toDownload, err in
                             competition(toUpload, toDownload, err)
                         }
@@ -105,31 +103,6 @@ class OnlineFunctions {
                 }
             }
         }
-        
-        
-            //                onlineLibraryRef.getDocuments { querySnapshot, error in
-//                                if let error {
-//                                    dispayingSettings.errorAlertData = error.localizedDescription
-//                                    dispayingSettings.isShowingErrorAlert.toggle()
-//                                } else if let querySnapshot {
-//                                    print(querySnapshot.documents)
-//                                }
-            //                }
-//            switch result {
-//            case .success(let onlineLibrary):
-//
-//                print(onlineLibrary.name)
-//
-//                //                        var onlinePhotos = onlineLibrary.photos
-//                //                        var offlinePhotos = library.photos
-//                //
-//                //                        var toUpload = [Photo]()
-//                //                        var toDownload = [DocumentReference]()
-//
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
     }
     
     static func addPhotos(_ imgs: [Photo], lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {

@@ -111,6 +111,7 @@ struct SignInView: View {
 
                 dismiss()
             } else {
+                print("In logining error")
                 print(error as Any)
             }
         }

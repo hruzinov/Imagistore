@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct SceneNavigatorView: View {
+struct AppNavigator: View {
     @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
