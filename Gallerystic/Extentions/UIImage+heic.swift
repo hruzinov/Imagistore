@@ -12,7 +12,9 @@ extension UIImage {
             let destination = CGImageDestinationCreateWithData(mutableData, "public.heic" as CFString, 1, nil),
             let cgImage = cgImage
         else { return nil }
-        CGImageDestinationAddImage(destination, cgImage, [kCGImageDestinationLossyCompressionQuality: compressionQuality, kCGImagePropertyOrientation: cgImageOrientation.rawValue] as [CFString : Any] as CFDictionary)
+        CGImageDestinationAddImage(destination, cgImage,
+                [kCGImageDestinationLossyCompressionQuality: compressionQuality,
+                 kCGImagePropertyOrientation: cgImageOrientation.rawValue] as [CFString: Any] as CFDictionary)
         guard CGImageDestinationFinalize(destination) else { return nil }
         return mutableData as Data
     }

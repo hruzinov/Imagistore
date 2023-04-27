@@ -9,8 +9,7 @@ struct UIAlbumBlockView: View {
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var uiImageHolder: UIImageHolder
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: .normal) }
-    
-    
+
     var body: some View {
         HStack {
             if photos.last != nil {

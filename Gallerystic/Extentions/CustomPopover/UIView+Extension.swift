@@ -11,8 +11,8 @@ extension UIView {
     func closestVC() -> UIViewController? {
         var responder: UIResponder? = self
         while responder != nil {
-            if let vc = responder as? UIViewController {
-                return vc
+            if let viewCtrl = responder as? UIViewController {
+                return viewCtrl
             }
             responder = responder?.next
         }

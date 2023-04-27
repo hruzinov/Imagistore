@@ -9,41 +9,50 @@ import FirebaseFirestoreSwift
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var dispayingSettings: DispayingSettings
-    
+    @EnvironmentObject var sceneSettings: SceneSettings
     @ObservedObject var library: PhotosLibrary
-    @State var photosSelector: PhotoStatus
-    
-    @State var isMainLibraryScreen: Bool = false
+
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var uiImageHolder: UIImageHolder
+    @Binding var navToRoot: Bool
+
     @State private var importSelectedItems = [PhotosPickerItem]()
-    
+    @State var photosSelector: PhotoStatus
+    @State var isMainLibraryScreen: Bool = false
     @State var showGalleryOverlay: Bool = false
     @State var selectedImage: Photo?
-    
     @State var selectingMode: Bool = false
     @State var selectedImagesArray: [Photo] = []
-    
     @State var isPresentingConfirm: Bool = false
     @State var scrollTo: UUID?
-    @Binding var navToRoot: Bool
-    
+
     var body: some View {
         NavigationStack {
             VStack {
-                if library.photos.filter({ ph in
-                    ph.status == photosSelector
+                if library.photos.filter({ img in
+                    img.status == photosSelector
                 }).count > 0 {
-                    UIGalleryView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, scrollTo: $scrollTo, selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray, isMainLibraryScreen: isMainLibraryScreen)
+                    UIGalleryView(
+                            library: library,
+                            photosSelector: photosSelector,
+                            sortingSelector: $sortingSelector,
+                            uiImageHolder: $uiImageHolder,
+                            scrollTo: $scrollTo,
+                            selectingMode: $selectingMode,
+                            selectedImagesArray: $selectedImagesArray,
+                            isMainLibraryScreen: isMainLibraryScreen
+                    )
                 } else {
-                    Text(Int.random(in: 1...100) == 7 ? "These aren't the photos you're looking for." : "No photos or videos here").font(.title2).bold()
+                    Text(Int.random(in: 1...100) == 7 ?
+                            "These aren't the photos you're looking for." :
+                            "No photos or videos here")
+                            .font(.title2)
+                            .bold()
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            
             .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingConfirm) {
                 Button("Delete photos", role: .destructive) {
                     if photosSelector == .deleted {
@@ -57,7 +66,6 @@ struct GallerySceneView: View {
                     Text("You cannot undo this action")
                 }
             }
-            
             .toolbar {
                 if isMainLibraryScreen, !selectingMode {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -75,19 +83,18 @@ struct GallerySceneView: View {
                         }
                     }
                 }
-                ToolbarItemGroup (placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button {
                         selectingMode.toggle()
                         if selectingMode {
-                            dispayingSettings.isShowingTabBar = false
+                            sceneSettings.isShowingTabBar = false
                         } else {
-                            dispayingSettings.isShowingTabBar = true
+                            sceneSettings.isShowingTabBar = true
                             selectedImagesArray = []
                         }
                     } label: {
                         Text(selectingMode ? "Cancel" : "Select")
                     }
-                    
                     if photosSelector != .deleted, !selectingMode {
                         Menu {
                             Picker(selection: $sortingSelector.animation()) {
@@ -105,13 +112,19 @@ struct GallerySceneView: View {
                             Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
                                 .disabled(selectedImagesArray.count==0)
                             Spacer()
-                            Text(selectedImagesArray.count > 0 ? "\(selectedImagesArray.count) selected" : "Select photos").bold()
+                            Text(selectedImagesArray.count > 0 ?
+                                    "\(selectedImagesArray.count) selected" : "Select photos"
+                            )
+                                    .bold()
                             Spacer()
                             Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
                                 .disabled(selectedImagesArray.count==0)
                         } else {
                             Spacer()
-                            Text(selectedImagesArray.count > 0 ? "\(selectedImagesArray.count) selected" : "Select photos").bold()
+                            Text(selectedImagesArray.count > 0 ?
+                                    "\(selectedImagesArray.count) selected" : "Select photos"
+                            )
+                                    .bold()
                             Spacer()
                             Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
                                 .disabled(selectedImagesArray.count==0)
@@ -120,73 +133,70 @@ struct GallerySceneView: View {
                 }
             }
         }
-        
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
-            
-            if isMainLibraryScreen {
+            if isMainLibraryScreen, sceneSettings.appSettings.isOnlineMode {
                 synchronizeLibrary()
             }
         }
         .onDisappear {
             if selectingMode {
-                dispayingSettings.isShowingTabBar = true
+                sceneSettings.isShowingTabBar = true
                 selectingMode.toggle()
                 selectedImagesArray = []
             }
         }
-        
         .onChange(of: navToRoot) { _ in
             dismiss()
             navToRoot = false
         }
     }
-    
-    private func changePhotoStatus(to: RemovingDirection) {
+
+    private func changePhotoStatus(to direction: RemovingDirection) {
         withAnimation {
-            switch to {
+            switch direction {
             case .bin:
                 library.toBin(selectedImagesArray) { err in
                     if let err {
-                        dispayingSettings.errorAlertData = err.localizedDescription
-                        dispayingSettings.isShowingErrorAlert.toggle()
+                        sceneSettings.errorAlertData = err.localizedDescription
+                        sceneSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .recover:
                 library.recoverImages(selectedImagesArray) { err in
                     if let err {
-                        dispayingSettings.errorAlertData = err.localizedDescription
-                        dispayingSettings.isShowingErrorAlert.toggle()
+                        sceneSettings.errorAlertData = err.localizedDescription
+                        sceneSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .permanent:
                 library.permanentRemove(selectedImagesArray) { err in
                     if let err {
-                        dispayingSettings.errorAlertData = err.localizedDescription
-                        dispayingSettings.isShowingErrorAlert.toggle()
+                        sceneSettings.errorAlertData = err.localizedDescription
+                        sceneSettings.isShowingErrorAlert.toggle()
                     }
                 }
             }
         }
-        
-        dispayingSettings.isShowingTabBar = true
+        sceneSettings.isShowingTabBar = true
         selectingMode.toggle()
         selectedImagesArray = []
     }
+
     private func importFromPhotosApp() {
         Task {
-            dispayingSettings.infoBarData = "Importing..."
-            dispayingSettings.infoBarFinal = false
+            sceneSettings.infoBarData = "Importing..."
+            sceneSettings.infoBarFinal = false
             let importCount = importSelectedItems.count
-            withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+            withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             var newPhotos: [Photo] = []
             for item in importSelectedItems {
                 withAnimation {
-                    dispayingSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
+                    sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
                 }
-                
+
                 if let data = try? await item.loadTransferable(type: Data.self) {
                     let uiImage = UIImage(data: data)
                     if let uiImage {
@@ -197,17 +207,18 @@ struct GallerySceneView: View {
                         } else {
                             creationDate = Date()
                         }
-                        
-                        let fileExtention: PhotoExtention
+
+                        let fileExtension: PhotoExtension
                         if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
-                            fileExtention = .png
+                            fileExtension = .png
                         } else {
-                            fileExtention = .jpg
+                            fileExtension = .jpg
                         }
-                        
+
                         let uuid = writeImageToFile(uiImage: uiImage)
                         if let uuid {
-                            newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate, importDate: Date(), fileExtention: fileExtention, keywords: []))
+                            newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate,
+                                    importDate: Date(), fileExtension: fileExtension, keywords: []))
                             count += 1
                         }
                     }
@@ -216,35 +227,39 @@ struct GallerySceneView: View {
             withAnimation {
                 library.addImages(newPhotos) { finalCount, err in
                     if let err {
-                        dispayingSettings.errorAlertData = err.localizedDescription
-                        dispayingSettings.isShowingErrorAlert.toggle()
+                        sceneSettings.errorAlertData = err.localizedDescription
+                        sceneSettings.isShowingErrorAlert.toggle()
                     } else {
                         scrollTo = newPhotos.last?.id
-                        dispayingSettings.infoBarFinal = true
-                        dispayingSettings.infoBarData = "\(finalCount) photos saved"
-                        dispayingSettings.infoBarProgress = Double(finalCount) / Double(importCount)
+                        sceneSettings.infoBarFinal = true
+                        sceneSettings.infoBarData = "\(finalCount) photos saved"
+                        sceneSettings.infoBarProgress = Double(finalCount) / Double(importCount)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+                            withAnimation { sceneSettings.isShowingInfoBar.toggle() }
                         }
                     }
                 }
-                newPhotos.forEach { ph in
-                    OnlineFunctions.uploadImage(photo: ph) { task, taskFull, error in
+                newPhotos.forEach { img in
+                    OnlineFunctions.uploadImage(photo: img) { task, taskFull, error in
                         if let error {
-                            dispayingSettings.errorAlertData = error.localizedDescription
-                            dispayingSettings.isShowingErrorAlert.toggle()
+                            sceneSettings.errorAlertData = error.localizedDescription
+                            sceneSettings.isShowingErrorAlert.toggle()
                         } else {
                             task?.observe(.progress, handler: { snapshot in
                                 let progress = snapshot.progress!
                                 withAnimation {
-                                    dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
+                                    sceneSettings.syncProgress =
+                                            Double(progress.completedUnitCount) /
+                                            Double(progress.totalUnitCount)
                                 }
                             })
                             task?.observe(.success, handler: { _ in
                                 taskFull?.observe(.progress, handler: { snapshot in
                                     let progress = snapshot.progress!
                                     withAnimation {
-                                        dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
+                                        sceneSettings.syncProgress =
+                                                Double(progress.completedUnitCount) /
+                                                Double(progress.totalUnitCount)
                                     }
                                 })
                             })
@@ -255,79 +270,128 @@ struct GallerySceneView: View {
             importSelectedItems = []
         }
     }
+    private func loadDataFromPhotos(_ importSelectedItems: [PhotosPickerItem]) async -> [Photo] {
+        var newPhotos = [Photo]()
+        var count = 0
+        for item in importSelectedItems {
+            withAnimation {
+                sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
+            }
+            if let data = try? await item.loadTransferable(type: Data.self) {
+                let uiImage = UIImage(data: data)
+                if let uiImage {
+                    let creationDate: Date
+                    if let localID = item.itemIdentifier {
+                        let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
+                        creationDate = asset?.creationDate ?? Date()
+                    } else {
+                        creationDate = Date()
+                    }
+                    let fileExtension: PhotoExtension
+                    if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
+                        fileExtension = .png
+                    } else {
+                        fileExtension = .jpg
+                    }
+                    let uuid = writeImageToFile(uiImage: uiImage)
+                    if let uuid {
+                        newPhotos.append(
+                                Photo(
+                                        id: uuid,
+                                        status: .normal,
+                                        creationDate: creationDate,
+                                        importDate: Date(),
+                                        fileExtension: fileExtension,
+                                        keywords: []
+                                )
+                        )
+                        count += 1
+                    }
+                }
+            }
+        }
+        return newPhotos
+    }
+
     private func synchronizeLibrary() {
         OnlineFunctions.getSyncData(lib: library, competition: { toUpload, toDownload, error in
             if let error {
-                dispayingSettings.errorAlertData = error.localizedDescription
-                dispayingSettings.isShowingErrorAlert.toggle()
+                sceneSettings.errorAlertData = error.localizedDescription
+                sceneSettings.isShowingErrorAlert.toggle()
             } else {
-                
                 if toUpload.count == 0 && toDownload.count == 0 {
-                    dispayingSettings.syncProgress = 1
+                    sceneSettings.syncProgress = 1
                 } else {
-                    
                     // Adding data to online library and uploading
                     if toUpload.count > 0 {
-                        OnlineFunctions.addPhotos(toUpload, lib: library) { error in
-                            if let error {
-                                dispayingSettings.errorAlertData = error.localizedDescription
-                                dispayingSettings.isShowingErrorAlert.toggle()
-                            } else {
-                                toUpload.forEach { ph in
-                                    OnlineFunctions.uploadImage(photo: ph) { task, taskFull, error in
-                                        if let error {
-                                            dispayingSettings.errorAlertData = error.localizedDescription
-                                            dispayingSettings.isShowingErrorAlert.toggle()
-                                        } else {
-                                            task?.observe(.progress, handler: { snapshot in
-                                                let progress = snapshot.progress!
-                                                withAnimation {
-                                                    dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
-                                                }
-                                            })
-                                            task?.observe(.success, handler: { _ in
-                                                taskFull?.observe(.progress, handler: { snapshot in
-                                                    let progress = snapshot.progress!
-                                                    withAnimation {
-                                                        dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
-                                                    }
-                                                })
-                                            })
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        syncToCloud(toUpload)
                     }
-                    
                     // Adding data to local library and downloading
                     if toDownload.count > 0 {
-                        toDownload.forEach { ph in
-                            OnlineFunctions.downloadImage(id: ph.id, fullSize: false) { task, error in
-                                if let error {
-                                    dispayingSettings.errorAlertData = error.localizedDescription
-                                    dispayingSettings.isShowingErrorAlert.toggle()
-                                } else {
-                                    
-                                    library.addImages([ph]) { _, error in
-                                        if let error {
-                                            dispayingSettings.errorAlertData = error.localizedDescription
-                                            dispayingSettings.isShowingErrorAlert.toggle()
-                                        }
-                                    }
-                                    
-                                    task?.observe(.progress, handler: { snapshot in
-                                        let progress = snapshot.progress!
-                                        withAnimation {
-                                            dispayingSettings.syncProgress = Double(progress.completedUnitCount) / Double(progress.totalUnitCount)
-                                        }
-                                    })
-                                }
-                            }
-                        }
+                        syncFromCloud(toDownload)
                     }
                 }
             }
         })
+    }
+    private func syncToCloud(_ toUpload: [Photo]) {
+        OnlineFunctions.addPhotos(toUpload, lib: library) { error in
+            if let error {
+                sceneSettings.errorAlertData = error.localizedDescription
+                sceneSettings.isShowingErrorAlert.toggle()
+            } else {
+                toUpload.forEach { img in
+                    OnlineFunctions.uploadImage(photo: img) { task, taskFull, error in
+                        if let error {
+                            sceneSettings.errorAlertData = error.localizedDescription
+                            sceneSettings.isShowingErrorAlert.toggle()
+                        } else {
+                            task?.observe(.progress, handler: { snapshot in
+                                let progress = snapshot.progress!
+                                withAnimation {
+                                    sceneSettings.syncProgress =
+                                            Double(progress.completedUnitCount) /
+                                            Double(progress.totalUnitCount)
+                                }
+                            })
+                            task?.observe(.success, handler: { _ in
+                                taskFull?.observe(.progress, handler: { snapshot in
+                                    let progress = snapshot.progress!
+                                    withAnimation {
+                                        sceneSettings.syncProgress =
+                                                Double(progress.completedUnitCount) /
+                                                Double(progress.totalUnitCount)
+                                    }
+                                })
+                            })
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private func syncFromCloud(_ toDownload: [Photo]) {
+        toDownload.forEach { img in
+            OnlineFunctions.downloadImage(id: img.id, fullSize: false) { task, error in
+                if let error {
+                    sceneSettings.errorAlertData = error.localizedDescription
+                    sceneSettings.isShowingErrorAlert.toggle()
+                } else {
+                    library.addImages([img]) { _, error in
+                        if let error {
+                            sceneSettings.errorAlertData = error.localizedDescription
+                            sceneSettings.isShowingErrorAlert.toggle()
+                        }
+                    }
+                    task?.observe(.progress, handler: { snapshot in
+                        let progress = snapshot.progress!
+                        withAnimation {
+                            sceneSettings.syncProgress =
+                                    Double(progress.completedUnitCount)/Double(progress.totalUnitCount)
+                        }
+                    })
+                }
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ import SwiftUI
 struct LoginSceneView: View {
     @Binding var applicationSettings: ApplicationSettings
     @State var isShovingImagePopover: Bool = false
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -27,7 +27,7 @@ struct LoginSceneView: View {
                             }
                             .padding(20)
                             .alwaysPopover(isPresented: $isShovingImagePopover) {
-                                HStack(spacing:0) {
+                                HStack(spacing: 0) {
                                     Text("Photo by ")
                                     Link(destination: URL(string: "https://unsplash.com/@nicolesaavedra17")!) {
                                         Text("Nicole Saavedra on Unsplash")
@@ -35,23 +35,22 @@ struct LoginSceneView: View {
                                 }
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                
+
                             }
-                            
+
                         }
-                    
+
                     Text("Convenient place for storing photos").font(.title).bold()
                         .multilineTextAlignment(.center)
                 }
-                
+
                 Spacer()
 
-                
-                VStack() {
+                VStack {
                     Text("Login or sign up to synchronize photos between your devices").font(.title3)
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 20)
-                    
+
                     HStack {
                         NavigationLink {
                             SignInView(applicationSettings: $applicationSettings)
@@ -63,9 +62,9 @@ struct LoginSceneView: View {
                         .foregroundColor(.black)
                         .background(.white)
                         .cornerRadius(10)
-                        
+
                         Button {
-                            
+
                         } label: {
                             Text("Register")
                         }
@@ -77,8 +76,7 @@ struct LoginSceneView: View {
                     .background(.ultraThinMaterial)
                     .cornerRadius(10)
                     .padding(.horizontal, 50)
-                    
-                    
+
                     Button {
                         withAnimation {
                             applicationSettings.isFirstLaunch.toggle()

@@ -10,10 +10,10 @@ enum Tab: String, CaseIterable {
 
 struct CustomTabBar: View {
     @Binding var selection: Tab
-    @EnvironmentObject var dispayingSettings: DispayingSettings
-    
+    @EnvironmentObject var sceneSettings: SceneSettings
+
     var body: some View {
-        if dispayingSettings.isShowingTabBar {
+        if sceneSettings.isShowingTabBar {
             HStack {
                 Button {
                     withAnimation(.easeInOut) {
@@ -28,7 +28,7 @@ struct CustomTabBar: View {
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.top, 10)
-                
+
                 Button {
                     withAnimation(.easeInOut) {
                         selection = .albums
@@ -40,7 +40,6 @@ struct CustomTabBar: View {
                     }
                     .foregroundColor(selection == .albums ? .blue : .gray)
                     .frame(maxWidth: .infinity)
-                    
                 }
                 .padding(.top, 10)
             }

@@ -6,9 +6,8 @@ import SwiftUI
 
 class PhotosLibrariesCollection: Codable {
     var libraries: [UUID]
-    
     init() {
-        self.libraries = []
+        libraries = []
     }
 }
 
@@ -20,64 +19,61 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
     var lastChangeDate: Date
     var lastSyncDate: Date?
     var photos: [Photo]
-    
-    init(id: UUID, name: String, libraryVersion: Int = actualLibraryVersion, lastChangeDate: Date = Date(), photos: [Photo] = []) {
+    init(id: UUID, name: String, libraryVersion: Int = actualLibraryVersion,
+         lastChangeDate: Date = Date(), photos: [Photo] = []) {
         self.id = id
         self.name = name
         self.libraryVersion = libraryVersion
         self.photos = photos
         self.lastChangeDate = lastChangeDate
     }
-    
-    
-    func addImages(_ imgs: [Photo], competition: @escaping (Int, Error?) -> Void) {
+    func addImages(_ images: [Photo], competition: @escaping (Int, Error?) -> Void) {
         var count = 0
-        for item in imgs {
+        for item in images {
             photos.append(item)
             count += 1
         }
-        if let e = saveLibrary(lib: self) {
-            competition(count, e)
+        if let err = saveLibrary(lib: self) {
+            competition(count, err)
         }
-        OnlineFunctions.addPhotos(imgs, lib: self) { err in
+        OnlineFunctions.addPhotos(images, lib: self) { err in
             competition(count, err)
         }
     }
-    
-    func toBin(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
-        for item in imgs {
+    func toBin(_ images: [Photo], competition: @escaping (Error?) -> Void) {
+        for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
                 photos[photoIndex].deletionDate = Date()
             }
         }
         self.objectWillChange.send()
-        if let e = saveLibrary(lib: self) {
-            competition(e)
+        if let err = saveLibrary(lib: self) {
+            competition(err)
         }
-        OnlineFunctions.toBin(imgs, lib: self) { err in
+        OnlineFunctions.toBin(images, lib: self) { err in
             competition(err)
         }
     }
-    func recoverImages(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
-        for item in imgs {
+    func recoverImages(_ images: [Photo], competition: @escaping (Error?) -> Void) {
+        for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
                 photos[photoIndex].deletionDate = nil
             }
         }
         self.objectWillChange.send()
-        if let e = saveLibrary(lib: self) {
-            competition(e)
+        if let err = saveLibrary(lib: self) {
+            competition(err)
         }
-        OnlineFunctions.recoverImages(imgs, lib: self) { err in
+        OnlineFunctions.recoverImages(images, lib: self) { err in
             competition(err)
         }
     }
-    func permanentRemove(_ imgs: [Photo], competition: @escaping (Error?) -> Void) {
-        for item in imgs {
+    func permanentRemove(_ images: [Photo], competition: @escaping (Error?) -> Void) {
+        for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
-                let (completed, error) = removeImageFile(id: item.id, fileExtention: item.fileExtention)
+                let (completed, error) = removeImageFile(id: item.id, fileExtension: item.fileExtension)
                 if completed {
                     photos.remove(at: photoIndex)
                 } else {
@@ -86,17 +82,19 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        if let e = saveLibrary(lib: self) {
-            competition(e)
+        if let err = saveLibrary(lib: self) {
+            competition(err)
         }
-        OnlineFunctions.permanentRemove(imgs, lib: self) { err in
+        OnlineFunctions.permanentRemove(images, lib: self) { err in
             competition(err)
         }
     }
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
         for item in photos {
-            if item.status == .deleted, let deletionDate = item.deletionDate, DateTimeFunctions.daysLeft(deletionDate) < 0 {
+            if item.status == .deleted,
+               let deletionDate = item.deletionDate,
+               DateTimeFunctions.daysLeft(deletionDate) < 0 {
                 forDeletion.append(item)
             }
         }
@@ -106,24 +104,23 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
     }
-    
-    func sortedPhotos(by: PhotosSortArgument, filter: PhotoStatus) -> [Photo]{
-        return self.photos
-            .sorted(by: { ph1, ph2 in
-                if filter == .deleted, let delDate1 = ph1.deletionDate, let delDate2 = ph2.deletionDate {
-                    return delDate1 < delDate2
-                } else {
-                    switch by {
-                    case .importDate:
-                        return ph1.importDate < ph2.importDate
-                    case .creationDate:
-                        return ph1.creationDate < ph2.creationDate
+    func sortedPhotos(by byArgument: PhotosSortArgument, filter: PhotoStatus) -> [Photo] {
+        photos
+                .sorted(by: { ph1, ph2 in
+                    if filter == .deleted, let delDate1 = ph1.deletionDate, let delDate2 = ph2.deletionDate {
+                        return delDate1 < delDate2
+                    } else {
+                        switch byArgument {
+                        case .importDate:
+                            return ph1.importDate < ph2.importDate
+                        case .creationDate:
+                            return ph1.creationDate < ph2.creationDate
+                        }
                     }
-                }
-            })
-            .filter({ ph in
-                ph.status == filter
-            })
+                })
+                .filter({ item in
+                    item.status == filter
+                })
     }
 }
 

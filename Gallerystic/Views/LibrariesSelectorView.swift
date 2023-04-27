@@ -8,15 +8,16 @@ import FirebaseFirestoreSwift
 
 struct LibrariesSelectorView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var sceneSettings: SceneSettings
     @Binding var applicationSettings: ApplicationSettings
     @Binding var librariesCollection: PhotosLibrariesCollection?
     @State var librariesArray: [PhotosLibrary] = []
-    @State private var libraryAvailable: [UUID:LibraryAvailable] = [:]
+    @State private var libraryAvailable: [UUID: LibraryAvailable] = [:]
     @Binding var selectedLibrary: PhotosLibrary?
     @State private var isShowingAddLibSheet: Bool = false
-    
+
     @State var newLibraryName: String = ""
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -65,8 +66,8 @@ struct LibrariesSelectorView: View {
                         libraryAvailable[id] = .offline
                     }
                 }
-                
-                if let isOnlineMode = applicationSettings.isOnlineMode, isOnlineMode, let userUid = applicationSettings.userUid {
+
+                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
                     getOnlineLibraries(userUid: userUid)
                 }
             }
@@ -77,7 +78,7 @@ struct LibrariesSelectorView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    
+
                 }
             }
             .navigationTitle("Libraries")
@@ -113,11 +114,11 @@ struct LibrariesSelectorView: View {
             }
         })
     }
-    
+
     private func getOnlineLibraries(userUid: String) {
         let db = Firestore.firestore()
         let onlineLibrariesRef = db.collection("users").document(userUid)
-        
+
         onlineLibrariesRef.getDocument(as: DBUser.self) { result in
             switch result {
             case .success(let user):
@@ -127,13 +128,13 @@ struct LibrariesSelectorView: View {
                         onlineLibrariesCollection.libraries.append(uuid)
                     }
                 }
-                
+
                 onlineLibrariesCollection.libraries.forEach({ id in
                     if libraryAvailable[id] != nil {
                         libraryAvailable[id] = .both
                     } else {
                         let onlineLibraryRef = db.collection("libraries").document(id.uuidString)
-                        
+
                         onlineLibraryRef.getDocument(as: DBLibrary.self) { result in
                             switch result {
                             case .success(let library):
@@ -149,7 +150,7 @@ struct LibrariesSelectorView: View {
                         }
                     }
                 })
-                
+
             case .failure(let error):
                 print(error)
             }
@@ -157,7 +158,7 @@ struct LibrariesSelectorView: View {
     }
     private func librarySelected(_ library: PhotosLibrary) {
         if libraryAvailable[library.id] == .offline {
-            if let isOnlineMode = applicationSettings.isOnlineMode, isOnlineMode, let userUid = applicationSettings.userUid {
+            if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
                 let db = Firestore.firestore()
                 let onlineUserRef = db.collection("users").document(userUid)
                 onlineUserRef.updateData(["libraries": FieldValue.arrayUnion([library.id.uuidString])])
@@ -165,13 +166,15 @@ struct LibrariesSelectorView: View {
         } else if libraryAvailable[library.id] == .online {
             librariesCollection?.libraries.append(library.id)
             _ = librariesCollection?.saveLibraryCollection()
+            _ = saveLibrary(lib: library)
         }
-        
+
         applicationSettings.lastSelectedLibrary = library.id
         applicationSettings.save()
+
         selectedLibrary = library
     }
-    
+
     private enum LibraryAvailable {
         case online
         case offline

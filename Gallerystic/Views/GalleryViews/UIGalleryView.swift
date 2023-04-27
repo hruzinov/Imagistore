@@ -5,27 +5,27 @@
 import SwiftUI
 
 struct UIGalleryView: View {
-    @EnvironmentObject var dispayingSettings: DispayingSettings
+    @EnvironmentObject var sceneSettings: SceneSettings
     @ObservedObject var library: PhotosLibrary
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
-    
+
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var uiImageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
-    
+
     @State var openedImage: UUID = UUID()
     @State var goToDetailedView: Bool = false
     @State var isMainLibraryScreen: Bool = false
-    
+
     let columns = [
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1)
     ]
-    
+
     var body: some View {
         ScrollViewReader { scroll in
             ScrollView {
@@ -77,7 +77,7 @@ struct UIGalleryView: View {
                                                 }
                                             })
                                     }
-                                    
+
                                 }
                                 .navigationDestination(isPresented: $goToDetailedView) {
                                     ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
@@ -91,16 +91,16 @@ struct UIGalleryView: View {
                 VStack {
                     if isMainLibraryScreen {
                         Text("\(photos.count) Photos").bold()
-                        if dispayingSettings.syncProgress == 1.0 {
+                        if sceneSettings.syncProgress == 1.0 {
                             Text("Synced").font(.caption)
                         } else {
-                            ProgressView(value: dispayingSettings.syncProgress).padding(.horizontal, 50)
+                            ProgressView(value: sceneSettings.syncProgress).padding(.horizontal, 50)
                         }
                     }
-                    
+
                 }
                 .padding(.vertical, 10)
-                
+
                 Rectangle()
                     .frame(height: 50)
                     .opacity(0)

@@ -4,18 +4,19 @@
 
 import SwiftUI
 
-struct UICircleProgressPupup: View {
+struct UICircleProgressPupUp: View {
     @Binding var progressText: String
     @Binding var progressValue: Double
     @Binding var progressFinal: Bool
-    
+
     var body: some View {
         VStack(spacing: 20) {
             ZStack {
                 Circle()
                     .stroke(Color.white.opacity(0), lineWidth: 10)
                 if progressFinal {
-                    Image(systemName: progressValue == 1 ? "checkmark.circle" : "checkmark.circle.trianglebadge.exclamationmark")
+                    Image(systemName: progressValue == 1 ? "checkmark.circle" :
+                            "checkmark.circle.trianglebadge.exclamationmark")
                         .font(Font.system(size: 80))
                 } else {
                     Circle()
@@ -25,7 +26,7 @@ struct UICircleProgressPupup: View {
                 }
             }
             .frame(width: 80, height: 80, alignment: .center)
-            
+
             Text(progressText)
         }
         .frame(width: 160, height: 160)
@@ -35,8 +36,9 @@ struct UICircleProgressPupup: View {
     }
 }
 
-struct CircleProgressPupup_Previews: PreviewProvider {
+struct CircleProgressPupUp_Previews: PreviewProvider {
     static var previews: some View {
-        UICircleProgressPupup(progressText: .constant("test text"), progressValue: .constant(0.5), progressFinal: .constant(true))
+        UICircleProgressPupUp(progressText: .constant("test text"),
+                progressValue: .constant(0.5), progressFinal: .constant(true))
     }
 }

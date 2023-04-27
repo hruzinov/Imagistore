@@ -3,16 +3,16 @@
 //
 
 import SwiftUI
-import Firebase
+import FirebaseAuth
 import FirebaseFirestore
 
 struct SignInView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var dispayingSettings: DispayingSettings
+    @EnvironmentObject var sceneSettings: SceneSettings
     @State var email: String = ""
     @State var password: String = ""
     @Binding var applicationSettings: ApplicationSettings
-    
+
     var body: some View {
         VStack(spacing: 15) {
             Spacer()
@@ -21,28 +21,27 @@ struct SignInView: View {
             Text("Welcome back, you've been missed!").font(.title2)
                 .multilineTextAlignment(.center)
                 .padding(.bottom, 20)
-        
-            
+
             VStack(spacing: 10) {
                 TextField("Login", text: $email)
                     .padding(10)
                     .background(.white)
                     .cornerRadius(10)
                     .autocapitalization(.none)
-                
+
                 SecureField("Password", text: $password)
                     .padding(10)
                     .background(.white)
                     .cornerRadius(10)
                     .autocapitalization(.none)
-                
+
                 Button {
                     signIn()
                 } label: {
                     Text("Sign In")
                         .frame(maxWidth: .infinity)
                 }
-                
+
                 .padding(.vertical, 15)
                 .foregroundColor(.black)
                 .background(.white)
@@ -51,15 +50,15 @@ struct SignInView: View {
             .foregroundColor(.black)
             .padding(.horizontal, 50)
             .font(.title2)
-            
+
             Spacer()
-            
+
             Text("Or continue with")
                 .font(.title3)
-                        
+
             HStack {
                 Button {
-                    
+
                 } label: {
                     Text("G")
                 }
@@ -69,13 +68,12 @@ struct SignInView: View {
                 .background(.white)
                 .cornerRadius(10)
             }
-            
 
         }
         .foregroundColor(.white)
         .background(Color("Teal"), ignoresSafeAreaEdges: .all)
     }
-    
+
     private func signIn() {
         print("printing")
         Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
@@ -85,28 +83,28 @@ struct SignInView: View {
                     applicationSettings.isFirstLaunch = false
                     applicationSettings.isOnlineMode = true
                     applicationSettings.save()
-                    
-                    dispayingSettings.isShowingInfoBar.toggle()
-                    dispayingSettings.infoBarFinal = true
-                    dispayingSettings.infoBarData = "Success Signing In"
-                    dispayingSettings.infoBarProgress = 1
-                    
+
+                    sceneSettings.appSettings.isOnlineMode = true
+                    sceneSettings.isShowingInfoBar.toggle()
+                    sceneSettings.infoBarFinal = true
+                    sceneSettings.infoBarData = "Success Signing In"
+                    sceneSettings.infoBarProgress = 1
+
                     let db = Firestore.firestore()
                     let onlineUserRef = db.collection("users").document(result.user.uid)
-                    onlineUserRef.getDocument { document, err in
+                    onlineUserRef.getDocument { document, _ in
                         if let document, document.exists {
                         } else {
                             onlineUserRef.setData([
-                                "username" : result.user.displayName as Any,
+                                "username": result.user.displayName as Any,
                                 "libraries": [String]()
                             ])
                         }
                     }
-                    
-                    
+
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation { dispayingSettings.isShowingInfoBar.toggle() }
+                    withAnimation { sceneSettings.isShowingInfoBar.toggle() }
                 }
 
                 dismiss()

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		49097FF029E9718A0023E36F /* UICircleProgressPupup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */; };
+		49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */; };
 		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
 		491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AE29C0942F000D138A /* PhotosLibrary.swift */; };
 		491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491A6D2529F7B49800BC5990 /* UIImageHolder.swift */; };
@@ -45,7 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupup.swift; sourceTree = "<group>"; };
+		49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupUp.swift; sourceTree = "<group>"; };
 		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
 		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		491289AE29C0942F000D138A /* PhotosLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosLibrary.swift; sourceTree = "<group>"; };
@@ -215,7 +215,7 @@
 		497647F329C0C0EE001C3FE4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				49097FEF29E9718A0023E36F /* UICircleProgressPupup.swift */,
+				49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */,
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
 			);
@@ -340,7 +340,7 @@
 				49DA593129F0506000E5AB34 /* LoginSceneView.swift in Sources */,
 				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
-				49097FF029E9718A0023E36F /* UICircleProgressPupup.swift in Sources */,
+				49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
 				49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,

@@ -11,13 +11,12 @@ class FileSettings {
     static let photosFilePath = getDocumentsDirectory().appendingPathComponent("miniatures/")
 }
 
-
-fileprivate func getDocumentsDirectory() -> URL {
+private func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     return paths[0]
 }
 
-fileprivate func directoryExistsAtPath(_ path: String) -> Bool {
+private func directoryExistsAtPath(_ path: String) -> Bool {
     var isDirectory: ObjCBool = true
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
     return exists && isDirectory.boolValue
@@ -42,11 +41,10 @@ extension PhotosLibrariesCollection {
     }
 }
 
-
 func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
     let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(lib.id.uuidString).json")
     do {
-        
+
         lib.lastChangeDate = changeDate
         let stringData = try JSONEncoder().encode(lib)
         do {
@@ -74,16 +72,16 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
             return nil
         }
     }
-    
+
     let stringData = try? String(contentsOf: FileSettings.librariesStoragePath).data(using: .utf8)
     guard let stringData else {
         let newLibrariesCollection = PhotosLibrariesCollection()
         _ = newLibrariesCollection.saveLibraryCollection()
         return newLibrariesCollection
     }
-    
+
     let librariesCollection = try! JSONDecoder().decode(PhotosLibrariesCollection.self, from: stringData)
-    
+
     return librariesCollection
 }
 
@@ -91,10 +89,10 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
     let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(id.uuidString).json")
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
     print("Library loaded in path \(libraryPath)")
-    
+
     guard let stringData else { return nil }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
-    
+
 //    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
 //        var allOk = true
 //
@@ -114,7 +112,7 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
 //            _ = saveLibrary(lib: library)
 //        }
 //    }
-        
+
     return library
 }
 
@@ -132,24 +130,24 @@ func readFullImageFromFile(id: UUID) -> UIImage? {
 }
 
 func writeImageToFile(uiImage: UIImage) -> UUID? {
-    
+
     let dataFull = uiImage.heic()
-    
+
     let size: CGSize
     if uiImage.size.width > uiImage.size.height {
-        let coef = uiImage.size.width / 512
-        size = CGSize(width: 512, height: uiImage.size.height / coef)
+        let coefficient = uiImage.size.width / 512
+        size = CGSize(width: 512, height: uiImage.size.height / coefficient)
     } else {
-        let coef = uiImage.size.height / 512
-        size = CGSize(width: uiImage.size.width / coef, height: 512)
+        let coefficient = uiImage.size.height / 512
+        size = CGSize(width: uiImage.size.width / coefficient, height: 512)
     }
-    
+
     let renderer = UIGraphicsImageRenderer(size: size)
-    let uiImageMini = renderer.image { (context) in
+    let uiImageMini = renderer.image { (_) in
         uiImage.draw(in: CGRect(origin: .zero, size: size))
     }
     let data = uiImageMini.heic(compressionQuality: 0.7)
-    
+
     if !directoryExistsAtPath(FileSettings.photosFilePath.path()) {
         do {
             try FileManager().createDirectory(at: FileSettings.photosFilePath, withIntermediateDirectories: true)
@@ -171,7 +169,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
 
     if let data, let dataFull {
         let uuid = UUID()
-        
+
         let filepath = FileSettings.photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
         do {
             try data.write(to: filepath)
@@ -179,7 +177,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
             print(error)
         }
         print("New image miniature file created in path \(filepath)")
-        
+
         let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(uuid.uuidString + ".heic")
         do {
             try dataFull.write(to: filepathFull)
@@ -190,10 +188,9 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
         return uuid
     }
 
-    
     return nil
 }
-func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) {
+func removeImageFile(id: UUID, fileExtension: PhotoExtension) -> (Bool, Error?) {
     let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
     let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(id.uuidString + ".heic")
     do {
@@ -207,7 +204,6 @@ func removeImageFile(id: UUID, fileExtention: PhotoExtention) -> (Bool, Error?) 
     }
 }
 
-
 // Cloud functions
 
 extension OnlineFunctions {
@@ -215,7 +211,7 @@ extension OnlineFunctions {
         let storage = Storage.storage()
         let photosFullRef = storage.reference().child("photos")
         let photosRef = storage.reference().child("miniatures")
-        
+
         let filename = "\(ph.id.uuidString).heic"
         let filepath = FileSettings.photosFilePath.appendingPathComponent(filename)
         let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(filename)
@@ -231,28 +227,26 @@ extension OnlineFunctions {
             if let error {
                 print(error)
                 competition(nil, nil, error)
-            }
-            else {
+            } else {
                 print("\(String(describing: metadata?.name))")
             }
-            
+
         }
         competition(uploadTask, uploadFullTask, nil)
-        
+
     }
-    
+
     static func downloadImage(id: UUID, fullSize: Bool, competition: @escaping (StorageDownloadTask?, Error?) -> Void) {
         let storage = Storage.storage()
-        
+
         let filename = "\(id.uuidString).heic"
-        
+
         let photosRef = storage.reference().child("photos/\(filename)")
         let filepath = FileSettings.photosFullFilePath.appendingPathComponent(filename)
 
         let photosRefMini = storage.reference().child("miniatures/\(filename)")
         let filepathMini = FileSettings.photosFilePath.appendingPathComponent(filename)
-        
-        
+
         photosRefMini.write(toFile: filepathMini) { url, error in
             if let error {
                 print(error)
@@ -261,7 +255,7 @@ extension OnlineFunctions {
                 print("Image (mini) downloaded to \(String(describing: url))")
             }
         }
-        
+
         let downloadTask = photosRef.write(toFile: filepath) { url, error in
             if let error {
                 print(error)
@@ -272,8 +266,7 @@ extension OnlineFunctions {
         }
         competition(downloadTask, nil)
     }
-    
-    
+
     // For separate downloading
 //    static func downloadImage(id: UUID, fullSize: Bool, competition: @escaping (StorageDownloadTask?, Error?) -> Void) {
 //        let storage = Storage.storage()
@@ -300,13 +293,13 @@ extension OnlineFunctions {
 //        }
 //        competition(downloadTask, nil)
 //    }
-    
+
     static func removeOnlineImage(photo ph: Photo, competition: @escaping (Error?) -> Void) {
         let storage = Storage.storage()
-        
+
         let photosFullRef = storage.reference().child("photos")
         let photosRef = storage.reference().child("miniatures")
-        
+
         let filename = "\(ph.id.uuidString).heic"
         photosRef.child(filename).delete { error in
             if let error {

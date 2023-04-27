@@ -10,21 +10,23 @@ struct AppNavigator: View {
     @State var applicationSettings = ApplicationSettings()
     @State var uiImageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
-    @EnvironmentObject var dispayingSettings: DispayingSettings
-    
+    @EnvironmentObject var sceneSettings: SceneSettings
+
     init() {
         UITabBar.appearance().isHidden = true
     }
-    
+
     var body: some View {
         ZStack {
             if loaded {
                 if applicationSettings.isFirstLaunch {
                     LoginSceneView(applicationSettings: $applicationSettings)
                 } else if let photosLibrary {
-                    ContentView(photosLibrary: photosLibrary, applicationSettings: $applicationSettings, uiImageHolder: $uiImageHolder)
+                    ContentView(photosLibrary: photosLibrary,
+                            applicationSettings: $applicationSettings, uiImageHolder: $uiImageHolder)
                 } else if librariesCollection != nil {
-                    LibrariesSelectorView(applicationSettings: $applicationSettings, librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
+                    LibrariesSelectorView(applicationSettings: $applicationSettings,
+                            librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
                 } else {
                     ProgressView("Loading...")
                         .progressViewStyle(.circular)
