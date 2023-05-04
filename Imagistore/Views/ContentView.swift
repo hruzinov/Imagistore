@@ -45,7 +45,7 @@ struct ContentView: View {
             }
         })
         .onAppear {
-            photosLibrary.clearBin { err in
+            photosLibrary.clearBin(photosLibrary) { err in
                 if let err {
                     sceneSettings.errorAlertData = err.localizedDescription
                     sceneSettings.isShowingErrorAlert.toggle()

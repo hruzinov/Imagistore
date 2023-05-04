@@ -14,7 +14,7 @@ struct UIAlbumBlockView: View {
         HStack {
             if photos.last != nil {
                 let lastImage = photos.last!
-                if let uiImage = uiImageHolder.getUiImage(photo: lastImage) {
+                if let uiImage = uiImageHolder.getUiImage(lastImage, lib: library) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)

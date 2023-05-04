@@ -13,11 +13,11 @@ class UIImageHolder {
         fullsizeArr = []
     }
 
-    func getUiImage(photo: Photo) -> UIImage? {
+    func getUiImage(_ photo: Photo, lib: PhotosLibrary) -> UIImage? {
         if let uiImage = data[photo.id] {
             return uiImage
         } else {
-            let uiImage = readImageFromFile(id: photo.id)
+            let uiImage = readImageFromFile(photo.id, library: lib)
             guard let uiImage else {
                 print("err")
                 return nil
@@ -27,11 +27,11 @@ class UIImageHolder {
         }
     }
 
-    func getFullUiImage(photo: Photo) -> UIImage? {
+    func getFullUiImage(_ photo: Photo, lib: PhotosLibrary) -> UIImage? {
         if fullsizeArr.contains(where: { $0 == photo.id }), let uiImage = data[photo.id] {
             return uiImage
         } else {
-            let uiImage = readFullImageFromFile(id: photo.id)
+            let uiImage = readFullImageFromFile(photo.id, library: lib)
             guard let uiImage else {
                 print("err")
                 return nil

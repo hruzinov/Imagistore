@@ -41,6 +41,7 @@ struct AppNavigator: View {
         }
         .onAppear {
             applicationSettings.load()
+            print(FileSettings.librariesStoragePath)
             DispatchQueue.main.async {
                 withAnimation {
                     if let libId = applicationSettings.lastSelectedLibrary {

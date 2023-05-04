@@ -166,7 +166,7 @@ struct GallerySceneView: View {
                     }
                 }
             case .permanent:
-                library.permanentRemove(selectedImagesArray) { err in
+                library.permanentRemove(selectedImagesArray, library: library) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
@@ -210,7 +210,7 @@ struct GallerySceneView: View {
                             fileExtension = .jpg
                         }
 
-                        let uuid = writeImageToFile(uiImage: uiImage)
+                        let uuid = writeImageToFile(uiImage: uiImage, library: library)
                         if let uuid {
                             newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate,
                                     importDate: Date(), fileExtension: fileExtension, keywords: []))
@@ -261,7 +261,7 @@ struct GallerySceneView: View {
                     } else {
                         fileExtension = .jpg
                     }
-                    let uuid = writeImageToFile(uiImage: uiImage)
+                    let uuid = writeImageToFile(uiImage: uiImage, library: library)
                     if let uuid {
                         newPhotos.append(
                                 Photo(

@@ -24,7 +24,7 @@ struct ImageDetailedView: View {
             VStack {
                 TabView(selection: $selectedImage) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.getFullUiImage(photo: item) {
+                        if let uiImage = uiImageHolder.getFullUiImage(item, lib: library) {
                             ZStack {
                                 Image(uiImage: uiImage)
                                     .resizable()
@@ -53,7 +53,7 @@ struct ImageDetailedView: View {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 2) {
                         ForEach(photos) { item in
-                            if let uiImage = uiImageHolder.getUiImage(photo: item) {
+                            if let uiImage = uiImageHolder.getUiImage(item, lib: library) {
                                 Button {
                                     self.selectedImage = item.id
                                     scrollTo = selectedImage
@@ -140,7 +140,7 @@ struct ImageDetailedView: View {
                     }
                 }
             case .permanent:
-                library.permanentRemove([changedPhoto]) { err in
+                library.permanentRemove([changedPhoto], library: library) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()

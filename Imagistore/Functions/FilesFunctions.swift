@@ -5,14 +5,22 @@
 import SwiftUI
 
 class FileSettings {
-    static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
-    static let photosFullFilePath = getDocumentsDirectory().appendingPathComponent("photos/")
-    static let photosFilePath = getDocumentsDirectory().appendingPathComponent("miniatures/")
+    static let librariesFileStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
+    static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries/")
 }
 
 private func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     return paths[0]
+}
+private func libraryPath(_ lib: UUID) -> URL {
+    return FileSettings.librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
+}
+private func photosFullFilePath(_ lib: UUID) -> URL {
+    return libraryPath(lib).appendingPathComponent("photos/")
+}
+private func photosFilePath(_ lib: UUID) -> URL {
+    return libraryPath(lib).appendingPathComponent("miniatures/")
 }
 
 private func directoryExistsAtPath(_ path: String) -> Bool {
@@ -26,7 +34,7 @@ extension PhotosLibrariesCollection {
         do {
             let stringData = try JSONEncoder().encode(self)
             do {
-                try stringData.write(to: FileSettings.librariesStoragePath)
+                try stringData.write(to: FileSettings.librariesFileStoragePath)
                 print("Libraries collection saved")
             } catch {
                 print(error)
@@ -41,13 +49,21 @@ extension PhotosLibrariesCollection {
 }
 
 func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
-    let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(lib.id.uuidString).json")
+    let libraryPath = libraryPath(lib.id)
+    if !directoryExistsAtPath(libraryPath.path()) {
+        do {
+            try FileManager().createDirectory(at: libraryPath, withIntermediateDirectories: true)
+            print("Created directory for library \(libraryPath)")
+        } catch {
+            print(error)
+            return nil
+        }
+    }
     do {
-
         lib.lastChangeDate = changeDate
         let stringData = try JSONEncoder().encode(lib)
         do {
-            try stringData.write(to: libraryPath)
+            try stringData.write(to: libraryPath.appendingPathComponent("library.json"))
             print("Library saved")
         } catch {
             print(error)
@@ -61,7 +77,7 @@ func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
 }
 
 func loadLibrariesCollection() -> PhotosLibrariesCollection? {
-    let generalLibrariesPath = getDocumentsDirectory().appendingPathComponent("/libraries/")
+    let generalLibrariesPath = FileSettings.librariesStoragePath
     if !directoryExistsAtPath(generalLibrariesPath.path()) {
         do {
             try FileManager().createDirectory(at: generalLibrariesPath, withIntermediateDirectories: true)
@@ -85,7 +101,7 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
 }
 
 func loadLibrary(id: UUID) -> PhotosLibrary? {
-    let libraryPath = getDocumentsDirectory().appendingPathComponent("/libraries/\(id.uuidString).json")
+    let libraryPath = libraryPath(id).appendingPathComponent("library.json")
     let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
     print("Library loaded in path \(libraryPath)")
 
@@ -115,21 +131,20 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
     return library
 }
 
-func readImageFromFile(id: UUID) -> UIImage? {
-    let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
+func readImageFromFile(_ id: UUID, library: PhotosLibrary) -> UIImage? {
+    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
 }
-func readFullImageFromFile(id: UUID) -> UIImage? {
-    let filepath = FileSettings.photosFullFilePath.appendingPathComponent(id.uuidString + ".heic")
+func readFullImageFromFile(_ id: UUID, library: PhotosLibrary) -> UIImage? {
+    let filepath = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
     return uiImage
 }
 
-func writeImageToFile(uiImage: UIImage) -> UUID? {
-
+func writeImageToFile(uiImage: UIImage, library: PhotosLibrary) -> UUID? {
     let dataFull = uiImage.heic()
 
     let size: CGSize
@@ -147,18 +162,18 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
     }
     let data = uiImageMini.heic(compressionQuality: 0.7)
 
-    if !directoryExistsAtPath(FileSettings.photosFilePath.path()) {
+    if !directoryExistsAtPath(photosFilePath(library.id).path()) {
         do {
-            try FileManager().createDirectory(at: FileSettings.photosFilePath, withIntermediateDirectories: true)
+            try FileManager().createDirectory(at: photosFilePath(library.id), withIntermediateDirectories: true)
             print("Created directory for photos")
         } catch {
             print(error)
             return nil
         }
     }
-    if !directoryExistsAtPath(FileSettings.photosFullFilePath.path()) {
+    if !directoryExistsAtPath(photosFullFilePath(library.id).path()) {
         do {
-            try FileManager().createDirectory(at: FileSettings.photosFullFilePath, withIntermediateDirectories: true)
+            try FileManager().createDirectory(at: photosFullFilePath(library.id), withIntermediateDirectories: true)
             print("Created directory for full size photos")
         } catch {
             print(error)
@@ -168,8 +183,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
 
     if let data, let dataFull {
         let uuid = UUID()
-
-        let filepath = FileSettings.photosFilePath.appendingPathComponent(uuid.uuidString + ".heic")
+        let filepath = photosFilePath(library.id).appendingPathComponent(uuid.uuidString + ".heic")
         do {
             try data.write(to: filepath)
         } catch {
@@ -177,7 +191,7 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
         }
         print("New image miniature file created in path \(filepath)")
 
-        let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(uuid.uuidString + ".heic")
+        let filepathFull = photosFullFilePath(library.id).appendingPathComponent(uuid.uuidString + ".heic")
         do {
             try dataFull.write(to: filepathFull)
         } catch {
@@ -189,9 +203,9 @@ func writeImageToFile(uiImage: UIImage) -> UUID? {
 
     return nil
 }
-func removeImageFile(id: UUID, fileExtension: PhotoExtension) -> (Bool, Error?) {
-    let filepath = FileSettings.photosFilePath.appendingPathComponent(id.uuidString + ".heic")
-    let filepathFull = FileSettings.photosFullFilePath.appendingPathComponent(id.uuidString + ".heic")
+func removeImageFile(_ id: UUID, library: PhotosLibrary) -> (Bool, Error?) {
+    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
+    let filepathFull = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         try FileManager.default.removeItem(atPath: filepathFull.path)

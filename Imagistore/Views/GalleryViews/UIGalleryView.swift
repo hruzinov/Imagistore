@@ -31,7 +31,7 @@ struct UIGalleryView: View {
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.getUiImage(photo: item) {
+                        if let uiImage = uiImageHolder.getUiImage(item, lib: library) {
                             GeometryReader { gr in
                                 let size = gr.size
                                 VStack {
@@ -91,13 +91,7 @@ struct UIGalleryView: View {
                 VStack {
                     if isMainLibraryScreen {
                         Text("\(photos.count) Photos").bold()
-                        if sceneSettings.syncProgress == 1.0 {
-                            Text("Synced").font(.caption)
-                        } else {
-                            ProgressView(value: sceneSettings.syncProgress).padding(.horizontal, 50)
-                        }
                     }
-
                 }
                 .padding(.vertical, 10)
 

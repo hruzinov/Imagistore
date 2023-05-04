@@ -58,10 +58,10 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         let err = saveLibrary(lib: self)
         competition(err)
     }
-    func permanentRemove(_ images: [Photo], competition: @escaping (Error?) -> Void) {
+    func permanentRemove(_ images: [Photo], library: PhotosLibrary, competition: @escaping (Error?) -> Void) {
         for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
-                let (completed, error) = removeImageFile(id: item.id, fileExtension: item.fileExtension)
+                let (completed, error) = removeImageFile(item.id, library: library)
                 if completed {
                     photos.remove(at: photoIndex)
                 } else {
@@ -73,7 +73,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         let err = saveLibrary(lib: self)
         competition(err)
     }
-    func clearBin(competition: @escaping (Error?) -> Void) {
+    func clearBin(_ lib: PhotosLibrary, competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
         for item in photos {
             if item.status == .deleted,
@@ -83,7 +83,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         if forDeletion.count > 0 {
-            permanentRemove(forDeletion) { error in
+            permanentRemove(forDeletion, library: lib) { error in
                 competition(error)
             }
         }
