@@ -131,17 +131,17 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
     return library
 }
 
-func readImageFromFile(_ id: UUID, library: PhotosLibrary) -> UIImage? {
+func readImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) {
     let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    return uiImage
+    completion(uiImage)
 }
-func readFullImageFromFile(_ id: UUID, library: PhotosLibrary) -> UIImage? {
+func readFullImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) {
     let filepath = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    return uiImage
+    completion(uiImage)
 }
 
 func writeImageToFile(uiImage: UIImage, library: PhotosLibrary) -> UUID? {

@@ -7,14 +7,14 @@ import SwiftUI
 struct UIAlbumBlockView: View {
     @ObservedObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
-    @Binding var uiImageHolder: UIImageHolder
+    @ObservedObject var uiImageHolder: UIImageHolder
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: .normal) }
 
     var body: some View {
         HStack {
             if photos.last != nil {
                 let lastImage = photos.last!
-                if let uiImage = uiImageHolder.getUiImage(lastImage, lib: library) {
+                if let uiImage = uiImageHolder.data[lastImage.id] {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -23,6 +23,11 @@ struct UIAlbumBlockView: View {
                         .clipped()
                         .aspectRatio(1, contentMode: .fit)
                         .cornerRadius(5)
+                } else {
+                    ProgressView().progressViewStyle(.circular)
+                        .task {
+                            uiImageHolder.getUiImage(lastImage, lib: library)
+                        }
                 }
             } else {
                 VStack {

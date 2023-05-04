@@ -11,7 +11,7 @@ struct GallerySceneView: View {
     @ObservedObject var library: PhotosLibrary
 
     @Binding var sortingSelector: PhotosSortArgument
-    @Binding var uiImageHolder: UIImageHolder
+    @ObservedObject var uiImageHolder: UIImageHolder
     @Binding var navToRoot: Bool
 
     @State private var importSelectedItems = [PhotosPickerItem]()
@@ -34,7 +34,7 @@ struct GallerySceneView: View {
                             library: library,
                             photosSelector: photosSelector,
                             sortingSelector: $sortingSelector,
-                            uiImageHolder: $uiImageHolder,
+                            uiImageHolder: uiImageHolder,
                             scrollTo: $scrollTo,
                             selectingMode: $selectingMode,
                             selectedImagesArray: $selectedImagesArray,

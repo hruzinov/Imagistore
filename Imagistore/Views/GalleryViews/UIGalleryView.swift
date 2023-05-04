@@ -11,7 +11,7 @@ struct UIGalleryView: View {
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @Binding var uiImageHolder: UIImageHolder
+    @ObservedObject var uiImageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
@@ -31,7 +31,7 @@ struct UIGalleryView: View {
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.getUiImage(item, lib: library) {
+                        if let uiImage = uiImageHolder.data[item.id] {
                             GeometryReader { gr in
                                 let size = gr.size
                                 VStack {
@@ -77,14 +77,20 @@ struct UIGalleryView: View {
                                                 }
                                             })
                                     }
-
                                 }
                                 .navigationDestination(isPresented: $goToDetailedView) {
-                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
+                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
                                 }
                             }
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)
+                        } else {
+                            ProgressView().progressViewStyle(.circular)
+                                .task {
+//                                    Task {
+                                        uiImageHolder.getUiImage(item, lib: library)
+//                                    }.receive(on:)
+                                }
                         }
                     }
                 }

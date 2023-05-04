@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-class UIImageHolder {
+class UIImageHolder: ObservableObject {
     var data: [UUID: UIImage]
     private var fullsizeArr: [UUID]
 
@@ -13,30 +13,41 @@ class UIImageHolder {
         fullsizeArr = []
     }
 
-    func getUiImage(_ photo: Photo, lib: PhotosLibrary) -> UIImage? {
-        if let uiImage = data[photo.id] {
+    func fullUiImage(_ id: UUID) -> UIImage? {
+        if fullsizeArr.contains(where: { $0 == id }), let uiImage = data[id] {
             return uiImage
         } else {
-            let uiImage = readImageFromFile(photo.id, library: lib)
-            guard let uiImage else {
-                return nil
-            }
-            data[photo.id] = uiImage
-            return uiImage
+            return nil
         }
     }
 
-    func getFullUiImage(_ photo: Photo, lib: PhotosLibrary) -> UIImage? {
-        if fullsizeArr.contains(where: { $0 == photo.id }), let uiImage = data[photo.id] {
-            return uiImage
-        } else {
-            let uiImage = readFullImageFromFile(photo.id, library: lib)
-            guard let uiImage else {
-                return nil
+    func getUiImage(_ photo: Photo, lib: PhotosLibrary) {
+//        if let uiImage = data[photo.id] {
+//        } else {
+        readImageFromFile(photo.id, library: lib) { uiImage in
+                if let uiImage {
+                    self.data[photo.id] = uiImage
+//                    DispatchQueue.main.async {
+                        self.objectWillChange.send()
+//                    }
+                }
             }
-            data.updateValue(uiImage, forKey: photo.id)
-            fullsizeArr.append(photo.id)
-            return uiImage
-        }
+//        }
+    }
+    func getFullUiImage(_ photo: Photo, lib: PhotosLibrary) {
+//        if fullsizeArr.contains(where: { $0 == photo.id }), let uiImage = data[photo.id] {
+////            completion(uiImage)
+//        } else {
+            readFullImageFromFile(photo.id, library: lib) { uiImage in
+                if let uiImage {
+                    self.data.updateValue(uiImage, forKey: photo.id)
+                    self.fullsizeArr.append(photo.id)
+//                    completion(uiImage)
+//                    DispatchQueue.main.async {
+                        self.objectWillChange.send()
+//                    },
+                }
+            }
+//        }
     }
 }

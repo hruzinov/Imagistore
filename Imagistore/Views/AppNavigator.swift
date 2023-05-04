@@ -8,7 +8,7 @@ struct AppNavigator: View {
     @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
-    @State var uiImageHolder: UIImageHolder = UIImageHolder()
+    @StateObject var uiImageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
     @EnvironmentObject var sceneSettings: SceneSettings
 
@@ -24,7 +24,7 @@ struct AppNavigator: View {
 //                } else
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
-                            applicationSettings: $applicationSettings, uiImageHolder: $uiImageHolder)
+                            applicationSettings: $applicationSettings, uiImageHolder: uiImageHolder)
                 } else if librariesCollection != nil {
                     LibrariesSelectorView(applicationSettings: $applicationSettings,
                             librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)

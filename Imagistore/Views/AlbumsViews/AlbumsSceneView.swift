@@ -9,7 +9,7 @@ struct AlbumsSceneView: View {
     @ObservedObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var navToRoot: Bool
-    @Binding var uiImageHolder: UIImageHolder
+    @ObservedObject var uiImageHolder: UIImageHolder
 
     var albums: [String] = []
 
@@ -27,10 +27,10 @@ struct AlbumsSceneView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
-                            GallerySceneView(library: library, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal)
+                            GallerySceneView(library: library, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal)
                         }, label: {
                             UIAlbumBlockView(library: library, sortingSelector: $sortingSelector,
-                                    uiImageHolder: $uiImageHolder)
+                                    uiImageHolder: uiImageHolder)
                         })
 
                     }
@@ -46,7 +46,7 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: library, sortingSelector: $sortingSelector, uiImageHolder: $uiImageHolder, navToRoot: $navToRoot, photosSelector: .deleted)
+                        GallerySceneView(library: library, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .deleted)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)

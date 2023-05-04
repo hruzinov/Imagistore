@@ -13,7 +13,7 @@ struct ImageDetailedView: View {
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @Binding var uiImageHolder: UIImageHolder
+    @ObservedObject var uiImageHolder: UIImageHolder
 
     @State var selectedImage: UUID
     @Binding var scrollTo: UUID?
@@ -24,7 +24,7 @@ struct ImageDetailedView: View {
             VStack {
                 TabView(selection: $selectedImage) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.getFullUiImage(item, lib: library) {
+                        if let uiImage = uiImageHolder.fullUiImage(item.id) {
                             ZStack {
                                 Image(uiImage: uiImage)
                                     .resizable()
@@ -42,6 +42,11 @@ struct ImageDetailedView: View {
                                         .padding(.horizontal, 10)
                                 }
                             }
+                        } else {
+                            ProgressView().progressViewStyle(.circular)
+                                .task {
+                                    uiImageHolder.getFullUiImage(item, lib: library)
+                                }
                         }
                     }
                 }
@@ -53,7 +58,7 @@ struct ImageDetailedView: View {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 2) {
                         ForEach(photos) { item in
-                            if let uiImage = uiImageHolder.getUiImage(item, lib: library) {
+                            if let uiImage = uiImageHolder.data[item.id] {
                                 Button {
                                     self.selectedImage = item.id
                                     scrollTo = selectedImage
@@ -77,6 +82,11 @@ struct ImageDetailedView: View {
                                             .id(item.id)
                                     }
                                 }
+                            } else {
+                                ProgressView().progressViewStyle(.circular)
+                                    .task {
+                                        uiImageHolder.getUiImage(item, lib: library)
+                                    }
                             }
                         }
                     }
