@@ -3,8 +3,6 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary

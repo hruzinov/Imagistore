@@ -19,9 +19,10 @@ struct AppNavigator: View {
     var body: some View {
         ZStack {
             if loaded {
-                if applicationSettings.isFirstLaunch {
-                    LoginSceneView(applicationSettings: $applicationSettings)
-                } else if let photosLibrary {
+//                if applicationSettings.isFirstLaunch {
+//                    LoginSceneView(applicationSettings: $applicationSettings)
+//                } else
+                if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
                             applicationSettings: $applicationSettings, uiImageHolder: $uiImageHolder)
                 } else if librariesCollection != nil {

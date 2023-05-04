@@ -4,8 +4,6 @@
 
 import SwiftUI
 import PhotosUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
@@ -136,9 +134,6 @@ struct GallerySceneView: View {
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
-            if isMainLibraryScreen, sceneSettings.appSettings.isOnlineMode {
-                synchronizeLibrary()
-            }
         }
         .onDisappear {
             if selectingMode {
@@ -239,33 +234,6 @@ struct GallerySceneView: View {
                         }
                     }
                 }
-                newPhotos.forEach { img in
-                    OnlineFunctions.uploadImage(photo: img) { task, taskFull, error in
-                        if let error {
-                            sceneSettings.errorAlertData = error.localizedDescription
-                            sceneSettings.isShowingErrorAlert.toggle()
-                        } else {
-                            task?.observe(.progress, handler: { snapshot in
-                                let progress = snapshot.progress!
-                                withAnimation {
-                                    sceneSettings.syncProgress =
-                                            Double(progress.completedUnitCount) /
-                                            Double(progress.totalUnitCount)
-                                }
-                            })
-                            task?.observe(.success, handler: { _ in
-                                taskFull?.observe(.progress, handler: { snapshot in
-                                    let progress = snapshot.progress!
-                                    withAnimation {
-                                        sceneSettings.syncProgress =
-                                                Double(progress.completedUnitCount) /
-                                                Double(progress.totalUnitCount)
-                                    }
-                                })
-                            })
-                        }
-                    }
-                }
             }
             importSelectedItems = []
         }
@@ -311,87 +279,5 @@ struct GallerySceneView: View {
             }
         }
         return newPhotos
-    }
-
-    private func synchronizeLibrary() {
-        OnlineFunctions.getSyncData(lib: library, competition: { toUpload, toDownload, error in
-            if let error {
-                sceneSettings.errorAlertData = error.localizedDescription
-                sceneSettings.isShowingErrorAlert.toggle()
-            } else {
-                if toUpload.count == 0 && toDownload.count == 0 {
-                    sceneSettings.syncProgress = 1
-                } else {
-                    // Adding data to online library and uploading
-                    if toUpload.count > 0 {
-                        syncToCloud(toUpload)
-                    }
-                    // Adding data to local library and downloading
-                    if toDownload.count > 0 {
-                        syncFromCloud(toDownload)
-                    }
-                }
-            }
-        })
-    }
-    private func syncToCloud(_ toUpload: [Photo]) {
-        OnlineFunctions.addPhotos(toUpload, lib: library) { error in
-            if let error {
-                sceneSettings.errorAlertData = error.localizedDescription
-                sceneSettings.isShowingErrorAlert.toggle()
-            } else {
-                toUpload.forEach { img in
-                    OnlineFunctions.uploadImage(photo: img) { task, taskFull, error in
-                        if let error {
-                            sceneSettings.errorAlertData = error.localizedDescription
-                            sceneSettings.isShowingErrorAlert.toggle()
-                        } else {
-                            task?.observe(.progress, handler: { snapshot in
-                                let progress = snapshot.progress!
-                                withAnimation {
-                                    sceneSettings.syncProgress =
-                                            Double(progress.completedUnitCount) /
-                                            Double(progress.totalUnitCount)
-                                }
-                            })
-                            task?.observe(.success, handler: { _ in
-                                taskFull?.observe(.progress, handler: { snapshot in
-                                    let progress = snapshot.progress!
-                                    withAnimation {
-                                        sceneSettings.syncProgress =
-                                                Double(progress.completedUnitCount) /
-                                                Double(progress.totalUnitCount)
-                                    }
-                                })
-                            })
-                        }
-                    }
-                }
-            }
-        }
-    }
-    private func syncFromCloud(_ toDownload: [Photo]) {
-        toDownload.forEach { img in
-            OnlineFunctions.downloadImage(id: img.id, fullSize: false) { task, error in
-                if let error {
-                    sceneSettings.errorAlertData = error.localizedDescription
-                    sceneSettings.isShowingErrorAlert.toggle()
-                } else {
-                    library.addImages([img]) { _, error in
-                        if let error {
-                            sceneSettings.errorAlertData = error.localizedDescription
-                            sceneSettings.isShowingErrorAlert.toggle()
-                        }
-                    }
-                    task?.observe(.progress, handler: { snapshot in
-                        let progress = snapshot.progress!
-                        withAnimation {
-                            sceneSettings.syncProgress =
-                                    Double(progress.completedUnitCount)/Double(progress.totalUnitCount)
-                        }
-                    })
-                }
-            }
-        }
     }
 }

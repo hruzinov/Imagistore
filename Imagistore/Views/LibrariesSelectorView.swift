@@ -3,8 +3,6 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 struct LibrariesSelectorView: View {
     @Environment(\.dismiss) var dismiss
@@ -12,7 +10,6 @@ struct LibrariesSelectorView: View {
     @Binding var applicationSettings: ApplicationSettings
     @Binding var librariesCollection: PhotosLibrariesCollection?
     @State var librariesArray: [PhotosLibrary] = []
-    @State private var libraryAvailable: [UUID: LibraryAvailable] = [:]
     @Binding var selectedLibrary: PhotosLibrary?
     @State private var isShowingAddLibSheet: Bool = false
 
@@ -33,18 +30,8 @@ struct LibrariesSelectorView: View {
                                     VStack(alignment: .leading) {
                                         HStack(spacing: 5) {
                                             Text(library.name).font(.title2).bold()
-                                            switch libraryAvailable[library.id] {
-                                            case .offline:
-                                                Image(systemName: "externaldrive")
-                                            case .online:
-                                                Image(systemName: "cloud")
-                                            case .both:
-                                                Image(systemName: "externaldrive.badge.icloud")
-                                            case .none:
-                                                Image(systemName: "exclamationmark.circle")
-                                            }
                                         }
-                                        Text("ID: \(library.id.uuidString)").font(.caption)
+//                                        Text("ID: \(library.id.uuidString)").font(.caption)
                                         Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
                                     }
                                     Spacer()
@@ -63,13 +50,12 @@ struct LibrariesSelectorView: View {
                 libsIds?.forEach { id in
                     if let library = loadLibrary(id: id) {
                         librariesArray.append(library)
-                        libraryAvailable[id] = .offline
                     }
                 }
 
-                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
-                    getOnlineLibraries(userUid: userUid)
-                }
+//                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
+//                    getOnlineLibraries(userUid: userUid)
+//                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -95,7 +81,6 @@ struct LibrariesSelectorView: View {
                         } else {
                             librariesCollection?.libraries.append(lib.id)
                             librariesArray.append(lib)
-                            libraryAvailable[lib.id] = .offline
                             let err = librariesCollection?.saveLibraryCollection()
                             if let err {
                                 print(err)
@@ -115,69 +100,10 @@ struct LibrariesSelectorView: View {
         })
     }
 
-    private func getOnlineLibraries(userUid: String) {
-        let db = Firestore.firestore()
-        let onlineLibrariesRef = db.collection("users").document(userUid)
-
-        onlineLibrariesRef.getDocument(as: DBUser.self) { result in
-            switch result {
-            case .success(let user):
-                let onlineLibrariesCollection = PhotosLibrariesCollection()
-                user.libraries.forEach { str in
-                    if let uuid = UUID(uuidString: str) {
-                        onlineLibrariesCollection.libraries.append(uuid)
-                    }
-                }
-
-                onlineLibrariesCollection.libraries.forEach({ id in
-                    if libraryAvailable[id] != nil {
-                        libraryAvailable[id] = .both
-                    } else {
-                        let onlineLibraryRef = db.collection("libraries").document(id.uuidString)
-
-                        onlineLibraryRef.getDocument(as: DBLibrary.self) { result in
-                            switch result {
-                            case .success(let library):
-                                if let uuid = UUID(uuidString: library.id) {
-                                    let locLibrary = PhotosLibrary(id: uuid, name: library.name, libraryVersion: library.libraryVersion, lastChangeDate: library.lastChangeDate,
-                                                                   photos: [])
-                                    librariesArray.append(locLibrary)
-                                    libraryAvailable[id] = .online
-                                }
-                            case .failure(let error):
-                                debugPrint(error)
-                            }
-                        }
-                    }
-                })
-
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
     private func librarySelected(_ library: PhotosLibrary) {
-        if libraryAvailable[library.id] == .offline {
-            if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
-                let db = Firestore.firestore()
-                let onlineUserRef = db.collection("users").document(userUid)
-                onlineUserRef.updateData(["libraries": FieldValue.arrayUnion([library.id.uuidString])])
-            }
-        } else if libraryAvailable[library.id] == .online {
-            librariesCollection?.libraries.append(library.id)
-            _ = librariesCollection?.saveLibraryCollection()
-            _ = saveLibrary(lib: library)
-        }
-
         applicationSettings.lastSelectedLibrary = library.id
         applicationSettings.save()
 
         selectedLibrary = library
-    }
-
-    private enum LibraryAvailable {
-        case online
-        case offline
-        case both
     }
 }

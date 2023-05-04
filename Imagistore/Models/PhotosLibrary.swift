@@ -33,12 +33,8 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             photos.append(item)
             count += 1
         }
-        if let err = saveLibrary(lib: self) {
-            competition(count, err)
-        }
-        OnlineFunctions.addPhotos(images, lib: self) { err in
-            competition(count, err)
-        }
+        let err = saveLibrary(lib: self)
+        competition(count, err)
     }
     func toBin(_ images: [Photo], competition: @escaping (Error?) -> Void) {
         for item in images {
@@ -48,12 +44,8 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        if let err = saveLibrary(lib: self) {
-            competition(err)
-        }
-        OnlineFunctions.toBin(images, lib: self) { err in
-            competition(err)
-        }
+        let err = saveLibrary(lib: self)
+        competition(err)
     }
     func recoverImages(_ images: [Photo], competition: @escaping (Error?) -> Void) {
         for item in images {
@@ -63,12 +55,8 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        if let err = saveLibrary(lib: self) {
-            competition(err)
-        }
-        OnlineFunctions.recoverImages(images, lib: self) { err in
-            competition(err)
-        }
+        let err = saveLibrary(lib: self)
+        competition(err)
     }
     func permanentRemove(_ images: [Photo], competition: @escaping (Error?) -> Void) {
         for item in images {
@@ -82,12 +70,8 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
             }
         }
         self.objectWillChange.send()
-        if let err = saveLibrary(lib: self) {
-            competition(err)
-        }
-        OnlineFunctions.permanentRemove(images, lib: self) { err in
-            competition(err)
-        }
+        let err = saveLibrary(lib: self)
+        competition(err)
     }
     func clearBin(competition: @escaping (Error?) -> Void) {
         var forDeletion = [Photo]()
