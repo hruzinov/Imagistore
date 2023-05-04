@@ -30,7 +30,7 @@ struct AlbumsSceneView: View {
                             GallerySceneView(library: library, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal)
                         }, label: {
                             UIAlbumBlockView(library: library, sortingSelector: $sortingSelector,
-                                    uiImageHolder: uiImageHolder)
+                                             uiImageHolder: uiImageHolder)
                         })
 
                     }

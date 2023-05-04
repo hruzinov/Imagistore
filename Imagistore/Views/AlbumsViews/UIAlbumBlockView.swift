@@ -9,7 +9,7 @@ struct UIAlbumBlockView: View {
     @Binding var sortingSelector: PhotosSortArgument
     @ObservedObject var uiImageHolder: UIImageHolder
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: .normal) }
-
+    
     var body: some View {
         HStack {
             if photos.last != nil {
@@ -26,7 +26,7 @@ struct UIAlbumBlockView: View {
                 } else {
                     ProgressView().progressViewStyle(.circular)
                         .task {
-                            uiImageHolder.getUiImage(lastImage, lib: library)
+                            await uiImageHolder.getUiImage(lastImage, lib: library)
                         }
                 }
             } else {

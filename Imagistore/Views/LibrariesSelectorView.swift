@@ -12,36 +12,36 @@ struct LibrariesSelectorView: View {
     @State var librariesArray: [PhotosLibrary] = []
     @Binding var selectedLibrary: PhotosLibrary?
     @State private var isShowingAddLibSheet: Bool = false
-
+    
     @State var newLibraryName: String = ""
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 Divider()
                 if librariesArray.count > 0 {
                     ForEach(librariesArray) { library in
-                            Button(action: {
-                                withAnimation {
-                                    librarySelected(library)
-                                }
-                            }, label: {
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        HStack(spacing: 5) {
-                                            Text(library.name).font(.title2).bold()
-                                        }
-//                                        Text("ID: \(library.id.uuidString)").font(.caption)
-                                        Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
+                        Button(action: {
+                            withAnimation {
+                                librarySelected(library)
+                            }
+                        }, label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    HStack(spacing: 5) {
+                                        Text(library.name).font(.title2).bold()
                                     }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
+                                    Text("ID: \(library.id.uuidString)").font(.caption)
+                                    Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
                                 }
-                                .foregroundColor(Color.primary)
-                            })
-                            .padding(.horizontal, 15)
-                            .padding(.vertical, 5)
-                            Divider()
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                            }
+                            .foregroundColor(Color.primary)
+                        })
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 5)
+                        Divider()
                     }
                 }
             }
@@ -52,10 +52,10 @@ struct LibrariesSelectorView: View {
                         librariesArray.append(library)
                     }
                 }
-
-//                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
-//                    getOnlineLibraries(userUid: userUid)
-//                }
+                
+                //                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
+                //                    getOnlineLibraries(userUid: userUid)
+                //                }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -64,7 +64,7 @@ struct LibrariesSelectorView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-
+                    
                 }
             }
             .navigationTitle("Libraries")
@@ -99,11 +99,11 @@ struct LibrariesSelectorView: View {
             }
         })
     }
-
+    
     private func librarySelected(_ library: PhotosLibrary) {
         applicationSettings.lastSelectedLibrary = library.id
         applicationSettings.save()
-
+        
         selectedLibrary = library
     }
 }

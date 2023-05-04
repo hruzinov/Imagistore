@@ -4,17 +4,15 @@
 
 import SwiftUI
 
-class FileSettings {
-    static let librariesFileStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
-    static let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries/")
-}
+private let librariesFileStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
+private let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries/")
 
 private func getDocumentsDirectory() -> URL {
     let paths = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
     return paths!
 }
 private func libraryPath(_ lib: UUID) -> URL {
-    return FileSettings.librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
+    return librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
 }
 private func photosFullFilePath(_ lib: UUID) -> URL {
     return libraryPath(lib).appendingPathComponent("photos/")
@@ -34,7 +32,7 @@ extension PhotosLibrariesCollection {
         do {
             let stringData = try JSONEncoder().encode(self)
             do {
-                try stringData.write(to: FileSettings.librariesFileStoragePath)
+                try stringData.write(to: librariesFileStoragePath)
                 print("Libraries collection saved")
             } catch {
                 print(error)
@@ -77,7 +75,7 @@ func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
 }
 
 func loadLibrariesCollection() -> PhotosLibrariesCollection? {
-    let generalLibrariesPath = FileSettings.librariesStoragePath
+    let generalLibrariesPath = librariesStoragePath
     if !directoryExistsAtPath(generalLibrariesPath.path()) {
         do {
             try FileManager().createDirectory(at: generalLibrariesPath, withIntermediateDirectories: true)
@@ -88,7 +86,7 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
         }
     }
 
-    let stringData = try? String(contentsOf: FileSettings.librariesFileStoragePath).data(using: .utf8)
+    let stringData = try? String(contentsOf: librariesFileStoragePath).data(using: .utf8)
     guard let stringData else {
         let newLibrariesCollection = PhotosLibrariesCollection()
         _ = newLibrariesCollection.saveLibraryCollection()
@@ -108,36 +106,36 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
     guard let stringData else { return nil }
     let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
 
-//    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
-//        var allOk = true
-//
-//        switch library.libraryVersion {
-//
-//        case 1:
-//            ///
-//
-//        default:
-//            print("Unknown library version: \(String(describing: library.libraryVersion))")
-//            allOk = false
-//        }
-//
-//        if allOk {
-//            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
-//            library.libraryVersion = PhotosLibrary.actualLibraryVersion
-//            _ = saveLibrary(lib: library)
-//        }
-//    }
+    //    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
+    //        var allOk = true
+    //
+    //        switch library.libraryVersion {
+    //
+    //        case 1:
+    //            ///
+    //
+    //        default:
+    //            print("Unknown library version: \(String(describing: library.libraryVersion))")
+    //            allOk = false
+    //        }
+    //
+    //        if allOk {
+    //            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
+    //            library.libraryVersion = PhotosLibrary.actualLibraryVersion
+    //            _ = saveLibrary(lib: library)
+    //        }
+    //    }
 
     return library
 }
 
-func readImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) {
+func readImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) async {
     let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}
     completion(uiImage)
 }
-func readFullImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) {
+func readFullImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) async {
     let filepath = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
     let uiImage = UIImage(contentsOfFile: filepath.path)
     if uiImage == nil {print("Image file not found in path: \(filepath)")}

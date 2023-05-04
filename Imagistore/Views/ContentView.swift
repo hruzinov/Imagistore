@@ -29,8 +29,8 @@ struct ContentView: View {
                 GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal, isMainLibraryScreen: true)
                     .tag(Tab.library)
                 AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                        navToRoot: $navToRoot, uiImageHolder: uiImageHolder)
-                    .tag(Tab.albums)
+                                navToRoot: $navToRoot, uiImageHolder: uiImageHolder)
+                .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {
                 CustomTabBar(selection: handler)
@@ -40,8 +40,8 @@ struct ContentView: View {
         .overlay(alignment: .center, content: {
             if sceneSettings.isShowingInfoBar {
                 UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
-                        progressValue: $sceneSettings.infoBarProgress,
-                        progressFinal: $sceneSettings.infoBarFinal)
+                                      progressValue: $sceneSettings.infoBarProgress,
+                                      progressFinal: $sceneSettings.infoBarFinal)
             }
         })
         .onAppear {

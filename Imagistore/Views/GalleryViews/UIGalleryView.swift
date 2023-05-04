@@ -31,10 +31,11 @@ struct UIGalleryView: View {
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.data[item.id] {
-                            GeometryReader { gr in
-                                let size = gr.size
-                                VStack {
+
+                        GeometryReader { gr in
+                            let size = gr.size
+                            VStack {
+                                if let uiImage = uiImageHolder.data[item.id] {
                                     Button {
                                         if selectingMode {
                                             if let index = selectedImagesArray.firstIndex(of: item) {
@@ -77,21 +78,21 @@ struct UIGalleryView: View {
                                                 }
                                             })
                                     }
-                                }
-                                .navigationDestination(isPresented: $goToDetailedView) {
-                                    ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
+                                } else {
+                                    ProgressView()
+                                        .progressViewStyle(.circular)
+                                        .frame(width: size.height, height: size.width, alignment: .center)
+                                        .task {
+                                            await uiImageHolder.getUiImage(item, lib: library)
+                                        }
                                 }
                             }
-                            .clipped()
-                            .aspectRatio(1, contentMode: .fit)
-                        } else {
-                            ProgressView().progressViewStyle(.circular)
-                                .task {
-//                                    Task {
-                                        uiImageHolder.getUiImage(item, lib: library)
-//                                    }.receive(on:)
-                                }
+                            .navigationDestination(isPresented: $goToDetailedView) {
+                                ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
+                            }
                         }
+                        .clipped()
+                        .aspectRatio(1, contentMode: .fit)
                     }
                 }
                 VStack {

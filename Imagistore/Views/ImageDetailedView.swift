@@ -45,7 +45,7 @@ struct ImageDetailedView: View {
                         } else {
                             ProgressView().progressViewStyle(.circular)
                                 .task {
-                                    uiImageHolder.getFullUiImage(item, lib: library)
+                                    await uiImageHolder.getFullUiImage(item, lib: library)
                                 }
                         }
                     }
@@ -85,7 +85,7 @@ struct ImageDetailedView: View {
                             } else {
                                 ProgressView().progressViewStyle(.circular)
                                     .task {
-                                        uiImageHolder.getUiImage(item, lib: library)
+                                        await uiImageHolder.getUiImage(item, lib: library)
                                     }
                             }
                         }
