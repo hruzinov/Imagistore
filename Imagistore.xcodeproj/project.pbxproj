@@ -52,13 +52,13 @@
 		491A6D2529F7B49800BC5990 /* UIImageHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageHolder.swift; sourceTree = "<group>"; };
 		49273B5E29BE378E00ECF488 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		49273B6329BE413E00ECF488 /* ImageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailedView.swift; sourceTree = "<group>"; };
-		493752F329BE2F7F006F9CD8 /* Gallerystic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gallerystic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		493752F329BE2F7F006F9CD8 /* Imagistore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Imagistore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerysticApp.swift; sourceTree = "<group>"; };
 		493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerySceneView.swift; sourceTree = "<group>"; };
 		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4937530629BE3202006F9CD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		493E5CEC29EAE4B2008A1A38 /* Gallerystic.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Gallerystic.entitlements; sourceTree = "<group>"; };
+		493E5CEC29EAE4B2008A1A38 /* Imagistore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Imagistore.entitlements; sourceTree = "<group>"; };
 		495662B629F13F8900B42928 /* DatabaseObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseObjects.swift; sourceTree = "<group>"; };
 		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFunctions.swift; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 		493752EA29BE2F7F006F9CD8 = {
 			isa = PBXGroup;
 			children = (
-				493752F529BE2F7F006F9CD8 /* Gallerystic */,
+				493752F529BE2F7F006F9CD8 /* Imagistore */,
 				493752F429BE2F7F006F9CD8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,15 +157,15 @@
 		493752F429BE2F7F006F9CD8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				493752F329BE2F7F006F9CD8 /* Gallerystic.app */,
+				493752F329BE2F7F006F9CD8 /* Imagistore.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		493752F529BE2F7F006F9CD8 /* Gallerystic */ = {
+		493752F529BE2F7F006F9CD8 /* Imagistore */ = {
 			isa = PBXGroup;
 			children = (
-				493E5CEC29EAE4B2008A1A38 /* Gallerystic.entitlements */,
+				493E5CEC29EAE4B2008A1A38 /* Imagistore.entitlements */,
 				4937530429BE2F96006F9CD8 /* Other */,
 				4917584729F926EE00CD33D4 /* Extentions */,
 				49273B5B29BE370400ECF488 /* Models */,
@@ -175,7 +175,7 @@
 				4937530629BE3202006F9CD8 /* GoogleService-Info.plist */,
 				491289AD29C088CE000D138A /* Info.plist */,
 			);
-			path = Gallerystic;
+			path = Imagistore;
 			sourceTree = "<group>";
 		};
 		493752FC29BE2F81006F9CD8 /* Preview Content */ = {
@@ -245,9 +245,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		493752F229BE2F7F006F9CD8 /* Gallerystic */ = {
+		493752F229BE2F7F006F9CD8 /* Imagistore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Gallerystic" */;
+			buildConfigurationList = 4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Imagistore" */;
 			buildPhases = (
 				493752EF29BE2F7F006F9CD8 /* Sources */,
 				493752F029BE2F7F006F9CD8 /* Frameworks */,
@@ -257,7 +257,7 @@
 			);
 			dependencies = (
 			);
-			name = Gallerystic;
+			name = Imagistore;
 			packageProductDependencies = (
 				49DA592629F04CBB00E5AB34 /* FirebaseAuth */,
 				49DA592829F04CBB00E5AB34 /* FirebaseFirestore */,
@@ -265,7 +265,7 @@
 				49DA592C29F04CBB00E5AB34 /* FirebaseStorage */,
 			);
 			productName = Gallerystic;
-			productReference = 493752F329BE2F7F006F9CD8 /* Gallerystic.app */;
+			productReference = 493752F329BE2F7F006F9CD8 /* Imagistore.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -283,7 +283,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Gallerystic" */;
+			buildConfigurationList = 493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Imagistore" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -299,7 +299,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				493752F229BE2F7F006F9CD8 /* Gallerystic */,
+				493752F229BE2F7F006F9CD8 /* Imagistore */,
 			);
 		};
 /* End PBXProject section */
@@ -475,15 +475,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Gallerystic/Gallerystic.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_ASSET_PATHS = "\"Gallerystic/Other/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_FILE = Imagistore/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -495,7 +495,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -511,15 +511,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Gallerystic/Gallerystic.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_ASSET_PATHS = "\"Gallerystic/Other/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Gallerystic/Info.plist;
+				INFOPLIST_FILE = Imagistore/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -531,7 +531,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Gallerystic;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -545,7 +545,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Gallerystic" */ = {
+		493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Imagistore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				493752FF29BE2F81006F9CD8 /* Debug */,
@@ -554,7 +554,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Gallerystic" */ = {
+		4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Imagistore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4937530229BE2F81006F9CD8 /* Debug */,

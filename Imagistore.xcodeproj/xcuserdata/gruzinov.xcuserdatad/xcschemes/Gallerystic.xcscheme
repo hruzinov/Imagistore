@@ -14,9 +14,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "493752F229BE2F7F006F9CD8"
-               BuildableName = "Gallerystic.app"
-               BlueprintName = "Gallerystic"
-               ReferencedContainer = "container:Gallerystic.xcodeproj">
+               BuildableName = "Imagistore.app"
+               BlueprintName = "Imagistore"
+               ReferencedContainer = "container:Imagistore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -43,9 +43,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "493752F229BE2F7F006F9CD8"
-            BuildableName = "Gallerystic.app"
-            BlueprintName = "Gallerystic"
-            ReferencedContainer = "container:Gallerystic.xcodeproj">
+            BuildableName = "Imagistore.app"
+            BlueprintName = "Imagistore"
+            ReferencedContainer = "container:Imagistore.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -60,9 +60,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "493752F229BE2F7F006F9CD8"
-            BuildableName = "Gallerystic.app"
-            BlueprintName = "Gallerystic"
-            ReferencedContainer = "container:Gallerystic.xcodeproj">
+            BuildableName = "Imagistore.app"
+            BlueprintName = "Imagistore"
+            ReferencedContainer = "container:Imagistore.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
