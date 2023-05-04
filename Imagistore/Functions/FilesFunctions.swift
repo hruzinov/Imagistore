@@ -10,8 +10,8 @@ class FileSettings {
 }
 
 private func getDocumentsDirectory() -> URL {
-    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-    return paths[0]
+    let paths = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
+    return paths!
 }
 private func libraryPath(_ lib: UUID) -> URL {
     return FileSettings.librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
@@ -88,7 +88,7 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
         }
     }
 
-    let stringData = try? String(contentsOf: FileSettings.librariesStoragePath).data(using: .utf8)
+    let stringData = try? String(contentsOf: FileSettings.librariesFileStoragePath).data(using: .utf8)
     guard let stringData else {
         let newLibrariesCollection = PhotosLibrariesCollection()
         _ = newLibrariesCollection.saveLibraryCollection()

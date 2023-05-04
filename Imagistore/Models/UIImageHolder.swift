@@ -19,7 +19,6 @@ class UIImageHolder {
         } else {
             let uiImage = readImageFromFile(photo.id, library: lib)
             guard let uiImage else {
-                print("err")
                 return nil
             }
             data[photo.id] = uiImage
@@ -33,7 +32,6 @@ class UIImageHolder {
         } else {
             let uiImage = readFullImageFromFile(photo.id, library: lib)
             guard let uiImage else {
-                print("err")
                 return nil
             }
             data.updateValue(uiImage, forKey: photo.id)
