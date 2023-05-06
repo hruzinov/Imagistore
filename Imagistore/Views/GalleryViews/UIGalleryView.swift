@@ -32,8 +32,8 @@ struct UIGalleryView: View {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
                     ForEach(photos) { item in
 
-                        GeometryReader { gr in
-                            let size = gr.size
+                        GeometryReader { geometryReader in
+                            let size = geometryReader.size
                             VStack {
                                 if let uiImage = uiImageHolder.data[item.id] {
                                     Button {
@@ -56,13 +56,16 @@ struct UIGalleryView: View {
                                             .overlay(
                                                 ZStack {
                                                     if let deletionDate = item.deletionDate {
-                                                        LinearGradient(colors: [.black.opacity(0), .black], startPoint: .center, endPoint: .bottom)
+                                                        LinearGradient(colors: [.black.opacity(0), .black],
+                                                                startPoint: .center, endPoint: .bottom)
                                                         VStack(alignment: .center) {
                                                             Spacer()
                                                             Text(DateTimeFunctions.daysLeftString(deletionDate))
                                                                 .font(.caption)
                                                                 .padding(5)
-                                                                .foregroundColor(DateTimeFunctions.daysLeft(deletionDate) < 3 ? .red : .white)
+                                                                .foregroundColor(
+                                                                        DateTimeFunctions.daysLeft(deletionDate) < 3 ?
+                                                                                .red : .white)
                                                         }
                                                     }
                                                 }
@@ -88,7 +91,9 @@ struct UIGalleryView: View {
                                 }
                             }
                             .navigationDestination(isPresented: $goToDetailedView) {
-                                ImageDetailedView(library: library, photosSelector: photosSelector, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, selectedImage: openedImage, scrollTo: $scrollTo)
+                                ImageDetailedView(library: library, photosSelector: photosSelector,
+                                        sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder,
+                                        selectedImage: openedImage, scrollTo: $scrollTo)
                             }
                         }
                         .clipped()

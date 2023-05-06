@@ -27,7 +27,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         self.lastChangeDate = lastChangeDate
     }
     func addImages(_ images: [Photo], competition: @escaping (Int, Error?) -> Void) {
-        self.photos = loadLibrary(id: self.id)!.photos
+        photos = loadLibrary(id: id)!.photos
         var count = 0
         for item in images {
             photos.append(item)
@@ -37,7 +37,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         competition(count, err)
     }
     func toBin(_ images: [Photo], competition: @escaping (Error?) -> Void) {
-        self.photos = loadLibrary(id: self.id)!.photos
+        photos = loadLibrary(id: id)!.photos
         for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .deleted
@@ -49,7 +49,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         competition(err)
     }
     func recoverImages(_ images: [Photo], competition: @escaping (Error?) -> Void) {
-        self.photos = loadLibrary(id: self.id)!.photos
+        photos = loadLibrary(id: id)!.photos
         for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
                 photos[photoIndex].status = .normal
@@ -61,7 +61,7 @@ class PhotosLibrary: Identifiable, Codable, ObservableObject {
         competition(err)
     }
     func permanentRemove(_ images: [Photo], library: PhotosLibrary, competition: @escaping (Error?) -> Void) {
-        self.photos = loadLibrary(id: self.id)!.photos
+        photos = loadLibrary(id: id)!.photos
         for item in images {
             if let photoIndex = photos.firstIndex(of: item) {
                 let (completed, error) = removeImageFile(item.id, library: library)

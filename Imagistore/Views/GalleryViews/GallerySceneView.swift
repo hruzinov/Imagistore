@@ -43,9 +43,7 @@ struct GallerySceneView: View {
                 } else {
                     Text(Int.random(in: 1...100) == 7 ?
                             "These aren't the photos you're looking for." :
-                            "No photos or videos here")
-                            .font(.title2)
-                            .bold()
+                            "No photos or videos here").font(.title2).bold()
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -199,16 +197,12 @@ struct GallerySceneView: View {
                         if let localID = item.itemIdentifier {
                             let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
                             creationDate = asset?.creationDate ?? Date()
-                        } else {
-                            creationDate = Date()
-                        }
+                        } else { creationDate = Date() }
 
                         let fileExtension: PhotoExtension
                         if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
                             fileExtension = .png
-                        } else {
-                            fileExtension = .jpg
-                        }
+                        } else { fileExtension = .jpg }
 
                         let uuid = writeImageToFile(uiImage: uiImage, library: library)
                         if let uuid {
@@ -237,47 +231,5 @@ struct GallerySceneView: View {
             }
             importSelectedItems = []
         }
-    }
-    private func loadDataFromPhotos(_ importSelectedItems: [PhotosPickerItem]) async -> [Photo] {
-        var newPhotos = [Photo]()
-        var count = 0
-        for item in importSelectedItems {
-            withAnimation {
-                sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
-            }
-            if let data = try? await item.loadTransferable(type: Data.self) {
-                let uiImage = UIImage(data: data)
-                if let uiImage {
-                    let creationDate: Date
-                    if let localID = item.itemIdentifier {
-                        let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
-                        creationDate = asset?.creationDate ?? Date()
-                    } else {
-                        creationDate = Date()
-                    }
-                    let fileExtension: PhotoExtension
-                    if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
-                        fileExtension = .png
-                    } else {
-                        fileExtension = .jpg
-                    }
-                    let uuid = writeImageToFile(uiImage: uiImage, library: library)
-                    if let uuid {
-                        newPhotos.append(
-                                Photo(
-                                        id: uuid,
-                                        status: .normal,
-                                        creationDate: creationDate,
-                                        importDate: Date(),
-                                        fileExtension: fileExtension,
-                                        keywords: []
-                                )
-                        )
-                        count += 1
-                    }
-                }
-            }
-        }
-        return newPhotos
     }
 }

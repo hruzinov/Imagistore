@@ -13,7 +13,7 @@
 		491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491A6D2529F7B49800BC5990 /* UIImageHolder.swift */; };
 		49273B5F29BE378E00ECF488 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B5E29BE378E00ECF488 /* Photo.swift */; };
 		49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B6329BE413E00ECF488 /* ImageDetailedView.swift */; };
-		493752F729BE2F7F006F9CD8 /* GallerysticApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */; };
+		493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */; };
 		493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */; };
 		493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FA29BE2F81006F9CD8 /* Assets.xcassets */; };
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
@@ -44,7 +44,7 @@
 		49273B5E29BE378E00ECF488 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		49273B6329BE413E00ECF488 /* ImageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailedView.swift; sourceTree = "<group>"; };
 		493752F329BE2F7F006F9CD8 /* Imagistore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Imagistore.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerysticApp.swift; sourceTree = "<group>"; };
+		493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagistoreApp.swift; sourceTree = "<group>"; };
 		493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerySceneView.swift; sourceTree = "<group>"; };
 		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -151,7 +151,7 @@
 				49273B5B29BE370400ECF488 /* Models */,
 				491289AA29C080F1000D138A /* Functions */,
 				4937530529BE2FA6006F9CD8 /* Views */,
-				493752F629BE2F7F006F9CD8 /* GallerysticApp.swift */,
+				493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */,
 				491289AD29C088CE000D138A /* Info.plist */,
 			);
 			path = Imagistore;
@@ -308,7 +308,7 @@
 				49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */,
 				493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */,
 				49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */,
-				493752F729BE2F7F006F9CD8 /* GallerysticApp.swift in Sources */,
+				493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

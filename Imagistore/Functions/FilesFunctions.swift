@@ -12,13 +12,13 @@ private func getDocumentsDirectory() -> URL {
     return paths!
 }
 private func libraryPath(_ lib: UUID) -> URL {
-    return librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
+    librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
 }
 private func photosFullFilePath(_ lib: UUID) -> URL {
-    return libraryPath(lib).appendingPathComponent("photos/")
+    libraryPath(lib).appendingPathComponent("photos/")
 }
 private func photosFilePath(_ lib: UUID) -> URL {
-    return libraryPath(lib).appendingPathComponent("miniatures/")
+    libraryPath(lib).appendingPathComponent("miniatures/")
 }
 
 extension PhotosLibrariesCollection {
@@ -70,9 +70,15 @@ func loadLibrariesCollection() -> PhotosLibrariesCollection? {
         return newLibrariesCollection
     }
 
-    let librariesCollection = try! JSONDecoder().decode(PhotosLibrariesCollection.self, from: stringData)
+    var librariesCollection: PhotosLibrariesCollection?
 
-    return librariesCollection
+    do {
+        librariesCollection = try JSONDecoder().decode(PhotosLibrariesCollection.self, from: stringData)
+        return librariesCollection
+    } catch {
+        print(error)
+    }
+    return  librariesCollection
 }
 
 func loadLibrary(id: UUID) -> PhotosLibrary? {
@@ -81,7 +87,14 @@ func loadLibrary(id: UUID) -> PhotosLibrary? {
     print("Library loaded in path \(libraryPath)")
 
     guard let stringData else { return nil }
-    let library: PhotosLibrary = try! JSONDecoder().decode(PhotosLibrary.self, from: stringData)
+
+    var library: PhotosLibrary?
+
+    do {
+        library = try JSONDecoder().decode(PhotosLibrary.self, from: stringData)
+    } catch {
+        print(error)
+    }
 
     //    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
     //        var allOk = true

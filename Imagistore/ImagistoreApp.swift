@@ -5,9 +5,9 @@
 import SwiftUI
 
 @main
-struct GallerysticApp: App {
+struct ImagistoreApp: App {
     @State var uiImageHolder: UIImageHolder = UIImageHolder()
-    
+
     var body: some Scene {
         WindowGroup {
             AppNavigator()

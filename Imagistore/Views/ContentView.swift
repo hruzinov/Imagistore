@@ -26,7 +26,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal, isMainLibraryScreen: true)
+                GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector,
+                        uiImageHolder: uiImageHolder, navToRoot: $navToRoot,
+                        photosSelector: .normal, isMainLibraryScreen: true)
                     .tag(Tab.library)
                 AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
                                 navToRoot: $navToRoot, uiImageHolder: uiImageHolder)

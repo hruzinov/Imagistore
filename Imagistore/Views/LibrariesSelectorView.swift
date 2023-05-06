@@ -12,9 +12,9 @@ struct LibrariesSelectorView: View {
     @State var librariesArray: [PhotosLibrary] = []
     @Binding var selectedLibrary: PhotosLibrary?
     @State private var isShowingAddLibSheet: Bool = false
-    
+
     @State var newLibraryName: String = ""
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -32,7 +32,8 @@ struct LibrariesSelectorView: View {
                                         Text(library.name).font(.title2).bold()
                                     }
                                     Text("ID: \(library.id.uuidString)").font(.caption)
-                                    Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))").font(.caption)
+                                    Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))")
+                                            .font(.caption)
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")
@@ -52,7 +53,7 @@ struct LibrariesSelectorView: View {
                         librariesArray.append(library)
                     }
                 }
-                
+
                 //                if applicationSettings.isOnlineMode, let userUid = applicationSettings.userUid {
                 //                    getOnlineLibraries(userUid: userUid)
                 //                }
@@ -64,7 +65,7 @@ struct LibrariesSelectorView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    
+
                 }
             }
             .navigationTitle("Libraries")
@@ -99,11 +100,11 @@ struct LibrariesSelectorView: View {
             }
         })
     }
-    
+
     private func librarySelected(_ library: PhotosLibrary) {
         applicationSettings.lastSelectedLibrary = library.id
         applicationSettings.save()
-        
+
         selectedLibrary = library
     }
 }
