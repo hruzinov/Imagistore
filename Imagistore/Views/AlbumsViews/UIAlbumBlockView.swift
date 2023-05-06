@@ -5,9 +5,9 @@
 import SwiftUI
 
 struct UIAlbumBlockView: View {
-    @ObservedObject var library: PhotosLibrary
+    @StateObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: .normal) }
     
     var body: some View {

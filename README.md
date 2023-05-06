@@ -13,6 +13,5 @@ For support, email evhen@gruzinov.com
 - Add full albums functionality
 - Add tags functionality
 - Working with videos
-- Synchronization
 - Adaptation for iPads and macOS
 - Tests

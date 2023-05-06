@@ -8,12 +8,12 @@ struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var sceneSettings: SceneSettings
 
-    @ObservedObject var library: PhotosLibrary
+    @StateObject var library: PhotosLibrary
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
 
     @State var selectedImage: UUID
     @Binding var scrollTo: UUID?

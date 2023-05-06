@@ -8,10 +8,10 @@ import PhotosUI
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var sceneSettings: SceneSettings
-    @ObservedObject var library: PhotosLibrary
+    @StateObject var library: PhotosLibrary
 
     @Binding var sortingSelector: PhotosSortArgument
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
     @Binding var navToRoot: Bool
 
     @State private var importSelectedItems = [PhotosPickerItem]()

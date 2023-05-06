@@ -6,12 +6,12 @@ import SwiftUI
 
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
-    @ObservedObject var library: PhotosLibrary
+    @StateObject var library: PhotosLibrary
     var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]

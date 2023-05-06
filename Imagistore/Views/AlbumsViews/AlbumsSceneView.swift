@@ -6,10 +6,10 @@ import SwiftUI
 
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var library: PhotosLibrary
+    @StateObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var navToRoot: Bool
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
 
     var albums: [String] = []
 

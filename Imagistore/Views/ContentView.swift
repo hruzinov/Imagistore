@@ -13,7 +13,7 @@ struct ContentView: View {
     @State var navToRoot: Bool = false
 
     @Binding var applicationSettings: ApplicationSettings
-    @ObservedObject var uiImageHolder: UIImageHolder
+    @StateObject var uiImageHolder: UIImageHolder
 
     var handler: Binding<Tab> { Binding(
         get: { selectedTab },
