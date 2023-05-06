@@ -20,7 +20,7 @@ struct ImageDetailedView: View {
     @State var isPresentingConfirm: Bool = false
 
     var body: some View {
-        NavigationStack {
+        VStack {
             VStack {
                 TabView(selection: $selectedImage) {
                     ForEach(photos) { item in
@@ -82,7 +82,7 @@ struct ImageDetailedView: View {
                                             .id(item.id)
                                     }
                                 }
-                            } else {
+                            } else if !uiImageHolder.notFound.contains(item.id) {
                                 ProgressView().progressViewStyle(.circular)
                                     .task {
                                         await uiImageHolder.getUiImage(item, lib: library)
@@ -158,7 +158,11 @@ struct ImageDetailedView: View {
                 }
             }
 
-            if photos.count == 0 {
+            let clearedPhotos = photos.filter { photo in
+                !uiImageHolder.notFound.contains(photo.id)
+            }
+
+            if clearedPhotos.count == 0 {
                 DispatchQueue.main.async { dismiss() }
             } else if photoIndex == photos.count {
                 selectedImage = photos[photoIndex-1].id

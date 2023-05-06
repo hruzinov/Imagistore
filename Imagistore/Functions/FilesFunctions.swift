@@ -183,7 +183,13 @@ func removeImageFile(_ id: UUID, library: PhotosLibrary) -> (Bool, Error?) {
         print("Image file deleted from path \(filepath)")
         return (true, nil)
     } catch {
-        print(error)
-        return (false, error)
+        switch error._code {
+        case 4:
+            print("An obscure image has been deleted")
+            return (true, nil)
+        default:
+            print(error)
+            return (false, error)
+        }
     }
 }
