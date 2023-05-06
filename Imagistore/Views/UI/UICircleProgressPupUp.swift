@@ -17,7 +17,7 @@ struct UICircleProgressPupUp: View {
                 if progressFinal {
                     Image(systemName: progressValue == 1 ? "checkmark.circle" :
                             "checkmark.circle.trianglebadge.exclamationmark")
-                        .font(Font.system(size: 80))
+                    .font(Font.system(size: 80))
                 } else {
                     Circle()
                         .trim(from: 0, to: progressValue)
@@ -39,6 +39,6 @@ struct UICircleProgressPupUp: View {
 struct CircleProgressPupUp_Previews: PreviewProvider {
     static var previews: some View {
         UICircleProgressPupUp(progressText: .constant("test text"),
-                progressValue: .constant(0.5), progressFinal: .constant(true))
+                              progressValue: .constant(0.5), progressFinal: .constant(true))
     }
 }

@@ -13,7 +13,7 @@ struct ContentView: View {
     @State var navToRoot: Bool = false
 
     @Binding var applicationSettings: ApplicationSettings
-    @StateObject var uiImageHolder: UIImageHolder
+    @StateObject var imageHolder: UIImageHolder
 
     var handler: Binding<Tab> { Binding(
         get: { selectedTab },
@@ -27,11 +27,11 @@ struct ContentView: View {
         VStack {
             TabView(selection: handler) {
                 GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                        uiImageHolder: uiImageHolder, navToRoot: $navToRoot,
-                        photosSelector: .normal, isMainLibraryScreen: true)
-                    .tag(Tab.library)
+                                 imageHolder: imageHolder, navToRoot: $navToRoot,
+                                 photosSelector: .normal, isMainLibraryScreen: true)
+                .tag(Tab.library)
                 AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                                navToRoot: $navToRoot, uiImageHolder: uiImageHolder)
+                                navToRoot: $navToRoot, imageHolder: imageHolder)
                 .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {

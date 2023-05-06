@@ -13,7 +13,7 @@ struct UIGalleryView: View {
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @StateObject var uiImageHolder: UIImageHolder
+    @StateObject var imageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
@@ -44,81 +44,77 @@ struct UIGalleryView: View {
                                             selectedImagesArray.append(item)
                                         }
                                     } else {
-                                        if !uiImageHolder.notFound.contains(item.id) {
-                                            goToDetailedView.toggle()
+                                        if !imageHolder.notFound.contains(item.id) {
                                             openedImage = item.id
+                                            goToDetailedView.toggle()
                                         }
                                     }
                                 } label: {
-                                    if let uiImage = uiImageHolder.data[item.id] {
+                                    if let uiImage = imageHolder.data[item.id] {
                                         Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: size.height, height: size.width, alignment: .center)
-                                                .id(item.id)
-                                                .overlay(
-                                                        ZStack {
-                                                            if let deletionDate = item.deletionDate {
-                                                                LinearGradient(colors: [.black.opacity(0), .black],
-                                                                        startPoint: .center, endPoint: .bottom)
-                                                                VStack(alignment: .center) {
-                                                                    Spacer()
-                                                                    Text(DateTimeFunctions.daysLeftString(deletionDate))
-                                                                            .font(.caption)
-                                                                            .padding(5)
-                                                                            .foregroundColor(
-                                                                                    DateTimeFunctions
-                                                                                            .daysLeft(deletionDate) < 3
-                                                                                            ? .red : .white)
-                                                                }
-                                                            }
-                                                        }
-                                                )
-                                                .overlay(alignment: .bottomTrailing, content: {
-                                                    if selectedImagesArray.contains(item) {
-                                                        Image(systemName: "checkmark.circle.fill")
-                                                                .font(.title2)
-                                                                .foregroundColor(Color.accentColor)
-                                                                .padding(1)
-                                                                .background(Circle().fill(.white))
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: size.height, height: size.width, alignment: .center)
+                                            .id(item.id)
+                                            .overlay(
+                                                ZStack {
+                                                    if let deletionDate = item.deletionDate {
+                                                        LinearGradient(colors: [.black.opacity(0), .black],
+                                                                       startPoint: .center, endPoint: .bottom)
+                                                        VStack(alignment: .center) {
+                                                            Spacer()
+                                                            Text(DateTimeFunctions.daysLeftString(deletionDate))
+                                                                .font(.caption)
                                                                 .padding(5)
+                                                                .foregroundColor(
+                                                                    DateTimeFunctions
+                                                                        .daysLeft(deletionDate) < 3
+                                                                    ? .red : .white)
+                                                        }
                                                     }
-                                                })
-                                    } else if uiImageHolder.notFound.contains(item.id) {
+                                                }
+                                            )
+                                            .overlay(alignment: .bottomTrailing, content: {
+                                                if selectedImagesArray.contains(item) {
+                                                    Image(systemName: "checkmark.circle.fill")
+                                                        .font(.title2)
+                                                        .foregroundColor(Color.accentColor)
+                                                        .padding(1)
+                                                        .background(Circle().fill(.white))
+                                                        .padding(5)
+                                                }
+                                            })
+                                    } else if imageHolder.notFound.contains(item.id) {
                                         VStack(spacing: 10) {
                                             Image(systemName: "exclamationmark.triangle.fill").font(.title2)
                                             Text("Image not found").font(.callout)
                                         }
-                                                .frame(width: size.height, height: size.width, alignment: .center)
-                                                .foregroundColor(.primary)
-                                                .overlay(alignment: .bottomTrailing, content: {
-                                                    if selectedImagesArray.contains(item) {
-                                                        Image(systemName: "checkmark.circle.fill")
-                                                                .font(.title2)
-                                                                .foregroundColor(Color.accentColor)
-                                                                .padding(1)
-                                                                .background(Circle().fill(.white))
-                                                                .padding(5)
-                                                    }
-                                                })
+                                        .frame(width: size.height, height: size.width, alignment: .center)
+                                        .foregroundColor(.primary)
+                                        .overlay(alignment: .bottomTrailing, content: {
+                                            if selectedImagesArray.contains(item) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .font(.title2)
+                                                    .foregroundColor(Color.accentColor)
+                                                    .padding(1)
+                                                    .background(Circle().fill(.white))
+                                                    .padding(5)
+                                            }
+                                        })
                                     } else {
-                                        ProgressView()
-                                                .progressViewStyle(.circular)
-                                                .frame(width: size.height, height: size.width, alignment: .center)
-                                                .task {
-                                                    await uiImageHolder.getUiImage(item, lib: library)
-                                                }
+                                        Rectangle()
+                                            .fill(Color.gray)
+//                                            .progressViewStyle(.circular)
+//                                            .frame(width: size.height, height: size.width, alignment: .center)
+                                            .task {
+                                                await imageHolder.getUiImage(item, lib: library)
+                                            }
                                     }
                                 }
                             }
-                                    .navigationDestination(isPresented: $goToDetailedView) {
-                                        ImageDetailedView(library: library, photosSelector: photosSelector,
-                                                sortingSelector: $sortingSelector, uiImageHolder: uiImageHolder,
-                                                selectedImage: openedImage, scrollTo: $scrollTo)
-                                    }
                         }
-                                .clipped()
-                                .aspectRatio(1, contentMode: .fit)
+                        .clipped()
+                        .aspectRatio(1, contentMode: .fit)
                     }
                 }
                 VStack {
@@ -126,22 +122,31 @@ struct UIGalleryView: View {
                         Text("\(photos.count) Photos").bold()
                     }
                 }
-                        .padding(.vertical, 10)
+                .padding(.vertical, 10)
 
                 Rectangle()
-                        .frame(height: 50)
-                        .opacity(0)
-                        .id("bottomRectangle")
+                    .frame(height: 50)
+                    .opacity(0)
+                    .id("bottomRectangle")
             }
-                    .onChange(of: scrollTo) { _ in
-                        if let scrollTo {
-                            if sortingSelector == .importDate {
-                                scroll.scrollTo("bottomRectangle", anchor: .bottom)
-                            } else {
-                                scroll.scrollTo(scrollTo, anchor: .center)
-                            }
-                        }
+            .onChange(of: scrollTo) { _ in
+                if let scrollTo {
+                    if sortingSelector == .importDate {
+                        scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                    } else {
+                        scroll.scrollTo(scrollTo, anchor: .center)
                     }
+                }
+            }
+            .onChange(of: openedImage) { _ in
+                scroll.scrollTo(openedImage, anchor: .center)
+            }
+            .fullScreenCover(isPresented: $goToDetailedView) {
+                ImageDetailedView(library: library, photosSelector: photosSelector,
+                                  sortingSelector: $sortingSelector, imageHolder: imageHolder,
+                                  selectedImage: $openedImage)
+
+            }
         }
     }
 }

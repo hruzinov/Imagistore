@@ -11,7 +11,7 @@ struct GallerySceneView: View {
     @StateObject var library: PhotosLibrary
 
     @Binding var sortingSelector: PhotosSortArgument
-    @StateObject var uiImageHolder: UIImageHolder
+    @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
 
     @State private var importSelectedItems = [PhotosPickerItem]()
@@ -31,18 +31,18 @@ struct GallerySceneView: View {
                     img.status == photosSelector
                 }).count > 0 {
                     UIGalleryView(
-                            library: library,
-                            photosSelector: photosSelector,
-                            sortingSelector: $sortingSelector,
-                            uiImageHolder: uiImageHolder,
-                            scrollTo: $scrollTo,
-                            selectingMode: $selectingMode,
-                            selectedImagesArray: $selectedImagesArray,
-                            isMainLibraryScreen: isMainLibraryScreen
+                        library: library,
+                        photosSelector: photosSelector,
+                        sortingSelector: $sortingSelector,
+                        imageHolder: imageHolder,
+                        scrollTo: $scrollTo,
+                        selectingMode: $selectingMode,
+                        selectedImagesArray: $selectedImagesArray,
+                        isMainLibraryScreen: isMainLibraryScreen
                     )
                 } else {
                     Text(Int.random(in: 1...100) == 7 ?
-                            "These aren't the photos you're looking for." :
+                         "These aren't the photos you're looking for." :
                             "No photos or videos here").font(.title2).bold()
                 }
             }
@@ -109,18 +109,18 @@ struct GallerySceneView: View {
                                 .disabled(selectedImagesArray.count==0)
                             Spacer()
                             Text(selectedImagesArray.count > 0 ?
-                                    "\(selectedImagesArray.count) selected" : "Select photos"
+                                 "\(selectedImagesArray.count) selected" : "Select photos"
                             )
-                                    .bold()
+                            .bold()
                             Spacer()
                             Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
                                 .disabled(selectedImagesArray.count==0)
                         } else {
                             Spacer()
                             Text(selectedImagesArray.count > 0 ?
-                                    "\(selectedImagesArray.count) selected" : "Select photos"
+                                 "\(selectedImagesArray.count) selected" : "Select photos"
                             )
-                                    .bold()
+                            .bold()
                             Spacer()
                             Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
                                 .disabled(selectedImagesArray.count==0)
@@ -207,7 +207,7 @@ struct GallerySceneView: View {
                         let uuid = writeImageToFile(uiImage: uiImage, library: library)
                         if let uuid {
                             newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate,
-                                    importDate: Date(), fileExtension: fileExtension, keywords: []))
+                                                   importDate: Date(), fileExtension: fileExtension, keywords: []))
                             count += 1
                         }
                     }

@@ -9,56 +9,67 @@ struct ImageDetailedView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
 
     @StateObject var library: PhotosLibrary
-    var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: photosSelector) }
+    var photos: [Photo] {
+        library.sortedPhotos(by: sortingSelector, filter: photosSelector)
+    }
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingSelector: PhotosSortArgument
-    @StateObject var uiImageHolder: UIImageHolder
+    @StateObject var imageHolder: UIImageHolder
 
-    @State var selectedImage: UUID
-    @Binding var scrollTo: UUID?
+    @Binding var selectedImage: UUID
+    @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
 
     var body: some View {
         VStack {
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.backward")
+                }
+                Spacer()
+                if let photo = photos.first(where: {$0.id == selectedImage}), photo.fileExtension == .png {
+                    Text("PNG")
+                        .font(.callout)
+                        .foregroundColor(.gray)
+                }
+            }
+            .font(.title2)
+            .padding(.leading, 10)
+            .padding(.top, 10)
+
             VStack {
                 TabView(selection: $selectedImage) {
                     ForEach(photos) { item in
-                        if let uiImage = uiImageHolder.fullUiImage(item.id) {
-                            ZStack {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .pinchToZoom()
+                            VStack {
+                                if let uiImage = imageHolder.fullUiImage(item.id) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .pinchToZoom()
+                                } else if let uiImage = imageHolder.data[item.id] {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .pinchToZoom()
+                                        .task {
+                                            await imageHolder.getFullUiImage(item, lib: library)
+                                        }
+                                }
                             }
                             .frame(maxHeight: .infinity)
-                            .overlay(alignment: .bottomTrailing) {
-                                if item.fileExtension == .png {
-                                    Text("PNG")
-                                        .foregroundColor(.none)
-                                        .padding(.horizontal, 10)
-                                        .background(Color(UIColor.lightGray))
-                                        .cornerRadius(10)
-                                        .padding(.horizontal, 10)
-                                }
-                            }
-                        } else {
-                            ProgressView().progressViewStyle(.circular)
-                                .task {
-                                    await uiImageHolder.getFullUiImage(item, lib: library)
-                                }
-                        }
                     }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .padding(.vertical, 10)
             }
-
             ScrollViewReader { scroll in
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 2) {
                         ForEach(photos) { item in
-                            if let uiImage = uiImageHolder.data[item.id] {
+                            if let uiImage = imageHolder.data[item.id] {
                                 Button {
                                     self.selectedImage = item.id
                                     scrollTo = selectedImage
@@ -82,22 +93,50 @@ struct ImageDetailedView: View {
                                             .id(item.id)
                                     }
                                 }
-                            } else if !uiImageHolder.notFound.contains(item.id) {
+                            } else if !imageHolder.notFound.contains(item.id) {
                                 ProgressView().progressViewStyle(.circular)
                                     .task {
-                                        await uiImageHolder.getUiImage(item, lib: library)
+                                        await imageHolder.getUiImage(item, lib: library)
                                     }
                             }
                         }
                     }
                     .frame(height: 80)
-                    .onAppear { scroll.scrollTo(selectedImage, anchor: .center) }
+                    .onAppear {
+                        scroll.scrollTo(selectedImage, anchor: .center)
+                    }
                     .onChange(of: selectedImage) { _ in
-                        withAnimation { scroll.scrollTo(selectedImage, anchor: .center) }
+                        withAnimation {
+                            scroll.scrollTo(selectedImage, anchor: .center)
+                        }
                     }
                 }
             }
+            HStack {
+                if photosSelector == .deleted {
+                    Button {
+                        isPresentingConfirm.toggle()
+                    } label: {
+                        Text("Delete permanently")
+                    }
+                    Button {
+                        changePhotoStatus(to: .recover)
+                    } label: {
+                        Text("Recover")
+                    }
+                } else {
+                    Button {
+                        isPresentingConfirm.toggle()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
+            .font(.title2)
+            .padding(.vertical, 10)
+            .foregroundColor(.blue)
         }
+
         .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
             Button("Delete photo", role: .destructive) {
                 if photosSelector == .deleted {
@@ -111,24 +150,6 @@ struct ImageDetailedView: View {
                 Text("You cannot undo this action")
             }
         }
-
-        .onAppear { sceneSettings.isShowingTabBar = false }
-        .onDisappear { sceneSettings.isShowingTabBar = true }
-
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                if photosSelector == .deleted {
-                    Button { isPresentingConfirm.toggle() } label: { Text("Delete permanently") }
-                    Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
-                } else {
-                    Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
-                }
-            }
-        }
-        .padding(.vertical, 10)
-        .foregroundColor(.blue)
     }
 
     private func changePhotoStatus(to destination: RemovingDirection) {
@@ -159,13 +180,15 @@ struct ImageDetailedView: View {
             }
 
             let clearedPhotos = photos.filter { photo in
-                !uiImageHolder.notFound.contains(photo.id)
+                !imageHolder.notFound.contains(photo.id)
             }
 
             if clearedPhotos.count == 0 {
-                DispatchQueue.main.async { dismiss() }
+                DispatchQueue.main.async {
+                    dismiss()
+                }
             } else if photoIndex == photos.count {
-                selectedImage = photos[photoIndex-1].id
+                selectedImage = photos[photoIndex - 1].id
             } else {
                 selectedImage = photos[photoIndex].id
             }

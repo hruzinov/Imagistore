@@ -134,14 +134,15 @@ func readFullImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @esca
 
 func writeImageToFile(uiImage: UIImage, library: PhotosLibrary) -> UUID? {
     let dataFull = uiImage.heic()
+    let maxSize: CGFloat = 320
 
     let size: CGSize
     if uiImage.size.width > uiImage.size.height {
-        let coefficient = uiImage.size.width / 512
-        size = CGSize(width: 512, height: uiImage.size.height / coefficient)
+        let coefficient = uiImage.size.width / maxSize
+        size = CGSize(width: maxSize, height: uiImage.size.height / coefficient)
     } else {
-        let coefficient = uiImage.size.height / 512
-        size = CGSize(width: uiImage.size.width / coefficient, height: 512)
+        let coefficient = uiImage.size.height / maxSize
+        size = CGSize(width: uiImage.size.width / coefficient, height: maxSize)
     }
 
     let renderer = UIGraphicsImageRenderer(size: size)

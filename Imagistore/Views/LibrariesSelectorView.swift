@@ -33,7 +33,7 @@ struct LibrariesSelectorView: View {
                                     }
                                     Text("ID: \(library.id.uuidString)").font(.caption)
                                     Text("Last change: \(DateTimeFunctions.dateToString(library.lastChangeDate))")
-                                            .font(.caption)
+                                        .font(.caption)
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")

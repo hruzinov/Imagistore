@@ -57,7 +57,7 @@ class PinchZoomView: UIView {
                 let newLocation = gesture.location(in: self)
                 let jumpDifference = CGSize(width: newLocation.x - location.x, height: newLocation.y - location.y)
                 startLocation = CGPoint(x: startLocation.x + jumpDifference.width,
-                        y: startLocation.y + jumpDifference.height)
+                                        y: startLocation.y + jumpDifference.height)
 
                 numberOfTouches = gesture.numberOfTouches
             }

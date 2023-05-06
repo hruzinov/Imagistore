@@ -9,7 +9,7 @@ struct AlbumsSceneView: View {
     @StateObject var library: PhotosLibrary
     @Binding var sortingSelector: PhotosSortArgument
     @Binding var navToRoot: Bool
-    @StateObject var uiImageHolder: UIImageHolder
+    @StateObject var imageHolder: UIImageHolder
 
     var albums: [String] = []
 
@@ -28,10 +28,10 @@ struct AlbumsSceneView: View {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
                             GallerySceneView(library: library, sortingSelector: $sortingSelector,
-                                    uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .normal)
+                                             imageHolder: imageHolder, navToRoot: $navToRoot, photosSelector: .normal)
                         }, label: {
                             UIAlbumBlockView(library: library, sortingSelector: $sortingSelector,
-                                             uiImageHolder: uiImageHolder)
+                                             imageHolder: imageHolder)
                         })
 
                     }
@@ -48,7 +48,7 @@ struct AlbumsSceneView: View {
                     Divider()
                     NavigationLink {
                         GallerySceneView(library: library, sortingSelector: $sortingSelector,
-                                uiImageHolder: uiImageHolder, navToRoot: $navToRoot, photosSelector: .deleted)
+                                         imageHolder: imageHolder, navToRoot: $navToRoot, photosSelector: .deleted)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)

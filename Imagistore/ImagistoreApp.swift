@@ -6,7 +6,7 @@ import SwiftUI
 
 @main
 struct ImagistoreApp: App {
-    @State var uiImageHolder: UIImageHolder = UIImageHolder()
+    @State var imageHolder: UIImageHolder = UIImageHolder()
 
     var body: some Scene {
         WindowGroup {

@@ -8,7 +8,7 @@ struct AppNavigator: View {
     @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
-    @StateObject var uiImageHolder: UIImageHolder = UIImageHolder()
+    @StateObject var imageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
     @EnvironmentObject var sceneSettings: SceneSettings
 
@@ -19,15 +19,15 @@ struct AppNavigator: View {
     var body: some View {
         ZStack {
             if loaded {
-//                if applicationSettings.isFirstLaunch {
-//                    LoginSceneView(applicationSettings: $applicationSettings)
-//                } else
+                //                if applicationSettings.isFirstLaunch {
+                //                    LoginSceneView(applicationSettings: $applicationSettings)
+                //                } else
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
-                            applicationSettings: $applicationSettings, uiImageHolder: uiImageHolder)
+                                applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else if librariesCollection != nil {
                     LibrariesSelectorView(applicationSettings: $applicationSettings,
-                            librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
+                                          librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
                 } else {
                     ProgressView("Loading...")
                         .progressViewStyle(.circular)
