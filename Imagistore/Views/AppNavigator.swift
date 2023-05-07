@@ -10,6 +10,7 @@ struct AppNavigator: View {
 
 //    @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
+    @State var photos: [Photo]?
     @State var applicationSettings = ApplicationSettings()
     @StateObject var imageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
@@ -25,11 +26,11 @@ struct AppNavigator: View {
                 //                if applicationSettings.isFirstLaunch {
                 //                    LoginSceneView(applicationSettings: $applicationSettings)
                 //                } else
-                if let photosLibrary {
-                    ContentView(photosLibrary: photosLibrary,
+                if let photosLibrary, let photos {
+                    ContentView(photosLibrary: photosLibrary, photos: photos,
                                 applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
-                    LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
+                    LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary, photos: $photos)
 //                } else {
 //                    ProgressView("Loading...")
 //                        .progressViewStyle(.circular)

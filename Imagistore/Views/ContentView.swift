@@ -7,8 +7,12 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary
     @EnvironmentObject var sceneSettings: SceneSettings
+    @Environment(\.managedObjectContext) private var viewContext
+    @State var photos: [Photo]
 
-    @State var sortingSelector: PhotosSortArgument = .importDate
+    //    @FetchRequest(sortDescriptors: []) var photos: FetchedResults<Photo>
+
+    @State var sortingArgument: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
 
@@ -26,13 +30,13 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector,
+                GallerySceneView(library: photosLibrary, photos: $photos, sortingArgument: $sortingArgument,
                                  imageHolder: imageHolder, navToRoot: $navToRoot,
                                  photosSelector: .normal, isMainLibraryScreen: true)
                 .tag(Tab.library)
-//                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-//                                navToRoot: $navToRoot, imageHolder: imageHolder)
-//                .tag(Tab.albums)
+                //                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
+                //                                navToRoot: $navToRoot, imageHolder: imageHolder)
+                //                .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {
                 CustomTabBar(selection: handler)
@@ -46,14 +50,14 @@ struct ContentView: View {
                                       progressFinal: $sceneSettings.infoBarFinal)
             }
         })
-//        .onAppear {
-//            photosLibrary.clearBin(photosLibrary) { err in
-//                if let err {
-//                    sceneSettings.errorAlertData = err.localizedDescription
-//                    sceneSettings.isShowingErrorAlert.toggle()
-//                }
-//            }
-//        }
+        //        .onAppear {
+        //            photosLibrary.clearBin(photosLibrary) { err in
+        //                if let err {
+        //                    sceneSettings.errorAlertData = err.localizedDescription
+        //                    sceneSettings.isShowingErrorAlert.toggle()
+        //                }
+        //            }
+        //        }
         .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
     }
 }

@@ -16,7 +16,7 @@ extension PhotosLibrary {
     @NSManaged public var id: UUID
     @NSManaged public var name: String?
     @NSManaged public var lastChange: Date
-    @NSManaged public var photos: Array<Photo>?
+    @NSManaged public var photos: Array<UUID>
 
 }
 

@@ -15,6 +15,8 @@ struct LibrariesSelectorView: View {
     //    @Binding var librariesCollection: PhotosLibrariesCollection?
     //    @State var librariesArray: [PhotosLibrary] = []
     @Binding var selectedLibrary: PhotosLibrary?
+    @Binding var photos: [Photo]?
+    
     @State private var isShowingAddLibSheet: Bool = false
 
     @State var newLibraryName: String = ""
@@ -99,9 +101,17 @@ struct LibrariesSelectorView: View {
     }
 
     private func librarySelected(_ library: PhotosLibrary) {
-        applicationSettings.lastSelectedLibrary = library.id
-        applicationSettings.save()
+//        applicationSettings.lastSelectedLibrary = library.id
+//        applicationSettings.save()
 
-        selectedLibrary = library
+        let fetchRequest = Photo.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "library LIKE %@", library.id.uuidString)
+        do {
+            photos = try viewContext.fetch(fetchRequest)
+            selectedLibrary = library
+        } catch {
+            sceneSettings.errorAlertData = error.localizedDescription
+            sceneSettings.isShowingErrorAlert.toggle()
+        }
     }
 }
