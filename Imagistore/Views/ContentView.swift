@@ -30,9 +30,9 @@ struct ContentView: View {
                                  imageHolder: imageHolder, navToRoot: $navToRoot,
                                  photosSelector: .normal, isMainLibraryScreen: true)
                 .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                                navToRoot: $navToRoot, imageHolder: imageHolder)
-                .tag(Tab.albums)
+//                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
+//                                navToRoot: $navToRoot, imageHolder: imageHolder)
+//                .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {
                 CustomTabBar(selection: handler)
@@ -46,14 +46,14 @@ struct ContentView: View {
                                       progressFinal: $sceneSettings.infoBarFinal)
             }
         })
-        .onAppear {
-            photosLibrary.clearBin(photosLibrary) { err in
-                if let err {
-                    sceneSettings.errorAlertData = err.localizedDescription
-                    sceneSettings.isShowingErrorAlert.toggle()
-                }
-            }
-        }
+//        .onAppear {
+//            photosLibrary.clearBin(photosLibrary) { err in
+//                if let err {
+//                    sceneSettings.errorAlertData = err.localizedDescription
+//                    sceneSettings.isShowingErrorAlert.toggle()
+//                }
+//            }
+//        }
         .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
     }
 }

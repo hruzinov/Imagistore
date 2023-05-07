@@ -33,6 +33,10 @@
 		49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */; };
 		49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */; };
 		49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */; };
+		49F0CE872A07AD4000E65888 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE862A07AD4000E65888 /* PersistenceController.swift */; };
+		49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */; };
+		49F0CE912A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */; };
+		49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +70,10 @@
 		49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettings.swift; sourceTree = "<group>"; };
 		49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrariesSelectorView.swift; sourceTree = "<group>"; };
+		49F0CE862A07AD4000E65888 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
+		49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "PhotosLibrary+CoreDataClass.swift"; path = "Imagistore/PhotosLibrary+CoreDataClass.swift"; sourceTree = "<group>"; };
+		49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "PhotosLibrary+CoreDataProperties.swift"; path = "Imagistore/PhotosLibrary+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +102,7 @@
 				49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */,
 				491289AB29C080FF000D138A /* FilesFunctions.swift */,
 				496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */,
+				49F0CE862A07AD4000E65888 /* PersistenceController.swift */,
 			);
 			path = Functions;
 			sourceTree = "<group>";
@@ -122,6 +131,7 @@
 				49273B5E29BE378E00ECF488 /* Photo.swift */,
 				491289AE29C0942F000D138A /* PhotosLibrary.swift */,
 				491A6D2529F7B49800BC5990 /* UIImageHolder.swift */,
+				49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -129,6 +139,8 @@
 		493752EA29BE2F7F006F9CD8 = {
 			isa = PBXGroup;
 			children = (
+				49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */,
+				49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */,
 				493752F529BE2F7F006F9CD8 /* Imagistore */,
 				493752F429BE2F7F006F9CD8 /* Products */,
 			);
@@ -288,7 +300,9 @@
 			files = (
 				491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */,
 				49A5CFB629DAD0100072C43B /* UIAlbumBlockView.swift in Sources */,
+				49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */,
 				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
+				49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */,
 				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
 				491289AF29C0942F000D138A /* PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* UIGalleryView.swift in Sources */,
@@ -301,6 +315,7 @@
 				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
 				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
 				49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */,
+				49F0CE872A07AD4000E65888 /* PersistenceController.swift in Sources */,
 				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
 				49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */,
 				49273B5F29BE378E00ECF488 /* Photo.swift in Sources */,
@@ -308,6 +323,7 @@
 				49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */,
 				493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */,
 				49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */,
+				49F0CE912A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift in Sources */,
 				493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -523,6 +539,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */,
+			);
+			currentVersion = 49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */;
+			path = LibrariesStorage.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 493752EB29BE2F7F006F9CD8 /* Project object */;
 }

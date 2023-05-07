@@ -4,8 +4,8 @@
 
 import SwiftUI
 
-class Photo: Identifiable, Codable, Equatable {
-    var id: UUID
+public class Photo: NSObject, Identifiable, Codable {
+    public var id: UUID
     var status: PhotoStatus
     var creationDate: Date
     var importDate: Date
