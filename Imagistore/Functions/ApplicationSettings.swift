@@ -63,12 +63,4 @@ class SceneSettings: ObservableObject {
     @Published var infoBarFinal: Bool = false
 
     @Published var syncProgress: Double = 0
-
-    @Published var appSettings: ApplicationSettings
-
-    init() {
-        var applicationSettings = ApplicationSettings()
-        applicationSettings.load()
-        appSettings = applicationSettings
-    }
 }

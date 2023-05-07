@@ -94,7 +94,8 @@ struct ImageDetailedView: View {
                                     }
                                 }
                             } else if !imageHolder.notFound.contains(item.id) {
-                                ProgressView().progressViewStyle(.circular)
+                                Rectangle()
+                                    .fill(Color.gray)
                                     .task {
                                         await imageHolder.getUiImage(item, lib: library)
                                     }

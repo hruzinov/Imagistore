@@ -3,13 +3,31 @@
 //
 
 import SwiftUI
+// Online parametrs
+//private let onlineLibrariesFileStoragePath = getOnlineDocumentsDirectory().appendingPathComponent("libraries.json")
+//private let onlineLibrariesStoragePath = getOnlineDocumentsDirectory().appendingPathComponent("libraries/")
+//
+//private func getOnlineDocumentsDirectory() -> URL {
+//    let paths = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
+//    return paths!
+//}
+//private func onlineLibraryPath(_ lib: UUID) -> URL {
+//    onlineLibrariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
+//}
+//private func onlinePhotosFullFilePath(_ lib: UUID) -> URL {
+//    onlineLibraryPath(lib).appendingPathComponent("photos/")
+//}
+//private func onlinePhotosFilePath(_ lib: UUID) -> URL {
+//    onlineLibraryPath(lib).appendingPathComponent("miniatures/")
+//}
 
+// Offline parametrs
 private let librariesFileStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
 private let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries/")
 
 private func getDocumentsDirectory() -> URL {
-    let paths = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
-    return paths!
+    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    return paths[0]
 }
 private func libraryPath(_ lib: UUID) -> URL {
     librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
