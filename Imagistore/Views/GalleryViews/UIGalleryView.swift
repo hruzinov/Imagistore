@@ -51,7 +51,7 @@ struct UIGalleryView: View {
 //                                        }
                                     }
                                 } label: {
-                                    if let miniature = item.miniature, let uiImage = UIImage(data: miniature) {
+                                    if let uiImage = imageHolder.data[item.id] { //, let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
@@ -102,16 +102,19 @@ struct UIGalleryView: View {
 //                                                    .padding(5)
 //                                            }
 //                                        })
+                                    } else {
+                                        Rectangle()
+                                            .fill(Color.gray)
+//                                            .progressViewStyle(.circular)
+//                                            .frame(width: size.height, height: size.width, alignment: .center)
+                                            .task {
+                                                if let data = item.miniature, let uiImage = UIImage(data: data) {
+                                                    imageHolder.data[item.id] = uiImage
+                                                    imageHolder.objectWillChange.send()
+                                                }
+//                                                await imageHolder.getUiImage(item, lib: library)
+                                            }
                                     }
-//                                    else {
-//                                        Rectangle()
-//                                            .fill(Color.gray)
-////                                            .progressViewStyle(.circular)
-////                                            .frame(width: size.height, height: size.width, alignment: .center)
-////                                            .task {
-////                                                await imageHolder.getUiImage(item, lib: library)
-////                                            }
-//                                    }
                                 }
                             }
                         }
