@@ -21,9 +21,9 @@ struct AppNavigator: View {
             if loaded {
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
-                                photos: FetchRequest(sortDescriptors: [], predicate:
-                                                        NSPredicate(format: "library = %@", photosLibrary.id as CVarArg)), applicationSettings: $applicationSettings,
-                                imageHolder: imageHolder)
+                                photos: FetchRequest(sortDescriptors: [],
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary.id as CVarArg)),
+                                        applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
                 }

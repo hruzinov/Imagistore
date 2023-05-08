@@ -183,15 +183,12 @@ struct GallerySceneView: View {
 
     private func importFromPhotosApp() {
         Task {
-            sceneSettings.infoBarData = "Importing..."
-            sceneSettings.infoBarFinal = false
+            sceneSettings.infoBarData = "Importing..."; sceneSettings.infoBarFinal = false
             let importCount = importSelectedItems.count
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             for item in importSelectedItems {
-                withAnimation {
-                    sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
-                }
+                withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }
 
                 if let data = try? await item.loadTransferable(type: Data.self) {
                     let uiImage = UIImage(data: data)
@@ -232,8 +229,7 @@ struct GallerySceneView: View {
                 }
             }
             withAnimation {
-                sceneSettings.infoBarFinal = true
-                sceneSettings.infoBarData = "\(count) photos saved"
+                sceneSettings.infoBarFinal = true; sceneSettings.infoBarData = "\(count) photos saved"
                 sceneSettings.infoBarProgress = Double(count) / Double(importCount)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     withAnimation { sceneSettings.isShowingInfoBar.toggle() }

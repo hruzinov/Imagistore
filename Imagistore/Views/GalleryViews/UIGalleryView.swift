@@ -86,7 +86,8 @@ struct UIGalleryView: View {
                                         Rectangle()
                                             .fill(Color.gray)
                                             .task {
-                                                if let uuid = item.uuid, let data = item.miniature, let uiImage = UIImage(data: data) {
+                                                if let uuid = item.uuid,
+                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
                                                     imageHolder.data[uuid] = uiImage
                                                     imageHolder.objectWillChange.send()
                                                 }
@@ -124,8 +125,8 @@ struct UIGalleryView: View {
                 scroll.scrollTo(openedImage, anchor: .center)
             }
             .fullScreenCover(isPresented: $goToDetailedView) {
-                ImageDetailedView(library: library, photos: photos, photosSelector: $photosSelector, imageHolder: imageHolder,
-                                  selectedImage: $openedImage)
+                ImageDetailedView(library: library, photos: photos,
+                        photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
             }
         }
     }

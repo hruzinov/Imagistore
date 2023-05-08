@@ -10,7 +10,7 @@ struct ContentView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest var photos: FetchedResults<Photo>
-    
+
     @State var sortingArgument: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false

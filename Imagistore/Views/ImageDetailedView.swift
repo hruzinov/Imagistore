@@ -29,7 +29,7 @@ struct ImageDetailedView: View {
                         Image(systemName: "chevron.backward")
                     }
                     Spacer()
-                    if let photo = photos.first(where: {$0.uuid == selectedImage}), photo.fileExtension == "public.png" {
+                    if let img = photos.first(where: {$0.uuid == selectedImage}), img.fileExtension == "public.png" {
                         Text("PNG")
                             .font(.callout)
                             .foregroundColor(.gray)
@@ -69,30 +69,42 @@ struct ImageDetailedView: View {
                 ScrollViewReader { scroll in
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 2) {
-                            ForEach(photos) { item in
-                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
-                                    Button {
-                                        self.selectedImage = uuid
-                                        scrollTo = selectedImage
-                                    } label: {
-                                        if selectedImage == item.uuid {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(maxHeight: 75, alignment: .center)
-                                                .padding(5)
-                                                .border(Color.gray, width: 4)
-                                                .padding(.horizontal, 20)
-                                                .clipped()
-                                                .id(item.uuid)
-                                        } else {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 50, height: 75, alignment: .center)
-                                                .clipped()
-                                                .id(item.uuid)
+                            ForEach(photos, id: \.uuid) { item in
+                                if let uuid = item.uuid {
+                                    if let uiImage = imageHolder.data[uuid] {
+                                        Button {
+                                            self.selectedImage = uuid
+                                            scrollTo = selectedImage
+                                        } label: {
+                                            if selectedImage == item.uuid {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(maxHeight: 75, alignment: .center)
+                                                    .padding(5)
+                                                    .border(Color.gray, width: 4)
+                                                    .padding(.horizontal, 20)
+                                                    .clipped()
+                                                    .id(item.uuid)
+                                            } else {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 50, height: 75, alignment: .center)
+                                                    .clipped()
+                                                    .id(item.uuid)
+                                            }
                                         }
+                                    } else {
+                                        Rectangle()
+                                            .fill(Color.gray)
+                                            .task {
+                                                if let uuid = item.uuid,
+                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
+                                                    imageHolder.data[uuid] = uiImage
+                                                    imageHolder.objectWillChange.send()
+                                                }
+                                            }
                                     }
                                 }
                             }

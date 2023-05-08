@@ -8,7 +8,7 @@ private let documentsDirectory: URL = FileManager.default.urls(for: .documentDir
 private func photosFilePath(_ libID: UUID) -> URL {
     documentsDirectory.appendingPathComponent("fullSizes/\(libID.uuidString)/")
 }
-fileprivate func directoryExistsAtPath(_ path: String) -> Bool {
+private func directoryExistsAtPath(_ path: String) -> Bool {
     var isDirectory: ObjCBool = true
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
     return exists && isDirectory.boolValue

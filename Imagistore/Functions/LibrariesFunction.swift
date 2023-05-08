@@ -49,7 +49,8 @@ extension PhotosLibrary {
         }
         competition(nil)
     }
-    func permanentRemove(_ images: [Photo], library: PhotosLibrary, in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
+    func permanentRemove(_ images: [Photo], library: PhotosLibrary,
+                         in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         do {
             images.forEach { photo in
                 if let uuid = photo.uuid, let index = library.photos.firstIndex(of: uuid) {
@@ -69,7 +70,7 @@ extension PhotosLibrary {
         let request = Photo.fetchRequest()
         let libPredicate = NSPredicate(format: "library = %@", lib.id as CVarArg)
         let deletedPredicate = NSPredicate(format: "deletionDate < %@", DateTimeFunctions.deletionDate as CVarArg)
-        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [libPredicate,deletedPredicate])
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [libPredicate, deletedPredicate])
 
         do {
             let forDeletion = try context.fetch(request)
