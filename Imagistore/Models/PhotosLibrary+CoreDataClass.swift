@@ -8,6 +8,10 @@ import CoreData
 @objc(PhotosLibrary)
 public class PhotosLibrary: NSManagedObject {
     static var actualLibraryVersion = 1
+
+    lazy var idPredicate = {
+        NSPredicate(format: "id = %@", self.id as CVarArg)
+    }()
 }
 
 enum PhotosSortArgument: String {

@@ -19,18 +19,13 @@ struct AppNavigator: View {
     var body: some View {
         ZStack {
             if loaded {
-                //                if applicationSettings.isFirstLaunch {
-                //                    LoginSceneView(applicationSettings: $applicationSettings)
-                //                } else
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
-                                applicationSettings: $applicationSettings, imageHolder: imageHolder)
+                                photos: FetchRequest(sortDescriptors: [], predicate:
+                                                        NSPredicate(format: "library = %@", photosLibrary.id as CVarArg)), applicationSettings: $applicationSettings,
+                                imageHolder: imageHolder)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
-//                } else {
-//                    ProgressView("Loading...")
-//                        .progressViewStyle(.circular)
-//                        .padding(50)
                 }
             } else {
                 ProgressView("Loading...")

@@ -10,7 +10,6 @@
 		490793EA2A08D6D600F6FDAE /* LibrariesFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490793E92A08D6D600F6FDAE /* LibrariesFunction.swift */; };
 		49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */; };
 		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
-		491289AF29C0942F000D138A /* _PhotosLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AE29C0942F000D138A /* _PhotosLibrary.swift */; };
 		491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491A6D2529F7B49800BC5990 /* UIImageHolder.swift */; };
 		49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B6329BE413E00ECF488 /* ImageDetailedView.swift */; };
 		493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */; };
@@ -46,7 +45,6 @@
 		49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupUp.swift; sourceTree = "<group>"; };
 		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
 		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		491289AE29C0942F000D138A /* _PhotosLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _PhotosLibrary.swift; sourceTree = "<group>"; };
 		491A6D2529F7B49800BC5990 /* UIImageHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageHolder.swift; sourceTree = "<group>"; };
 		49273B6329BE413E00ECF488 /* ImageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailedView.swift; sourceTree = "<group>"; };
 		493752F329BE2F7F006F9CD8 /* Imagistore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Imagistore.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,7 +135,6 @@
 				497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */,
 				49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */,
 				49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */,
-				491289AE29C0942F000D138A /* _PhotosLibrary.swift */,
 				491A6D2529F7B49800BC5990 /* UIImageHolder.swift */,
 				49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */,
 			);
@@ -311,7 +308,6 @@
 				49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */,
 				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
 				490793EA2A08D6D600F6FDAE /* LibrariesFunction.swift in Sources */,
-				491289AF29C0942F000D138A /* _PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* UIGalleryView.swift in Sources */,
 				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,
 				49737E5929EBF18E00168A63 /* AppNavigator.swift in Sources */,

@@ -3,13 +3,14 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary
     @EnvironmentObject var sceneSettings: SceneSettings
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: []) var photos: FetchedResults<Photo>
-
+    @FetchRequest var photos: FetchedResults<Photo>
+    
     @State var sortingArgument: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
@@ -41,6 +42,7 @@ struct ContentView: View {
             }
             .toolbar(.hidden, for: .tabBar)
         }
+
         .overlay(alignment: .center, content: {
             if sceneSettings.isShowingInfoBar {
                 UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
@@ -48,14 +50,14 @@ struct ContentView: View {
                                       progressFinal: $sceneSettings.infoBarFinal)
             }
         })
-        //        .onAppear {
-        //            photosLibrary.clearBin(photosLibrary) { err in
-        //                if let err {
-        //                    sceneSettings.errorAlertData = err.localizedDescription
-        //                    sceneSettings.isShowingErrorAlert.toggle()
-        //                }
-        //            }
-        //        }
+        .onAppear {
+            photosLibrary.clearBin(photosLibrary, in: viewContext) { err in
+                if let err {
+                    sceneSettings.errorAlertData = err.localizedDescription
+                    sceneSettings.isShowingErrorAlert.toggle()
+                }
+            }
+        }
         .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
     }
 }

@@ -15,8 +15,8 @@ struct UIAlbumBlockView: View {
 
     var body: some View {
         HStack {
-            if let lastImage = filteredPhotos.last {
-                if let uiImage = imageHolder.data[lastImage.uuid] {
+            if let lastImage = filteredPhotos.last, let lastID = lastImage.uuid {
+                if let uiImage = imageHolder.data[lastID] {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -29,7 +29,7 @@ struct UIAlbumBlockView: View {
                     ProgressView().progressViewStyle(.circular)
                         .task {
                             if let data = lastImage.miniature, let uiImage = UIImage(data: data) {
-                                imageHolder.data[lastImage.uuid] = uiImage
+                                imageHolder.data[lastID] = uiImage
                                 imageHolder.objectWillChange.send()
                             }
                         }

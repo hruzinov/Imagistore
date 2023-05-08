@@ -11,15 +11,11 @@ struct ImageDetailedView: View {
 
     @StateObject var library: PhotosLibrary
     var photos: [Photo]
-//    var filteredPhotos: [Photo] {
-//        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
-//    }
 
     @Binding var photosSelector: PhotoStatus
-//    @Binding var sortingSelector: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
 
-    @Binding var selectedImage: UUID
+    @Binding var selectedImage: UUID?
     @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
 
@@ -33,25 +29,35 @@ struct ImageDetailedView: View {
                         Image(systemName: "chevron.backward")
                     }
                     Spacer()
-                    if let photo = photos.first(where: {$0.uuid == selectedImage}), photo.fileExtension == "png" {
+                    if let photo = photos.first(where: {$0.uuid == selectedImage}), photo.fileExtension == "public.png" {
                         Text("PNG")
                             .font(.callout)
                             .foregroundColor(.gray)
                     }
                 }
                 .font(.title2)
-                .padding(.leading, 10)
+                .padding(.horizontal, 10)
                 .padding(.top, 10)
 
                 VStack {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
                             VStack {
-                                if let uiImage = imageHolder.data[item.uuid] {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .pinchToZoom()
+                                if let uuid = item.uuid {
+                                    if let uiImage = imageHolder.fullUiImage(uuid) {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .pinchToZoom()
+                                    } else if let uiImage = imageHolder.data[uuid] {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .pinchToZoom()
+                                            .task {
+                                                await imageHolder.getFullUiImage(uuid, lib: library)
+                                            }
+                                    }
                                 }
                             }
                             .frame(maxHeight: .infinity)
@@ -64,9 +70,9 @@ struct ImageDetailedView: View {
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 2) {
                             ForEach(photos) { item in
-                                if let uiImage = imageHolder.data[item.uuid] {
+                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
                                     Button {
-                                        self.selectedImage = item.uuid
+                                        self.selectedImage = uuid
                                         scrollTo = selectedImage
                                     } label: {
                                         if selectedImage == item.uuid {
@@ -88,12 +94,6 @@ struct ImageDetailedView: View {
                                                 .id(item.uuid)
                                         }
                                     }
-                                    //                            } else if !imageHolder.notFound.contains(item.id) {
-                                    //                                Rectangle()
-                                    //                                    .fill(Color.gray)
-                                    //                                    .task {
-                                    //                                        await imageHolder.getUiImage(item, lib: library)
-                                    //                                    }
                                 }
                             }
                         }
@@ -108,30 +108,6 @@ struct ImageDetailedView: View {
                         }
                     }
                 }
-                //            HStack {
-                //                if photosSelector == .deleted {
-                //                    Button {
-                ////                        isPresentingConfirm.toggle()
-                //                    } label: {
-                //                        Text("Delete permanently")
-                //                    }
-                //                    Spacer()
-                //                    Button {
-                ////                        changePhotoStatus(to: .recover)
-                //                    } label: {
-                //                        Text("Recover")
-                //                    }
-                //                } else {
-                //                    Button {
-                //                        isPresentingConfirm.toggle()
-                //                    } label: {
-                //                        Image(systemName: "trash")
-                //                            .font(.title2)
-                //                    }
-                //                }
-                //            }
-                //            .padding(.vertical, 10)
-                //            .foregroundColor(.blue)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .bottomBar) {
@@ -180,13 +156,12 @@ struct ImageDetailedView: View {
                     }
                 }
             case .permanent:
-                print("HEHE")
-//                library.permanentRemove([changedPhoto], library: library) { err in
-//                    if let err {
-//                        sceneSettings.errorAlertData = err.localizedDescription
-//                        sceneSettings.isShowingErrorAlert.toggle()
-//                    }
-//                }
+                library.permanentRemove([changedPhoto], library: library, in: viewContext) { err in
+                    if let err {
+                        sceneSettings.errorAlertData = err.localizedDescription
+                        sceneSettings.isShowingErrorAlert.toggle()
+                    }
+                }
             }
 
             let clearedPhotos = photos.filter { photo in
@@ -198,9 +173,9 @@ struct ImageDetailedView: View {
                     dismiss()
                 }
             } else if photoIndex == clearedPhotos.count {
-                selectedImage = clearedPhotos[photoIndex - 1].uuid
+                selectedImage = clearedPhotos[photoIndex - 1].uuid!
             } else {
-                selectedImage = clearedPhotos[photoIndex].uuid
+                selectedImage = clearedPhotos[photoIndex].uuid!
             }
         }
     }

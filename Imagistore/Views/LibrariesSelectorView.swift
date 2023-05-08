@@ -11,9 +11,6 @@ struct LibrariesSelectorView: View {
 
     @FetchRequest(sortDescriptors: []) var librariesCollection: FetchedResults<PhotosLibrary>
     @Binding var applicationSettings: ApplicationSettings
-    //    @Binding var librariesCollection: FetchRequest<CoreDataLibrary>
-    //    @Binding var librariesCollection: PhotosLibrariesCollection?
-    //    @State var librariesArray: [PhotosLibrary] = []
     @Binding var selectedLibrary: PhotosLibrary?
     
     @State private var isShowingAddLibSheet: Bool = false
