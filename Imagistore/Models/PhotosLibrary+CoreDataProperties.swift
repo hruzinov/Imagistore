@@ -12,7 +12,7 @@ extension PhotosLibrary {
         return NSFetchRequest<PhotosLibrary>(entityName: "PhotosLibrary")
     }
 
-    @NSManaged public var version: Int16
+    @NSManaged public var version: Int16 
     @NSManaged public var id: UUID
     @NSManaged public var name: String?
     @NSManaged public var lastChange: Date

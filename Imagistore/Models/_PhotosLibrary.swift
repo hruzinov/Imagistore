@@ -26,40 +26,8 @@
 //        self.photos = photos
 //        self.lastChangeDate = lastChangeDate
 //    }
-//    func addImages(_ images: [Photo], competition: @escaping (Int, Error?) -> Void) {
-//        photos = loadLibrary(id: id)!.photos
-//        var count = 0
-//        for item in images {
-//            photos.append(item)
-//            count += 1
-//        }
-//        let err = saveLibrary(lib: self)
-//        competition(count, err)
-//    }
-//    func toBin(_ images: [Photo], competition: @escaping (Error?) -> Void) {
-//        photos = loadLibrary(id: id)!.photos
-//        for item in images {
-//            if let photoIndex = photos.firstIndex(of: item) {
-//                photos[photoIndex].status = .deleted
-//                photos[photoIndex].deletionDate = Date()
-//            }
-//        }
-//        self.objectWillChange.send()
-//        let err = saveLibrary(lib: self)
-//        competition(err)
-//    }
-//    func recoverImages(_ images: [Photo], competition: @escaping (Error?) -> Void) {
-//        photos = loadLibrary(id: id)!.photos
-//        for item in images {
-//            if let photoIndex = photos.firstIndex(of: item) {
-//                photos[photoIndex].status = .normal
-//                photos[photoIndex].deletionDate = nil
-//            }
-//        }
-//        self.objectWillChange.send()
-//        let err = saveLibrary(lib: self)
-//        competition(err)
-//    }
+
+
 //    func permanentRemove(_ images: [Photo], library: PhotosLibrary, competition: @escaping (Error?) -> Void) {
 //        photos = loadLibrary(id: id)!.photos
 //        for item in images {

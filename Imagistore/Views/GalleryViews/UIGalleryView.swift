@@ -7,10 +7,11 @@ import SwiftUI
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
-    @Binding var photos: [Photo]
-    var filteredPhotos: [Photo] {
-        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
-    }
+    var photos: [Photo]
+//    var photos: FetchedResults<Photo>
+//    var filteredPhotos: [Photo] {
+//        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+//    }
 
     @State var photosSelector: PhotoStatus
     @Binding var sortingArgument: PhotosSortArgument
@@ -33,7 +34,7 @@ struct UIGalleryView: View {
         ScrollViewReader { scroll in
             ScrollView {
                 LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                    ForEach(filteredPhotos) { item in
+                    ForEach(photos) { item in
                         GeometryReader { geometryReader in
                             let size = geometryReader.size
                             VStack {
@@ -45,13 +46,11 @@ struct UIGalleryView: View {
                                             selectedImagesArray.append(item)
                                         }
                                     } else {
-//                                        if !imageHolder.notFound.contains(item.id) {
-//                                            openedImage = item.id
-//                                            goToDetailedView.toggle()
-//                                        }
+                                        openedImage = item.uuid
+                                        goToDetailedView.toggle()
                                     }
                                 } label: {
-                                    if let uiImage = imageHolder.data[item.id] { //, let uiImage = UIImage(data: data) {
+                                    if let uiImage = imageHolder.data[item.uuid] { //, let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
@@ -109,7 +108,7 @@ struct UIGalleryView: View {
 //                                            .frame(width: size.height, height: size.width, alignment: .center)
                                             .task {
                                                 if let data = item.miniature, let uiImage = UIImage(data: data) {
-                                                    imageHolder.data[item.id] = uiImage
+                                                    imageHolder.data[item.uuid] = uiImage
                                                     imageHolder.objectWillChange.send()
                                                 }
 //                                                await imageHolder.getUiImage(item, lib: library)
@@ -146,12 +145,13 @@ struct UIGalleryView: View {
             .onChange(of: openedImage) { _ in
                 scroll.scrollTo(openedImage, anchor: .center)
             }
-//            .fullScreenCover(isPresented: $goToDetailedView) {
+            .fullScreenCover(isPresented: $goToDetailedView) {
 //                ImageDetailedView(library: library, photosSelector: photosSelector,
-//                                  sortingSelector: $sortingSelector, imageHolder: imageHolder,
+//                                  sortingArgument: $sortingArgument, imageHolder: imageHolder,
 //                                  selectedImage: $openedImage)
-//
-//            }
+                ImageDetailedView(library: library, photos: photos, photosSelector: $photosSelector, imageHolder: imageHolder,
+                                  selectedImage: $openedImage)
+            }
         }
     }
 }

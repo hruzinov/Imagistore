@@ -4,11 +4,11 @@
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="deletionDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="fileExtension" optional="YES" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="importDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="library" optional="YES" attributeType="String"/>
         <attribute name="miniature" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="status" optional="YES" attributeType="String"/>
+        <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="PhotosLibrary" representedClassName="PhotosLibrary" syncable="YES">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>

@@ -6,11 +6,7 @@ import SwiftUI
 import CoreData
 
 struct AppNavigator: View {
-//    @FetchRequest(sortDescriptors: []) var librariesCollection: FetchedResults<CoreDataLibrary>
-
-//    @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
-    @State var photos: [Photo]?
     @State var applicationSettings = ApplicationSettings()
     @StateObject var imageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
@@ -26,11 +22,11 @@ struct AppNavigator: View {
                 //                if applicationSettings.isFirstLaunch {
                 //                    LoginSceneView(applicationSettings: $applicationSettings)
                 //                } else
-                if let photosLibrary, let photos {
-                    ContentView(photosLibrary: photosLibrary, photos: photos,
+                if let photosLibrary {
+                    ContentView(photosLibrary: photosLibrary,
                                 applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
-                    LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary, photos: $photos)
+                    LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
 //                } else {
 //                    ProgressView("Loading...")
 //                        .progressViewStyle(.circular)

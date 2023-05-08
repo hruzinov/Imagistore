@@ -10,7 +10,10 @@ struct GallerySceneView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
-    @Binding var photos: [Photo]
+    var photos: FetchedResults<Photo>
+    var filteredPhotos: [Photo] {
+        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+    }
 
 
 //    @State var photos: FetchedResults<Photo>?
@@ -53,10 +56,10 @@ struct GallerySceneView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if photos.count > 0 {
+                if filteredPhotos.count > 0 {
                     UIGalleryView(
                         library: library,
-                        photos: $photos,
+                        photos: filteredPhotos,
                         photosSelector: photosSelector,
                         sortingArgument: $sortingArgument,
                         imageHolder: imageHolder,
@@ -253,7 +256,7 @@ struct GallerySceneView: View {
                         let data = uiImageMini.heic(compressionQuality: 0.6)
 
                         let newLib = Photo(context: viewContext)
-                        newLib.id = UUID()
+                        newLib.uuid = UUID()
                         newLib.library = library.id.uuidString
                         newLib.status = PhotoStatus.normal.rawValue
                         newLib.creationDate = creationDate
@@ -261,13 +264,13 @@ struct GallerySceneView: View {
                         newLib.deletionDate = nil
                         newLib.fileExtension = fileExtension.rawValue
                         newLib.miniature = data
-                        library.photos.append(newLib.id)
+                        library.photos.append(newLib.uuid)
 
                         do {
                             try viewContext.save()
-                            photos.append(newLib)
+//                            photos.append(newLib)
                             count+=1
-                            scrollTo = newLib.id
+                            scrollTo = newLib.uuid
                         } catch {
                             sceneSettings.errorAlertData = error.localizedDescription
                             sceneSettings.isShowingErrorAlert.toggle()

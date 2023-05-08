@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		490793EA2A08D6D600F6FDAE /* LibrariesFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490793E92A08D6D600F6FDAE /* LibrariesFunction.swift */; };
 		49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */; };
 		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
 		491289AF29C0942F000D138A /* _PhotosLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AE29C0942F000D138A /* _PhotosLibrary.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		490793E92A08D6D600F6FDAE /* LibrariesFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrariesFunction.swift; sourceTree = "<group>"; };
 		49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupUp.swift; sourceTree = "<group>"; };
 		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
 		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				491289AB29C080FF000D138A /* FilesFunctions.swift */,
 				496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */,
 				49F0CE862A07AD4000E65888 /* PersistenceController.swift */,
+				490793E92A08D6D600F6FDAE /* LibrariesFunction.swift */,
 			);
 			path = Functions;
 			sourceTree = "<group>";
@@ -307,6 +310,7 @@
 				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
 				49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */,
 				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
+				490793EA2A08D6D600F6FDAE /* LibrariesFunction.swift in Sources */,
 				491289AF29C0942F000D138A /* _PhotosLibrary.swift in Sources */,
 				497647F529C0C102001C3FE4 /* UIGalleryView.swift in Sources */,
 				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,

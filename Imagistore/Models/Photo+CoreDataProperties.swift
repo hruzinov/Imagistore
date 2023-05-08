@@ -16,7 +16,7 @@ extension Photo {
         return NSFetchRequest<Photo>(entityName: "Photo")
     }
 
-    @NSManaged public var id: UUID
+    @NSManaged public var uuid: UUID
     @NSManaged public var library: String
     @NSManaged public var status: String
     @NSManaged public var creationDate: Date

@@ -22,7 +22,7 @@ enum PhotoExtension: String, Codable {
     case png
 }
 
-func sortedPhotos(_ photos: [Photo], by byArgument: PhotosSortArgument, filter: PhotoStatus) -> [Photo] {
+func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgument, filter: PhotoStatus) -> [Photo] {
     photos
         .sorted(by: { ph1, ph2 in
             if filter == .deleted, let delDate1 = ph1.deletionDate, let delDate2 = ph2.deletionDate {

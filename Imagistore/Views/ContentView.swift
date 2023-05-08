@@ -8,9 +8,7 @@ struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary
     @EnvironmentObject var sceneSettings: SceneSettings
     @Environment(\.managedObjectContext) private var viewContext
-    @State var photos: [Photo]
-
-    //    @FetchRequest(sortDescriptors: []) var photos: FetchedResults<Photo>
+    @FetchRequest(sortDescriptors: []) var photos: FetchedResults<Photo>
 
     @State var sortingArgument: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
@@ -30,13 +28,13 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photos: $photos, sortingArgument: $sortingArgument,
+                GallerySceneView(library: photosLibrary, photos: photos, sortingArgument: $sortingArgument,
                                  imageHolder: imageHolder, navToRoot: $navToRoot,
                                  photosSelector: .normal, isMainLibraryScreen: true)
                 .tag(Tab.library)
-                //                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                //                                navToRoot: $navToRoot, imageHolder: imageHolder)
-                //                .tag(Tab.albums)
+                AlbumsSceneView(library: photosLibrary, sortingArgument: $sortingArgument,
+                                navToRoot: $navToRoot, imageHolder: imageHolder, photos: photos)
+                .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {
                 CustomTabBar(selection: handler)
