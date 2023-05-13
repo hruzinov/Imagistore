@@ -31,9 +31,9 @@ struct LibrariesSelectorView: View {
                             HStack {
                                 VStack(alignment: .leading) {
                                     HStack(spacing: 5) {
-                                        Text(library.name ?? "*No name*").font(.title2).bold()
+                                        Text(library.name ?? "*No name*").font(.title2).bold().multilineTextAlignment(.leading)
                                     }
-                                    Text("ID: \(library.id.uuidString)").font(.caption)
+                                    Text("ID: \(library.uuid.uuidString)").font(.caption)
                                     Text("Last change: \(DateTimeFunctions.dateToString(library.lastChange))")
                                         .font(.caption)
                                 }
@@ -66,11 +66,13 @@ struct LibrariesSelectorView: View {
                         Button {
                             withAnimation {
                                 let newLib = PhotosLibrary(context: viewContext)
-                                newLib.id = UUID()
+                                newLib.uuid = UUID()
                                 newLib.name = newLibraryName
                                 newLib.photos = []
                                 newLib.lastChange = Date()
                                 newLib.version = Int16(PhotosLibrary.actualLibraryVersion)
+
+                                print(newLib.uuid)
 
                                 do {
                                     try viewContext.save()

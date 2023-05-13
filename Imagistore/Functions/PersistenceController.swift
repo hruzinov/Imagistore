@@ -7,13 +7,25 @@ import CoreData
 struct PersistenceController {
     static let shared = PersistenceController()
 
-    let container: NSPersistentContainer
+    let container: NSPersistentCloudKitContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "LibrariesStorage")
+        container = NSPersistentCloudKitContainer(name: "LibrariesStorage")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
+
+        // Only initialize the schema when building the app with the
+        // Debug build configuration.
+        #if DEBUG
+        do {
+            // Use the container to initialize the development schema.
+            try container.initializeCloudKitSchema(options: [])
+        } catch {
+            // Handle any errors.
+        }
+        #endif
+
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.

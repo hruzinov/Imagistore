@@ -4,6 +4,7 @@
 
 import Foundation
 import CoreData
+import CloudKit
 
 extension Photo {
 
@@ -12,13 +13,14 @@ extension Photo {
     }
 
     @NSManaged public var uuid: UUID?
-    @NSManaged public var library: UUID
+    @NSManaged public var library: PhotosLibrary
     @NSManaged public var status: String
     @NSManaged public var creationDate: Date
     @NSManaged public var importDate: Date
     @NSManaged public var deletionDate: Date?
     @NSManaged public var fileExtension: String?
     @NSManaged public var miniature: Data?
+    @NSManaged public var fullsizeCloudID: String?
 
 }
 

@@ -29,7 +29,7 @@ struct ImageDetailedView: View {
                         Image(systemName: "chevron.backward")
                     }
                     Spacer()
-                    if let img = photos.first(where: {$0.uuid == selectedImage}), img.fileExtension == "public.png" {
+                    if let img = photos.first(where: {$0.uuid == selectedImage}), img.fileExtension == "png" {
                         Text("PNG")
                             .font(.callout)
                             .foregroundColor(.gray)
@@ -53,9 +53,19 @@ struct ImageDetailedView: View {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFit()
-                                            .pinchToZoom()
+                                            .overlay(alignment: .bottomTrailing, content: {
+                                                Image(systemName: "circle.dashed")
+                                                    .font(.title)
+                                                    .padding(10)
+                                                    .foregroundColor(.gray)
+                                            })
                                             .task {
-                                                await imageHolder.getFullUiImage(uuid, lib: library)
+                                                await imageHolder.getFullUiImage(item) { err in
+                                                    if let err {
+                                                        sceneSettings.errorAlertData = err.localizedDescription
+                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                                    }
+                                                }
                                             }
                                     }
                                 }

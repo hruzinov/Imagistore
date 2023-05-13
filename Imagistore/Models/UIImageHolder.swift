@@ -22,12 +22,12 @@ class UIImageHolder: ObservableObject {
             return nil
         }
     }
-    func getFullUiImage(_ photoID: UUID, lib: PhotosLibrary) async {
-        await readImageFromFile(photoID, library: lib) { uiImage in
-            if let uiImage {
+    func getFullUiImage(_ photo: Photo, completion: @escaping (Error?) -> Void) async {
+        await readImageFromFile(photo) { uiImage, error in
+            if let uiImage, let uuid = photo.uuid {
                 DispatchQueue.main.async {
-                    self.data.updateValue(uiImage, forKey: photoID)
-                    self.fullsizeArr.append(photoID)
+                    self.data.updateValue(uiImage, forKey: uuid)
+                    self.fullsizeArr.append(uuid)
                     self.objectWillChange.send()
                 }
             }

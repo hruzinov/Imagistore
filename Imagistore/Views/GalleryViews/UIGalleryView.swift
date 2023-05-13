@@ -15,6 +15,7 @@ struct UIGalleryView: View {
     @Binding var scrollTo: UUID?
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
+    @Binding var syncArr: [UUID]
 
     @State var openedImage: UUID?
     @State var goToDetailedView: Bool = false
@@ -34,21 +35,7 @@ struct UIGalleryView: View {
                         GeometryReader { geometryReader in
                             let size = geometryReader.size
                             VStack {
-                                Button {
-                                    if selectingMode {
-                                        if let index = selectedImagesArray.firstIndex(of: item) {
-                                            selectedImagesArray.remove(at: index)
-                                        } else {
-                                            selectedImagesArray.append(item)
-                                        }
-                                    } else {
-                                        if let uuid = item.uuid {
-                                            openedImage = uuid
-                                            goToDetailedView.toggle()
-                                        }
-                                    }
-                                } label: {
-                                    if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
+                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
@@ -93,6 +80,19 @@ struct UIGalleryView: View {
                                                 }
                                             }
                                     }
+                            }
+                            .onTapGesture {
+                                if selectingMode {
+                                    if let index = selectedImagesArray.firstIndex(of: item) {
+                                        selectedImagesArray.remove(at: index)
+                                    } else {
+                                        selectedImagesArray.append(item)
+                                    }
+                                } else {
+                                    if let uuid = item.uuid {
+                                        openedImage = uuid
+                                        goToDetailedView.toggle()
+                                    }
                                 }
                             }
                         }
@@ -102,7 +102,19 @@ struct UIGalleryView: View {
                 }
                 VStack {
                     if isMainLibraryScreen {
-                        Text("\(photos.count) Photos").bold()
+                        Text("\(photos.count) Photos")
+                            .font(.callout)
+                            .bold()
+                        if syncArr.count > 0 {
+                            Text("Syncing: \(syncArr.count) photos left")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        } else {
+                            Label("Synced", systemImage: "checkmark")
+//                            Text("Synced")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
                 .padding(.vertical, 10)

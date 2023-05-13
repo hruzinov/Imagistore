@@ -53,12 +53,11 @@ extension PhotosLibrary {
                          in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         do {
             images.forEach { photo in
-                if let uuid = photo.uuid, let index = library.photos.firstIndex(of: uuid) {
-                    context.delete(photo)
-                    library.photos.remove(at: index)
-                    let (_, error) = removeImageFile(uuid, library: library)
+                context.delete(photo)
+                removeImageFile(photo) { _, error in
                     if let error { competition(error) }
                 }
+                library.removeFromPhotos(photo)
             }
             try context.save()
         } catch {
@@ -68,7 +67,7 @@ extension PhotosLibrary {
     }
     func clearBin(_ lib: PhotosLibrary, in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         let request = Photo.fetchRequest()
-        let libPredicate = NSPredicate(format: "library = %@", lib.id as CVarArg)
+        let libPredicate = NSPredicate(format: "library = %@", lib as CVarArg)
         let deletedPredicate = NSPredicate(format: "deletionDate < %@", DateTimeFunctions.deletionDate as CVarArg)
         request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [libPredicate, deletedPredicate])
 

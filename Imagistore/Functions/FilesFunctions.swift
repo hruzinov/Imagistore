@@ -3,6 +3,9 @@
 //
 
 import SwiftUI
+import CloudKit
+
+private let cloudDatabase = CKContainer(identifier: "iCloud.com.gruzinov.imagistore.photos").privateCloudDatabase
 
 private let documentsDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 private func photosFilePath(_ libID: UUID) -> URL {
@@ -13,16 +16,50 @@ private func directoryExistsAtPath(_ path: String) -> Bool {
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
     return exists && isDirectory.boolValue
 }
+func imageFileURL (_ id: UUID, libraryID: UUID) -> URL {
+    return photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
+}
 
-func readImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) async {
-    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
-    let uiImage = UIImage(contentsOfFile: filepath.path)
-    if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    completion(uiImage)
+func readImageFromFile(_ photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) async {
+    if let uuid = photo.uuid, let cloudID = photo.fullsizeCloudID {
+        let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
+        let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
+        if uiImage == nil {
+            print("TestDebug — no local file")
+            do {
+                let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
+                let photoAsset = record.value(forKey: "asset") as? CKAsset
+                var cloudUiImage: UIImage?
+                if let photoAsset, let photoURL = photoAsset.fileURL {
+                    cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
+                    print("TestDebug — generationg UIImage")
+                }
+
+
+                if cloudUiImage == nil {
+                    print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
+                    print("TestDebug — cloud image is nil")
+                } else if writeImageToFile(uuid, uiImage: cloudUiImage!, library: photo.library) {
+                    print("TestDebug — writed to file")
+                    completion(cloudUiImage, nil)
+                } else {
+                    print("TestDebug — some else")
+                    completion(nil, nil)
+                }
+
+            } catch {
+                print("TestDebug — \(error.localizedDescription)")
+                completion(nil, error)
+            }
+        }
+        completion(uiImage, nil)
+    } else {
+        completion(nil, nil)
+    }
 }
 func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) -> Bool {
     let data = uiImage.heic()
-    let libraryPath = photosFilePath(library.id)
+    let libraryPath = photosFilePath(library.uuid)
 
     if let data {
         if !directoryExistsAtPath(libraryPath.path()) {
@@ -47,20 +84,26 @@ func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) ->
     return false
 }
 
-func removeImageFile(_ id: UUID, library: PhotosLibrary) -> (Bool, Error?) {
-    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
+func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Void) {
+    let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(photo.uuid!.uuidString + ".heic")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         print("Image file deleted from path \(filepath)")
-        return (true, nil)
+
+        if let fullsizeCloudID = photo.fullsizeCloudID {
+            cloudDatabase.delete(withRecordID: CKRecord.ID(recordName: fullsizeCloudID)) { _, _ in
+            }
+        }
+
+        completion(true, nil)
     } catch {
         switch error._code {
         case 4:
             print("An obscure image has been deleted")
-            return (true, nil)
+            completion(true, nil)
         default:
             print(error)
-            return (false, error)
+            completion(false, error)
         }
     }
 }

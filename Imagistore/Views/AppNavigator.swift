@@ -22,7 +22,7 @@ struct AppNavigator: View {
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
                                 photos: FetchRequest(sortDescriptors: [],
-                                        predicate: NSPredicate(format: "library = %@", photosLibrary.id as CVarArg)),
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary)),
                                         applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)

@@ -26,6 +26,7 @@
 		497CC1E42A07FBD9006F1BC9 /* Photo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497CC1E22A07FBD9006F1BC9 /* Photo+CoreDataClass.swift */; };
 		497CC1E52A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */; };
 		49A5CFB629DAD0100072C43B /* UIAlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5CFB529DAD0100072C43B /* UIAlbumBlockView.swift */; };
+		49B7E7EE2A0F905F0057237F /* converter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B7E7ED2A0F905F0057237F /* converter.swift */; };
 		49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */; };
 		49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */; };
 		49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */; };
@@ -63,6 +64,7 @@
 		497CC1E22A07FBD9006F1BC9 /* Photo+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataClass.swift"; sourceTree = "<group>"; };
 		497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		49A5CFB529DAD0100072C43B /* UIAlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlbumBlockView.swift; sourceTree = "<group>"; };
+		49B7E7ED2A0F905F0057237F /* converter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = converter.swift; sourceTree = "<group>"; };
 		49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Modifiers.swift"; sourceTree = "<group>"; };
 		49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				4937530529BE2FA6006F9CD8 /* Views */,
 				493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */,
 				491289AD29C088CE000D138A /* Info.plist */,
+				49B7E7ED2A0F905F0057237F /* converter.swift */,
 			);
 			path = Imagistore;
 			sourceTree = "<group>";
@@ -312,6 +315,7 @@
 				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,
 				49737E5929EBF18E00168A63 /* AppNavigator.swift in Sources */,
 				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
+				49B7E7EE2A0F905F0057237F /* converter.swift in Sources */,
 				49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */,
 				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
@@ -457,7 +461,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -473,15 +477,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -493,7 +497,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -509,15 +513,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

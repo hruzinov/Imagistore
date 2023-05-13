@@ -10,7 +10,7 @@ public class PhotosLibrary: NSManagedObject {
     static var actualLibraryVersion = 1
 
     lazy var idPredicate = {
-        NSPredicate(format: "id = %@", self.id as CVarArg)
+        NSPredicate(format: "uuid = %@", self.uuid as CVarArg)
     }()
 }
 
