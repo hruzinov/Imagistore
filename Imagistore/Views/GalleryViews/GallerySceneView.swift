@@ -19,6 +19,7 @@ struct GallerySceneView: View {
     @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
+    @Binding var scrollToBottom: Bool
 
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
@@ -42,6 +43,7 @@ struct GallerySceneView: View {
                         sortingArgument: $sortingArgument,
                         imageHolder: imageHolder,
                         scrollTo: $scrollTo,
+                        scrollToBottom: $scrollToBottom,
                         selectingMode: $selectingMode,
                         selectedImagesArray: $selectedImagesArray,
                         syncArr: $syncArr,
@@ -191,6 +193,7 @@ struct GallerySceneView: View {
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             var cloudRecords = [CKRecord]()
+            var lastUUID: UUID?
             for item in importSelectedItems {
                 withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }
 
@@ -232,7 +235,7 @@ struct GallerySceneView: View {
                             do {
                                 try viewContext.save()
                                 count+=1
-                                scrollTo = newPhoto.uuid
+                                lastUUID = uuid
 
                             } catch {
                                 sceneSettings.errorAlertData = error.localizedDescription
@@ -243,6 +246,7 @@ struct GallerySceneView: View {
                 }
             }
             withAnimation {
+                scrollTo = lastUUID
                 sceneSettings.infoBarFinal = true; sceneSettings.infoBarData = "\(count) photos saved"
                 sceneSettings.infoBarProgress = Double(count) / Double(importCount)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -255,11 +259,9 @@ struct GallerySceneView: View {
         }
     }
     private func uploadPhotos(_ records: [CKRecord]) {
-        let database = CKContainer(identifier: "iCloud.com.gruzinov.imagistore.photos").privateCloudDatabase
-
         for item in records {
             do {
-                database.save(item) { record, error in
+                cloudDatabase.save(item) { record, error in
                     if let error {
                         debugPrint(error)
                     } else {

@@ -4,6 +4,7 @@
 
 import SwiftUI
 import CoreData
+import CloudKit
 
 func generateMiniatureData(_ uiImage: UIImage) -> Data? {
     let miniatureMaxSize: CGFloat = 320
@@ -20,7 +21,7 @@ func generateMiniatureData(_ uiImage: UIImage) -> Data? {
     let uiImageMini = renderer.image { (_) in
         uiImage.draw(in: CGRect(origin: .zero, size: size))
     }
-    let data = uiImageMini.heic(compressionQuality: 0.6)
+    let data = uiImageMini.heic(compressionQuality: 0.1)
     return data
 }
 
@@ -52,12 +53,24 @@ extension PhotosLibrary {
     func permanentRemove(_ images: [Photo], library: PhotosLibrary,
                          in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         do {
+            var cloudIDArr = [CKRecord.ID]()
             images.forEach { photo in
                 context.delete(photo)
                 removeImageFile(photo) { _, error in
                     if let error { competition(error) }
                 }
                 library.removeFromPhotos(photo)
+                if let cloudID = photo.fullsizeCloudID {
+                    cloudIDArr.append(CKRecord.ID(recordName: cloudID))
+                }
+            }
+            cloudDatabase.modifyRecords(saving: [], deleting: cloudIDArr) { result in
+                switch result {
+                case .success((_, let deletedRecords)):
+                    debugPrint(deletedRecords)
+                case .failure(let error):
+                    competition(error)
+                }
             }
             try context.save()
         } catch {

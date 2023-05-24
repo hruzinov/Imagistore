@@ -5,7 +5,7 @@
 import SwiftUI
 import CloudKit
 
-private let cloudDatabase = CKContainer(identifier: "iCloud.com.gruzinov.imagistore.photos").privateCloudDatabase
+let cloudDatabase = CKContainer(identifier: "iCloud.com.gruzinov.imagistore.photos").privateCloudDatabase
 
 private let documentsDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 private func photosFilePath(_ libID: UUID) -> URL {
@@ -18,6 +18,26 @@ private func directoryExistsAtPath(_ path: String) -> Bool {
 }
 func imageFileURL (_ id: UUID, libraryID: UUID) -> URL {
     return photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
+}
+
+func checkFileRecord(_ item: Photo) {
+    if let recordID = item.fullsizeCloudID {
+        cloudDatabase.fetch(withRecordID: CKRecord.ID(recordName: recordID)) { record, error in
+            if let error {
+                debugPrint(error)
+            } else if record == nil, let uuid = item.uuid {
+                let imageAsset = CKAsset(fileURL: imageFileURL(uuid, libraryID: item.library.uuid))
+                let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
+                photoCloudRecord["library"] = item.library.uuid.uuidString as CKRecordValue
+                photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
+                photoCloudRecord["asset"] = imageAsset
+                item.fullsizeCloudID = photoCloudRecord.recordID.recordName
+                cloudDatabase.save(photoCloudRecord) { _, error in
+                    debugPrint(error as Any)
+                }
+            }
+        }
+    }
 }
 
 func readImageFromFile(_ photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) async {
@@ -89,12 +109,6 @@ func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Voi
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         print("Image file deleted from path \(filepath)")
-
-        if let fullsizeCloudID = photo.fullsizeCloudID {
-            cloudDatabase.delete(withRecordID: CKRecord.ID(recordName: fullsizeCloudID)) { _, _ in
-            }
-        }
-
         completion(true, nil)
     } catch {
         switch error._code {

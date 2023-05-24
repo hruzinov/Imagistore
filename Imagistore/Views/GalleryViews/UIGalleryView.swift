@@ -13,6 +13,7 @@ struct UIGalleryView: View {
     @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
+    @Binding var scrollToBottom: Bool
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
     @Binding var syncArr: [UUID]
@@ -40,7 +41,7 @@ struct UIGalleryView: View {
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
-                                            .id(item.id)
+                                            .id(item.uuid)
                                             .overlay(
                                                 ZStack {
                                                     if let deletionDate = item.deletionDate {
@@ -110,8 +111,7 @@ struct UIGalleryView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         } else {
-                            Label("Synced", systemImage: "checkmark")
-//                            Text("Synced")
+                            Text("Synced")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
@@ -124,6 +124,7 @@ struct UIGalleryView: View {
                     .opacity(0)
                     .id("bottomRectangle")
             }
+            .onAppear { scrollToBottom.toggle() }
             .onChange(of: scrollTo) { _ in
                 if let scrollTo {
                     if sortingArgument == .importDate {
@@ -135,6 +136,12 @@ struct UIGalleryView: View {
             }
             .onChange(of: openedImage) { _ in
                 scroll.scrollTo(openedImage, anchor: .center)
+            }
+            .onChange(of: scrollToBottom) { _ in
+                if scrollToBottom {
+                    scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                    scrollToBottom.toggle()
+                }
             }
             .fullScreenCover(isPresented: $goToDetailedView) {
                 ImageDetailedView(library: library, photos: photos,

@@ -49,6 +49,7 @@ struct ImageDetailedView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
+                                            .task { checkFileRecord(item) }
                                     } else if let uiImage = imageHolder.data[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
