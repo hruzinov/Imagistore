@@ -11,6 +11,8 @@ class DateTimeFunctions {
         return dateFormatter.string(from: date)
     }
 
+    static var deletionDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+
     static func daysLeft(_ date: Date) -> Double {
         var dateComponent = DateComponents()
         dateComponent.day = 30

@@ -6,15 +6,17 @@ import SwiftUI
 
 struct UIAlbumBlockView: View {
     @StateObject var library: PhotosLibrary
-    @Binding var sortingSelector: PhotosSortArgument
+    @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
-    var photos: [Photo] { library.sortedPhotos(by: sortingSelector, filter: .normal) }
+    var photos: FetchedResults<Photo>
+    var filteredPhotos: [Photo] {
+        sortedPhotos(photos, by: sortingArgument, filter: .normal)
+    }
 
     var body: some View {
         HStack {
-            if photos.last != nil {
-                let lastImage = photos.last!
-                if let uiImage = imageHolder.data[lastImage.id] {
+            if let lastImage = filteredPhotos.last, let lastID = lastImage.uuid {
+                if let uiImage = imageHolder.data[lastID] {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -26,7 +28,10 @@ struct UIAlbumBlockView: View {
                 } else {
                     ProgressView().progressViewStyle(.circular)
                         .task {
-                            await imageHolder.getUiImage(lastImage, lib: library)
+                            if let data = lastImage.miniature, let uiImage = UIImage(data: data) {
+                                imageHolder.data[lastID] = uiImage
+                                imageHolder.objectWillChange.send()
+                            }
                         }
                 }
             } else {
@@ -53,7 +58,7 @@ struct UIAlbumBlockView: View {
                             .padding(5)
                             .bold()
                         Spacer()
-                        Text(String(photos.count))
+                        Text(String(filteredPhotos.count))
                     }
                 }
                 .font(.subheadline)

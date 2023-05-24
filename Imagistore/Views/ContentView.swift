@@ -3,14 +3,18 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ContentView: View {
     @StateObject var photosLibrary: PhotosLibrary
     @EnvironmentObject var sceneSettings: SceneSettings
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest var photos: FetchedResults<Photo>
 
-    @State var sortingSelector: PhotosSortArgument = .importDate
+    @State var sortingArgument: PhotosSortArgument = .importDate
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
+    @State var scrollToBottom: Bool = false
 
     @Binding var applicationSettings: ApplicationSettings
     @StateObject var imageHolder: UIImageHolder
@@ -18,7 +22,8 @@ struct ContentView: View {
     var handler: Binding<Tab> { Binding(
         get: { selectedTab },
         set: {
-            if $0 == selectedTab { navToRoot = true }
+            if $0 == .library && $0 == selectedTab { scrollToBottom = true }
+            else if $0 == .albums && $0 == selectedTab { navToRoot = true }
             self.selectedTab = $0
         }
     )}
@@ -26,12 +31,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                                 imageHolder: imageHolder, navToRoot: $navToRoot,
+                GallerySceneView(library: photosLibrary, photos: photos, sortingArgument: $sortingArgument,
+                                 imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: $scrollToBottom,
                                  photosSelector: .normal, isMainLibraryScreen: true)
                 .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, sortingSelector: $sortingSelector,
-                                navToRoot: $navToRoot, imageHolder: imageHolder)
+                AlbumsSceneView(library: photosLibrary, sortingArgument: $sortingArgument,
+                                navToRoot: $navToRoot, imageHolder: imageHolder, photos: photos)
                 .tag(Tab.albums)
             }
             .overlay(alignment: .bottom) {
@@ -39,6 +44,7 @@ struct ContentView: View {
             }
             .toolbar(.hidden, for: .tabBar)
         }
+
         .overlay(alignment: .center, content: {
             if sceneSettings.isShowingInfoBar {
                 UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
@@ -47,7 +53,7 @@ struct ContentView: View {
             }
         })
         .onAppear {
-            photosLibrary.clearBin(photosLibrary) { err in
+            photosLibrary.clearBin(photosLibrary, in: viewContext) { err in
                 if let err {
                     sceneSettings.errorAlertData = err.localizedDescription
                     sceneSettings.isShowingErrorAlert.toggle()

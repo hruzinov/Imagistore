@@ -7,9 +7,10 @@ import SwiftUI
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject var library: PhotosLibrary
-    @Binding var sortingSelector: PhotosSortArgument
+    @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
     @StateObject var imageHolder: UIImageHolder
+    var photos: FetchedResults<Photo>
 
     var albums: [String] = []
 
@@ -27,11 +28,11 @@ struct AlbumsSceneView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
                         NavigationLink(destination: {
-                            GallerySceneView(library: library, sortingSelector: $sortingSelector,
-                                             imageHolder: imageHolder, navToRoot: $navToRoot, photosSelector: .normal)
+                            GallerySceneView(library: library, photos: photos, sortingArgument: $sortingArgument,
+                                             imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .normal)
                         }, label: {
-                            UIAlbumBlockView(library: library, sortingSelector: $sortingSelector,
-                                             imageHolder: imageHolder)
+                            UIAlbumBlockView(library: library, sortingArgument: $sortingArgument,
+                                             imageHolder: imageHolder, photos: photos)
                         })
 
                     }
@@ -47,14 +48,14 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: library, sortingSelector: $sortingSelector,
-                                         imageHolder: imageHolder, navToRoot: $navToRoot, photosSelector: .deleted)
+                        GallerySceneView(library: library, photos: photos, sortingArgument: $sortingArgument,
+                                         imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .deleted)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
                             Spacer()
-                            Text(String(library.photos.filter({ img in
-                                img.status == .deleted
+                            Text(String(photos.filter({ img in
+                                img.status == PhotoStatus.deleted.rawValue
                             }).count)).foregroundColor(Color.secondary)
                             Image(systemName: "chevron.forward").foregroundColor(Color.secondary)
                         }

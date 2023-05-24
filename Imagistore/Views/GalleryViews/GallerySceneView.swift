@@ -4,15 +4,22 @@
 
 import SwiftUI
 import PhotosUI
+import CloudKit
 
 struct GallerySceneView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
+    var photos: FetchedResults<Photo>
+    var filteredPhotos: [Photo] {
+        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+    }
 
-    @Binding var sortingSelector: PhotosSortArgument
+    @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
+    @Binding var scrollToBottom: Bool
 
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
@@ -23,21 +30,23 @@ struct GallerySceneView: View {
     @State var selectedImagesArray: [Photo] = []
     @State var isPresentingConfirm: Bool = false
     @State var scrollTo: UUID?
+    @State var syncArr = [UUID]()
 
     var body: some View {
         NavigationStack {
             VStack {
-                if library.photos.filter({ img in
-                    img.status == photosSelector
-                }).count > 0 {
+                if filteredPhotos.count > 0 {
                     UIGalleryView(
                         library: library,
+                        photos: filteredPhotos,
                         photosSelector: photosSelector,
-                        sortingSelector: $sortingSelector,
+                        sortingArgument: $sortingArgument,
                         imageHolder: imageHolder,
                         scrollTo: $scrollTo,
+                        scrollToBottom: $scrollToBottom,
                         selectingMode: $selectingMode,
                         selectedImagesArray: $selectedImagesArray,
+                        syncArr: $syncArr,
                         isMainLibraryScreen: isMainLibraryScreen
                     )
                 } else {
@@ -93,7 +102,7 @@ struct GallerySceneView: View {
                     }
                     if photosSelector != .deleted, !selectingMode {
                         Menu {
-                            Picker(selection: $sortingSelector.animation()) {
+                            Picker(selection: $sortingArgument.animation()) {
                                 Text("Creation date").tag(PhotosSortArgument.creationDate)
                                 Text("Importing date").tag(PhotosSortArgument.importDate)
                             } label: {}
@@ -150,21 +159,21 @@ struct GallerySceneView: View {
         withAnimation {
             switch direction {
             case .bin:
-                library.toBin(selectedImagesArray) { err in
+                library.toBin(selectedImagesArray, in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .recover:
-                library.recoverImages(selectedImagesArray) { err in
+                library.recoverImages(selectedImagesArray, in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
                     }
                 }
             case .permanent:
-                library.permanentRemove(selectedImagesArray, library: library) { err in
+                library.permanentRemove(selectedImagesArray, library: library, in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
@@ -179,16 +188,14 @@ struct GallerySceneView: View {
 
     private func importFromPhotosApp() {
         Task {
-            sceneSettings.infoBarData = "Importing..."
-            sceneSettings.infoBarFinal = false
+            sceneSettings.infoBarData = "Importing..."; sceneSettings.infoBarFinal = false
             let importCount = importSelectedItems.count
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
-            var newPhotos: [Photo] = []
+            var cloudRecords = [CKRecord]()
+            var lastUUID: UUID?
             for item in importSelectedItems {
-                withAnimation {
-                    sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count)
-                }
+                withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }
 
                 if let data = try? await item.loadTransferable(type: Data.self) {
                     let uiImage = UIImage(data: data)
@@ -199,37 +206,71 @@ struct GallerySceneView: View {
                             creationDate = asset?.creationDate ?? Date()
                         } else { creationDate = Date() }
 
-                        let fileExtension: PhotoExtension
-                        if let format = item.supportedContentTypes.first?.identifier, format == "public.png" {
-                            fileExtension = .png
-                        } else { fileExtension = .jpg }
+                        let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension
+                        let uuid = UUID()
+                        let data = generateMiniatureData(uiImage)
 
-                        let uuid = writeImageToFile(uiImage: uiImage, library: library)
-                        if let uuid {
-                            newPhotos.append(Photo(id: uuid, status: .normal, creationDate: creationDate,
-                                                   importDate: Date(), fileExtension: fileExtension, keywords: []))
-                            count += 1
+                        if writeImageToFile(uuid, uiImage: uiImage, library: library) {
+                            let newPhoto = Photo(context: viewContext)
+                            newPhoto.uuid = uuid
+                            newPhoto.library = library
+                            newPhoto.status = PhotoStatus.normal.rawValue
+                            newPhoto.creationDate = creationDate
+                            newPhoto.importDate = Date()
+                            newPhoto.deletionDate = nil
+                            newPhoto.fileExtension = fileExtension
+                            newPhoto.miniature = data
+                            library.addToPhotos(newPhoto)
+
+                            let imageAsset = CKAsset(fileURL: imageFileURL(uuid, libraryID: library.uuid))
+
+                            let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
+                            photoCloudRecord["library"] = library.uuid.uuidString as CKRecordValue
+                            photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
+                            photoCloudRecord["asset"] = imageAsset
+                            newPhoto.fullsizeCloudID = photoCloudRecord.recordID.recordName
+                            syncArr.append(uuid)
+                            cloudRecords.append(photoCloudRecord)
+
+                            do {
+                                try viewContext.save()
+                                count+=1
+                                lastUUID = uuid
+
+                            } catch {
+                                sceneSettings.errorAlertData = error.localizedDescription
+                                sceneSettings.isShowingErrorAlert.toggle()
+                            }
                         }
                     }
                 }
             }
             withAnimation {
-                library.addImages(newPhotos) { finalCount, err in
-                    if let err {
-                        sceneSettings.errorAlertData = err.localizedDescription
-                        sceneSettings.isShowingErrorAlert.toggle()
+                scrollTo = lastUUID
+                sceneSettings.infoBarFinal = true; sceneSettings.infoBarData = "\(count) photos saved"
+                sceneSettings.infoBarProgress = Double(count) / Double(importCount)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation { sceneSettings.isShowingInfoBar.toggle() }
+                }
+            }
+
+            importSelectedItems = []
+            uploadPhotos(cloudRecords)
+        }
+    }
+    private func uploadPhotos(_ records: [CKRecord]) {
+        for item in records {
+            do {
+                cloudDatabase.save(item) { record, error in
+                    if let error {
+                        debugPrint(error)
                     } else {
-                        scrollTo = newPhotos.last?.id
-                        sceneSettings.infoBarFinal = true
-                        sceneSettings.infoBarData = "\(finalCount) photos saved"
-                        sceneSettings.infoBarProgress = Double(finalCount) / Double(importCount)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            withAnimation { sceneSettings.isShowingInfoBar.toggle() }
+                        if let index = syncArr.firstIndex(where: { $0.uuidString == record?.value(forKey: "photo") as! String}) {
+                            syncArr.remove(at: index)
                         }
                     }
                 }
             }
-            importSelectedItems = []
         }
     }
 }

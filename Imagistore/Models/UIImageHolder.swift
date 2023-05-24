@@ -22,26 +22,12 @@ class UIImageHolder: ObservableObject {
             return nil
         }
     }
-
-    func getUiImage(_ photo: Photo, lib: PhotosLibrary) async {
-        await readImageFromFile(photo.id, library: lib) { uiImage in
-            if let uiImage {
+    func getFullUiImage(_ photo: Photo, completion: @escaping (Error?) -> Void) async {
+        await readImageFromFile(photo) { uiImage, error in
+            if let uiImage, let uuid = photo.uuid {
                 DispatchQueue.main.async {
-                    self.data[photo.id] = uiImage
-                    self.objectWillChange.send()
-                }
-            } else {
-                self.notFound.append(photo.id)
-            }
-        }
-    }
-
-    func getFullUiImage(_ photo: Photo, lib: PhotosLibrary) async {
-        await readFullImageFromFile(photo.id, library: lib) { uiImage in
-            if let uiImage {
-                DispatchQueue.main.async {
-                    self.data.updateValue(uiImage, forKey: photo.id)
-                    self.fullsizeArr.append(photo.id)
+                    self.data.updateValue(uiImage, forKey: uuid)
+                    self.fullsizeArr.append(uuid)
                     self.objectWillChange.send()
                 }
             }

@@ -7,18 +7,18 @@ import SwiftUI
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
-    var photos: [Photo] {
-        library.sortedPhotos(by: sortingSelector, filter: photosSelector)
-    }
+    var photos: [Photo]
 
     @State var photosSelector: PhotoStatus
-    @Binding var sortingSelector: PhotosSortArgument
+    @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
+    @Binding var scrollToBottom: Bool
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
+    @Binding var syncArr: [UUID]
 
-    @State var openedImage: UUID = UUID()
+    @State var openedImage: UUID?
     @State var goToDetailedView: Bool = false
     @State var isMainLibraryScreen: Bool = false
 
@@ -36,26 +36,12 @@ struct UIGalleryView: View {
                         GeometryReader { geometryReader in
                             let size = geometryReader.size
                             VStack {
-                                Button {
-                                    if selectingMode {
-                                        if let index = selectedImagesArray.firstIndex(of: item) {
-                                            selectedImagesArray.remove(at: index)
-                                        } else {
-                                            selectedImagesArray.append(item)
-                                        }
-                                    } else {
-                                        if !imageHolder.notFound.contains(item.id) {
-                                            openedImage = item.id
-                                            goToDetailedView.toggle()
-                                        }
-                                    }
-                                } label: {
-                                    if let uiImage = imageHolder.data[item.id] {
+                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
-                                            .id(item.id)
+                                            .id(item.uuid)
                                             .overlay(
                                                 ZStack {
                                                     if let deletionDate = item.deletionDate {
@@ -84,31 +70,29 @@ struct UIGalleryView: View {
                                                         .padding(5)
                                                 }
                                             })
-                                    } else if imageHolder.notFound.contains(item.id) {
-                                        VStack(spacing: 10) {
-                                            Image(systemName: "exclamationmark.triangle.fill").font(.title2)
-                                            Text("Image not found").font(.callout)
-                                        }
-                                        .frame(width: size.height, height: size.width, alignment: .center)
-                                        .foregroundColor(.primary)
-                                        .overlay(alignment: .bottomTrailing, content: {
-                                            if selectedImagesArray.contains(item) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .font(.title2)
-                                                    .foregroundColor(Color.accentColor)
-                                                    .padding(1)
-                                                    .background(Circle().fill(.white))
-                                                    .padding(5)
-                                            }
-                                        })
                                     } else {
                                         Rectangle()
                                             .fill(Color.gray)
-//                                            .progressViewStyle(.circular)
-//                                            .frame(width: size.height, height: size.width, alignment: .center)
                                             .task {
-                                                await imageHolder.getUiImage(item, lib: library)
+                                                if let uuid = item.uuid,
+                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
+                                                    imageHolder.data[uuid] = uiImage
+                                                    imageHolder.objectWillChange.send()
+                                                }
                                             }
+                                    }
+                            }
+                            .onTapGesture {
+                                if selectingMode {
+                                    if let index = selectedImagesArray.firstIndex(of: item) {
+                                        selectedImagesArray.remove(at: index)
+                                    } else {
+                                        selectedImagesArray.append(item)
+                                    }
+                                } else {
+                                    if let uuid = item.uuid {
+                                        openedImage = uuid
+                                        goToDetailedView.toggle()
                                     }
                                 }
                             }
@@ -119,7 +103,18 @@ struct UIGalleryView: View {
                 }
                 VStack {
                     if isMainLibraryScreen {
-                        Text("\(photos.count) Photos").bold()
+                        Text("\(photos.count) Photos")
+                            .font(.callout)
+                            .bold()
+                        if syncArr.count > 0 {
+                            Text("Syncing: \(syncArr.count) photos left")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        } else {
+                            Text("Synced")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
                 .padding(.vertical, 10)
@@ -129,9 +124,10 @@ struct UIGalleryView: View {
                     .opacity(0)
                     .id("bottomRectangle")
             }
+            .onAppear { scrollToBottom.toggle() }
             .onChange(of: scrollTo) { _ in
                 if let scrollTo {
-                    if sortingSelector == .importDate {
+                    if sortingArgument == .importDate {
                         scroll.scrollTo("bottomRectangle", anchor: .bottom)
                     } else {
                         scroll.scrollTo(scrollTo, anchor: .center)
@@ -141,11 +137,15 @@ struct UIGalleryView: View {
             .onChange(of: openedImage) { _ in
                 scroll.scrollTo(openedImage, anchor: .center)
             }
+            .onChange(of: scrollToBottom) { _ in
+                if scrollToBottom {
+                    scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                    scrollToBottom.toggle()
+                }
+            }
             .fullScreenCover(isPresented: $goToDetailedView) {
-                ImageDetailedView(library: library, photosSelector: photosSelector,
-                                  sortingSelector: $sortingSelector, imageHolder: imageHolder,
-                                  selectedImage: $openedImage)
-
+                ImageDetailedView(library: library, photos: photos,
+                        photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
             }
         }
     }

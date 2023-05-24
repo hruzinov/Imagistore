@@ -3,9 +3,9 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct AppNavigator: View {
-    @State var librariesCollection: PhotosLibrariesCollection?
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
     @StateObject var imageHolder: UIImageHolder = UIImageHolder()
@@ -19,19 +19,13 @@ struct AppNavigator: View {
     var body: some View {
         ZStack {
             if loaded {
-                //                if applicationSettings.isFirstLaunch {
-                //                    LoginSceneView(applicationSettings: $applicationSettings)
-                //                } else
                 if let photosLibrary {
                     ContentView(photosLibrary: photosLibrary,
-                                applicationSettings: $applicationSettings, imageHolder: imageHolder)
-                } else if librariesCollection != nil {
-                    LibrariesSelectorView(applicationSettings: $applicationSettings,
-                                          librariesCollection: $librariesCollection, selectedLibrary: $photosLibrary)
+                                photos: FetchRequest(sortDescriptors: [],
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary)),
+                                        applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
-                    ProgressView("Loading...")
-                        .progressViewStyle(.circular)
-                        .padding(50)
+                    LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
                 }
             } else {
                 ProgressView("Loading...")
@@ -40,24 +34,24 @@ struct AppNavigator: View {
             }
         }
         .onAppear {
-            applicationSettings.load()
-            DispatchQueue.main.async {
-                withAnimation {
-                    if let libId = applicationSettings.lastSelectedLibrary {
-                        let lastLibrary = loadLibrary(id: libId)
-                        if let lastLibrary {
-                            photosLibrary = lastLibrary
-                        } else {
-                            applicationSettings.lastSelectedLibrary = nil
-                            applicationSettings.save()
-                            librariesCollection = loadLibrariesCollection()
-                        }
-                    } else {
-                        librariesCollection = loadLibrariesCollection()
-                    }
+//            applicationSettings.load()
+//            DispatchQueue.main.async {
+//                withAnimation {
+//                    if let libId = applicationSettings.lastSelectedLibrary {
+//                        let lastLibrary = loadLibrary(id: libId)
+//                        if let lastLibrary {
+//                            photosLibrary = lastLibrary
+//                        } else {
+//                            applicationSettings.lastSelectedLibrary = nil
+//                            applicationSettings.save()
+//                            librariesCollection = loadLibrariesCollection()
+//                        }
+//                    } else {
+//                        librariesCollection = loadLibrariesCollection()
+//                    }
                     loaded.toggle()
-                }
-            }
+//                }
+//            }
         }
     }
 }

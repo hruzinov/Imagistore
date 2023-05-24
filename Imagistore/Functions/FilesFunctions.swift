@@ -3,194 +3,121 @@
 //
 
 import SwiftUI
+import CloudKit
 
-private let librariesFileStoragePath = getDocumentsDirectory().appendingPathComponent("libraries.json")
-private let librariesStoragePath = getDocumentsDirectory().appendingPathComponent("libraries/")
+let cloudDatabase = CKContainer(identifier: "iCloud.com.gruzinov.imagistore.photos").privateCloudDatabase
 
-private func getDocumentsDirectory() -> URL {
-    let paths = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
-    return paths!
+private let documentsDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+private func photosFilePath(_ libID: UUID) -> URL {
+    documentsDirectory.appendingPathComponent("fullSizes/\(libID.uuidString)/")
 }
-private func libraryPath(_ lib: UUID) -> URL {
-    librariesStoragePath.appendingPathComponent("\(lib.uuidString)/")
+private func directoryExistsAtPath(_ path: String) -> Bool {
+    var isDirectory: ObjCBool = true
+    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+    return exists && isDirectory.boolValue
 }
-private func photosFullFilePath(_ lib: UUID) -> URL {
-    libraryPath(lib).appendingPathComponent("photos/")
-}
-private func photosFilePath(_ lib: UUID) -> URL {
-    libraryPath(lib).appendingPathComponent("miniatures/")
+func imageFileURL (_ id: UUID, libraryID: UUID) -> URL {
+    return photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
 }
 
-extension PhotosLibrariesCollection {
-    func saveLibraryCollection() -> Error? {
-        do {
-            let stringData = try JSONEncoder().encode(self)
+func checkFileRecord(_ item: Photo) {
+    if let recordID = item.fullsizeCloudID {
+        cloudDatabase.fetch(withRecordID: CKRecord.ID(recordName: recordID)) { record, error in
+            if let error {
+                debugPrint(error)
+            } else if record == nil, let uuid = item.uuid {
+                let imageAsset = CKAsset(fileURL: imageFileURL(uuid, libraryID: item.library.uuid))
+                let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
+                photoCloudRecord["library"] = item.library.uuid.uuidString as CKRecordValue
+                photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
+                photoCloudRecord["asset"] = imageAsset
+                item.fullsizeCloudID = photoCloudRecord.recordID.recordName
+                cloudDatabase.save(photoCloudRecord) { _, error in
+                    debugPrint(error as Any)
+                }
+            }
+        }
+    }
+}
+
+func readImageFromFile(_ photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) async {
+    if let uuid = photo.uuid, let cloudID = photo.fullsizeCloudID {
+        let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
+        let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
+        if uiImage == nil {
+            print("TestDebug — no local file")
             do {
-                try stringData.write(to: librariesFileStoragePath)
-                print("Libraries collection saved")
+                let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
+                let photoAsset = record.value(forKey: "asset") as? CKAsset
+                var cloudUiImage: UIImage?
+                if let photoAsset, let photoURL = photoAsset.fileURL {
+                    cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
+                    print("TestDebug — generationg UIImage")
+                }
+
+
+                if cloudUiImage == nil {
+                    print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
+                    print("TestDebug — cloud image is nil")
+                } else if writeImageToFile(uuid, uiImage: cloudUiImage!, library: photo.library) {
+                    print("TestDebug — writed to file")
+                    completion(cloudUiImage, nil)
+                } else {
+                    print("TestDebug — some else")
+                    completion(nil, nil)
+                }
+
+            } catch {
+                print("TestDebug — \(error.localizedDescription)")
+                completion(nil, error)
+            }
+        }
+        completion(uiImage, nil)
+    } else {
+        completion(nil, nil)
+    }
+}
+func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) -> Bool {
+    let data = uiImage.heic()
+    let libraryPath = photosFilePath(library.uuid)
+
+    if let data {
+        if !directoryExistsAtPath(libraryPath.path()) {
+            do {
+                try FileManager().createDirectory(at: libraryPath, withIntermediateDirectories: true)
+                print("Created directory for photos")
             } catch {
                 print(error)
-                return error
+                return false
             }
-        } catch {
-            print(error)
-            return error
         }
-        return nil
-    }
-}
 
-func saveLibrary(lib: PhotosLibrary, changeDate: Date = Date()) -> Error? {
-    let libraryPath = libraryPath(lib.id)
-    do {
-        try FileManager().createDirectory(at: libraryPath, withIntermediateDirectories: true)
-        lib.lastChangeDate = changeDate
-        let stringData = try JSONEncoder().encode(lib)
+        let filepath = libraryPath.appendingPathComponent(uuid.uuidString + ".heic")
         do {
-            try stringData.write(to: libraryPath.appendingPathComponent("library.json"))
-            print("Library saved")
-        } catch {
-            print(error)
-            return error
-        }
-    } catch {
-        print(error)
-        return error
-    }
-    return nil
-}
-
-func loadLibrariesCollection() -> PhotosLibrariesCollection? {
-    let generalLibrariesPath = librariesStoragePath
-    try? FileManager().createDirectory(at: generalLibrariesPath, withIntermediateDirectories: true)
-    let stringData = try? String(contentsOf: librariesFileStoragePath).data(using: .utf8)
-    guard let stringData else {
-        let newLibrariesCollection = PhotosLibrariesCollection()
-        _ = newLibrariesCollection.saveLibraryCollection()
-        return newLibrariesCollection
-    }
-
-    var librariesCollection: PhotosLibrariesCollection?
-
-    do {
-        librariesCollection = try JSONDecoder().decode(PhotosLibrariesCollection.self, from: stringData)
-        return librariesCollection
-    } catch {
-        print(error)
-    }
-    return  librariesCollection
-}
-
-func loadLibrary(id: UUID) -> PhotosLibrary? {
-    let libraryPath = libraryPath(id).appendingPathComponent("library.json")
-    let stringData = try? String(contentsOf: libraryPath).data(using: .utf8)
-    print("Library loaded in path \(libraryPath)")
-
-    guard let stringData else { return nil }
-
-    var library: PhotosLibrary?
-
-    do {
-        library = try JSONDecoder().decode(PhotosLibrary.self, from: stringData)
-    } catch {
-        print(error)
-    }
-
-    //    if library.libraryVersion < PhotosLibrary.actualLibraryVersion {
-    //        var allOk = true
-    //
-    //        switch library.libraryVersion {
-    //
-    //        case 1:
-    //            ///
-    //
-    //        default:
-    //            print("Unknown library version: \(String(describing: library.libraryVersion))")
-    //            allOk = false
-    //        }
-    //
-    //        if allOk {
-    //            print("Library updated to version \(PhotosLibrary.actualLibraryVersion)")
-    //            library.libraryVersion = PhotosLibrary.actualLibraryVersion
-    //            _ = saveLibrary(lib: library)
-    //        }
-    //    }
-
-    return library
-}
-
-func readImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) async {
-    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
-    let uiImage = UIImage(contentsOfFile: filepath.path)
-    if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    completion(uiImage)
-}
-func readFullImageFromFile(_ id: UUID, library: PhotosLibrary, completion: @escaping (UIImage?) -> Void) async {
-    let filepath = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
-    let uiImage = UIImage(contentsOfFile: filepath.path)
-    if uiImage == nil {print("Image file not found in path: \(filepath)")}
-    completion(uiImage)
-}
-
-func writeImageToFile(uiImage: UIImage, library: PhotosLibrary) -> UUID? {
-    let dataFull = uiImage.heic()
-    let maxSize: CGFloat = 320
-
-    let size: CGSize
-    if uiImage.size.width > uiImage.size.height {
-        let coefficient = uiImage.size.width / maxSize
-        size = CGSize(width: maxSize, height: uiImage.size.height / coefficient)
-    } else {
-        let coefficient = uiImage.size.height / maxSize
-        size = CGSize(width: uiImage.size.width / coefficient, height: maxSize)
-    }
-
-    let renderer = UIGraphicsImageRenderer(size: size)
-    let uiImageMini = renderer.image { (_) in
-        uiImage.draw(in: CGRect(origin: .zero, size: size))
-    }
-    let data = uiImageMini.heic(compressionQuality: 0.7)
-
-    if let data, let dataFull {
-        let uuid = UUID()
-        let filepath = photosFilePath(library.id).appendingPathComponent(uuid.uuidString + ".heic")
-        do {
-            try FileManager().createDirectory(at: photosFilePath(library.id), withIntermediateDirectories: true)
             try data.write(to: filepath)
         } catch {
             print(error)
         }
-        print("New image miniature file created in path \(filepath)")
-
-        let filepathFull = photosFullFilePath(library.id).appendingPathComponent(uuid.uuidString + ".heic")
-        do {
-            try FileManager().createDirectory(at: photosFullFilePath(library.id), withIntermediateDirectories: true)
-            try dataFull.write(to: filepathFull)
-        } catch {
-            print(error)
-        }
-        print("New image file created in path \(filepathFull)")
-        return uuid
+        print("New image file created in path \(filepath)")
+        return true
     }
-
-    return nil
+    return false
 }
-func removeImageFile(_ id: UUID, library: PhotosLibrary) -> (Bool, Error?) {
-    let filepath = photosFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
-    let filepathFull = photosFullFilePath(library.id).appendingPathComponent(id.uuidString + ".heic")
+
+func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Void) {
+    let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(photo.uuid!.uuidString + ".heic")
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
-        try FileManager.default.removeItem(atPath: filepathFull.path)
         print("Image file deleted from path \(filepath)")
-        return (true, nil)
+        completion(true, nil)
     } catch {
         switch error._code {
         case 4:
             print("An obscure image has been deleted")
-            return (true, nil)
+            completion(true, nil)
         default:
             print(error)
-            return (false, error)
+            completion(false, error)
         }
     }
 }
