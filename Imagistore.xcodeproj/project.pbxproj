@@ -1,0 +1,565 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		490793EA2A08D6D600F6FDAE /* LibraryFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490793E92A08D6D600F6FDAE /* LibraryFunctions.swift */; };
+		49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */; };
+		491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491289AB29C080FF000D138A /* FilesFunctions.swift */; };
+		491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491A6D2529F7B49800BC5990 /* UIImageHolder.swift */; };
+		49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49273B6329BE413E00ECF488 /* ImageDetailedView.swift */; };
+		493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */; };
+		493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */; };
+		493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FA29BE2F81006F9CD8 /* Assets.xcassets */; };
+		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
+		493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */; };
+		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
+		496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */; };
+		49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49737E5329EBE19600168A63 /* UIImage+heic.swift */; };
+		49737E5929EBF18E00168A63 /* AppNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49737E5829EBF18E00168A63 /* AppNavigator.swift */; };
+		497647F529C0C102001C3FE4 /* UIGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497647F429C0C102001C3FE4 /* UIGalleryView.swift */; };
+		4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */; };
+		497CC1E42A07FBD9006F1BC9 /* Photo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497CC1E22A07FBD9006F1BC9 /* Photo+CoreDataClass.swift */; };
+		497CC1E52A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */; };
+		49A5CFB629DAD0100072C43B /* UIAlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5CFB529DAD0100072C43B /* UIAlbumBlockView.swift */; };
+		49B7E7EE2A0F905F0057237F /* converter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B7E7ED2A0F905F0057237F /* converter.swift */; };
+		49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */; };
+		49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */; };
+		49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */; };
+		49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */; };
+		49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49CB4CCD29F050DD00C8687F /* ContentViewController.swift */; };
+		49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */; };
+		49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */; };
+		49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */; };
+		49F0CE872A07AD4000E65888 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE862A07AD4000E65888 /* PersistenceController.swift */; };
+		49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */; };
+		49F0CE912A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */; };
+		49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		490793E92A08D6D600F6FDAE /* LibraryFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFunctions.swift; sourceTree = "<group>"; };
+		49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICircleProgressPupUp.swift; sourceTree = "<group>"; };
+		491289AB29C080FF000D138A /* FilesFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesFunctions.swift; sourceTree = "<group>"; };
+		491289AD29C088CE000D138A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		491A6D2529F7B49800BC5990 /* UIImageHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageHolder.swift; sourceTree = "<group>"; };
+		49273B6329BE413E00ECF488 /* ImageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailedView.swift; sourceTree = "<group>"; };
+		493752F329BE2F7F006F9CD8 /* Imagistore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Imagistore.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagistoreApp.swift; sourceTree = "<group>"; };
+		493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallerySceneView.swift; sourceTree = "<group>"; };
+		493752FA29BE2F81006F9CD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		493E5CEC29EAE4B2008A1A38 /* Imagistore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Imagistore.entitlements; sourceTree = "<group>"; };
+		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
+		496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFunctions.swift; sourceTree = "<group>"; };
+		49737E5329EBE19600168A63 /* UIImage+heic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+heic.swift"; sourceTree = "<group>"; };
+		49737E5529EBE60800168A63 /* LibraryChangesLog.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LibraryChangesLog.md; sourceTree = "<group>"; };
+		49737E5829EBF18E00168A63 /* AppNavigator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppNavigator.swift; sourceTree = "<group>"; };
+		497647F429C0C102001C3FE4 /* UIGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGalleryView.swift; sourceTree = "<group>"; };
+		4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsSceneView.swift; sourceTree = "<group>"; };
+		497CC1E22A07FBD9006F1BC9 /* Photo+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataClass.swift"; sourceTree = "<group>"; };
+		497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		49A5CFB529DAD0100072C43B /* UIAlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlbumBlockView.swift; sourceTree = "<group>"; };
+		49B7E7ED2A0F905F0057237F /* converter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = converter.swift; sourceTree = "<group>"; };
+		49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Modifiers.swift"; sourceTree = "<group>"; };
+		49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlwaysPopoverModifier.swift; sourceTree = "<group>"; };
+		49CB4CCD29F050DD00C8687F /* ContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
+		49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettings.swift; sourceTree = "<group>"; };
+		49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrariesSelectorView.swift; sourceTree = "<group>"; };
+		49F0CE862A07AD4000E65888 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
+		49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotosLibrary+CoreDataClass.swift"; sourceTree = "<group>"; };
+		49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotosLibrary+CoreDataProperties.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		493752F029BE2F7F006F9CD8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4906B77D29F7979A0030EBEF /* GalleryViews */ = {
+			isa = PBXGroup;
+			children = (
+				497647F429C0C102001C3FE4 /* UIGalleryView.swift */,
+				493752F829BE2F7F006F9CD8 /* GallerySceneView.swift */,
+			);
+			path = GalleryViews;
+			sourceTree = "<group>";
+		};
+		491289AA29C080F1000D138A /* Functions */ = {
+			isa = PBXGroup;
+			children = (
+				49D6A84529E1C74400E17E5C /* ApplicationSettings.swift */,
+				491289AB29C080FF000D138A /* FilesFunctions.swift */,
+				496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */,
+				49F0CE862A07AD4000E65888 /* PersistenceController.swift */,
+				490793E92A08D6D600F6FDAE /* LibraryFunctions.swift */,
+			);
+			path = Functions;
+			sourceTree = "<group>";
+		};
+		4917584629F90D8F00CD33D4 /* AlbumsViews */ = {
+			isa = PBXGroup;
+			children = (
+				4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */,
+				49A5CFB529DAD0100072C43B /* UIAlbumBlockView.swift */,
+			);
+			path = AlbumsViews;
+			sourceTree = "<group>";
+		};
+		4917584729F926EE00CD33D4 /* Extentions */ = {
+			isa = PBXGroup;
+			children = (
+				49737E5329EBE19600168A63 /* UIImage+heic.swift */,
+				49DA593029F0506000E5AB34 /* CustomPopover */,
+			);
+			path = Extentions;
+			sourceTree = "<group>";
+		};
+		49273B5B29BE370400ECF488 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				497CC1E22A07FBD9006F1BC9 /* Photo+CoreDataClass.swift */,
+				497CC1E32A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift */,
+				49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift */,
+				49F0CE902A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift */,
+				491A6D2529F7B49800BC5990 /* UIImageHolder.swift */,
+				49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		493752EA29BE2F7F006F9CD8 = {
+			isa = PBXGroup;
+			children = (
+				493752F529BE2F7F006F9CD8 /* Imagistore */,
+				493752F429BE2F7F006F9CD8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		493752F429BE2F7F006F9CD8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				493752F329BE2F7F006F9CD8 /* Imagistore.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		493752F529BE2F7F006F9CD8 /* Imagistore */ = {
+			isa = PBXGroup;
+			children = (
+				493E5CEC29EAE4B2008A1A38 /* Imagistore.entitlements */,
+				4937530429BE2F96006F9CD8 /* Other */,
+				4917584729F926EE00CD33D4 /* Extentions */,
+				49273B5B29BE370400ECF488 /* Models */,
+				491289AA29C080F1000D138A /* Functions */,
+				4937530529BE2FA6006F9CD8 /* Views */,
+				493752F629BE2F7F006F9CD8 /* ImagistoreApp.swift */,
+				491289AD29C088CE000D138A /* Info.plist */,
+				49B7E7ED2A0F905F0057237F /* converter.swift */,
+			);
+			path = Imagistore;
+			sourceTree = "<group>";
+		};
+		493752FC29BE2F81006F9CD8 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		4937530429BE2F96006F9CD8 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				493752FA29BE2F81006F9CD8 /* Assets.xcassets */,
+				493752FC29BE2F81006F9CD8 /* Preview Content */,
+				49737E5529EBE60800168A63 /* LibraryChangesLog.md */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		4937530529BE2FA6006F9CD8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4917584629F90D8F00CD33D4 /* AlbumsViews */,
+				4906B77D29F7979A0030EBEF /* GalleryViews */,
+				497647F329C0C0EE001C3FE4 /* UI */,
+				49737E5829EBF18E00168A63 /* AppNavigator.swift */,
+				49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */,
+				49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */,
+				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
+				49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		497647F329C0C0EE001C3FE4 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */,
+				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
+				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		49DA593029F0506000E5AB34 /* CustomPopover */ = {
+			isa = PBXGroup;
+			children = (
+				49CB4CCC29F050DD00C8687F /* AlwaysPopoverModifier.swift */,
+				49CB4CCD29F050DD00C8687F /* ContentViewController.swift */,
+				49CB4CCB29F050DD00C8687F /* UIView+Extension.swift */,
+				49CB4CCA29F050DD00C8687F /* View+Modifiers.swift */,
+			);
+			path = CustomPopover;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		493752F229BE2F7F006F9CD8 /* Imagistore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Imagistore" */;
+			buildPhases = (
+				493752EF29BE2F7F006F9CD8 /* Sources */,
+				493752F029BE2F7F006F9CD8 /* Frameworks */,
+				493752F129BE2F7F006F9CD8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Imagistore;
+			packageProductDependencies = (
+			);
+			productName = Gallerystic;
+			productReference = 493752F329BE2F7F006F9CD8 /* Imagistore.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		493752EB29BE2F7F006F9CD8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1420;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					493752F229BE2F7F006F9CD8 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = 493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Imagistore" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 493752EA29BE2F7F006F9CD8;
+			packageReferences = (
+			);
+			productRefGroup = 493752F429BE2F7F006F9CD8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				493752F229BE2F7F006F9CD8 /* Imagistore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		493752F129BE2F7F006F9CD8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */,
+				493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */,
+				493752FB29BE2F81006F9CD8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		493752EF29BE2F7F006F9CD8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				491A6D2629F7B49800BC5990 /* UIImageHolder.swift in Sources */,
+				49A5CFB629DAD0100072C43B /* UIAlbumBlockView.swift in Sources */,
+				49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */,
+				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
+				49F0CE922A07BC9800E65888 /* PhotosLibrary+CoreDataProperties.swift in Sources */,
+				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
+				490793EA2A08D6D600F6FDAE /* LibraryFunctions.swift in Sources */,
+				497647F529C0C102001C3FE4 /* UIGalleryView.swift in Sources */,
+				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,
+				49737E5929EBF18E00168A63 /* AppNavigator.swift in Sources */,
+				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
+				49B7E7EE2A0F905F0057237F /* converter.swift in Sources */,
+				49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */,
+				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
+				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
+				49D6A84629E1C74400E17E5C /* ApplicationSettings.swift in Sources */,
+				49273B6429BE413E00ECF488 /* ImageDetailedView.swift in Sources */,
+				49097FF029E9718A0023E36F /* UICircleProgressPupUp.swift in Sources */,
+				49F0CE872A07AD4000E65888 /* PersistenceController.swift in Sources */,
+				4977099E29D6FAD000BC0BBC /* AlbumsSceneView.swift in Sources */,
+				49CB4CCF29F050DD00C8687F /* UIView+Extension.swift in Sources */,
+				495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */,
+				497CC1E42A07FBD9006F1BC9 /* Photo+CoreDataClass.swift in Sources */,
+				49CAAC2029E3FC3100C51AA3 /* ContentView.swift in Sources */,
+				493752F929BE2F7F006F9CD8 /* GallerySceneView.swift in Sources */,
+				49E99ADF29F172ED00309D38 /* LibrariesSelectorView.swift in Sources */,
+				49F0CE912A07BC9800E65888 /* PhotosLibrary+CoreDataClass.swift in Sources */,
+				497CC1E52A07FBD9006F1BC9 /* Photo+CoreDataProperties.swift in Sources */,
+				493752F729BE2F7F006F9CD8 /* ImagistoreApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		493752FF29BE2F81006F9CD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4937530029BE2F81006F9CD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4937530229BE2F81006F9CD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
+				DEVELOPMENT_TEAM = G4PV26QJD2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Imagistore/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.4.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		4937530329BE2F81006F9CD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 15;
+				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
+				DEVELOPMENT_TEAM = G4PV26QJD2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Imagistore/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.4.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		493752EE29BE2F7F006F9CD8 /* Build configuration list for PBXProject "Imagistore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				493752FF29BE2F81006F9CD8 /* Debug */,
+				4937530029BE2F81006F9CD8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4937530129BE2F81006F9CD8 /* Build configuration list for PBXNativeTarget "Imagistore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4937530229BE2F81006F9CD8 /* Debug */,
+				4937530329BE2F81006F9CD8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */,
+			);
+			currentVersion = 49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */;
+			path = LibrariesStorage.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 493752EB29BE2F7F006F9CD8 /* Project object */;
+}
