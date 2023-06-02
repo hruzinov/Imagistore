@@ -179,7 +179,7 @@ struct ImageDetailedView: View {
                     }
                 }
             case .permanent:
-                library.permanentRemove([changedPhoto], library: library, in: viewContext) { err in
+                library.permanentRemove([changedPhoto], in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()

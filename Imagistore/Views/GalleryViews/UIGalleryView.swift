@@ -135,7 +135,7 @@ struct UIGalleryView: View {
                 }
             }
             .onChange(of: openedImage) { _ in
-                scroll.scrollTo(openedImage, anchor: .center)
+                scroll.scrollTo(openedImage)
             }
             .onChange(of: scrollToBottom) { _ in
                 if scrollToBottom {

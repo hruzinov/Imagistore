@@ -173,7 +173,7 @@ struct GallerySceneView: View {
                     }
                 }
             case .permanent:
-                library.permanentRemove(selectedImagesArray, library: library, in: viewContext) { err in
+                library.permanentRemove(selectedImagesArray, in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
@@ -193,6 +193,7 @@ struct GallerySceneView: View {
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             var cloudRecords = [CKRecord]()
+            var photosAssets = NSMutableArray()
             var lastUUID: UUID?
             for item in importSelectedItems {
                 withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }
@@ -203,7 +204,12 @@ struct GallerySceneView: View {
                         let creationDate: Date
                         if let localID = item.itemIdentifier {
                             let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
-                            creationDate = asset?.creationDate ?? Date()
+                            if let asset {
+                                creationDate = asset.creationDate ?? Date()
+                                photosAssets.add(asset)
+                            } else {
+                                creationDate = Date()
+                            }
                         } else { creationDate = Date() }
 
                         let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension
@@ -233,6 +239,7 @@ struct GallerySceneView: View {
                             cloudRecords.append(photoCloudRecord)
 
                             do {
+                                library.lastChange = Date()
                                 try viewContext.save()
                                 count+=1
                                 lastUUID = uuid
@@ -245,6 +252,17 @@ struct GallerySceneView: View {
                     }
                 }
             }
+            do {
+                try PHPhotoLibrary.shared().performChangesAndWait {
+                    PHAssetChangeRequest.deleteAssets(photosAssets)
+                }
+            } catch {
+                if (error as NSError).code != 3072 {
+                    sceneSettings.errorAlertData = error.localizedDescription
+                    sceneSettings.isShowingErrorAlert.toggle()
+                }
+            }
+
             withAnimation {
                 scrollTo = lastUUID
                 sceneSettings.infoBarFinal = true; sceneSettings.infoBarData = "\(count) photos saved"

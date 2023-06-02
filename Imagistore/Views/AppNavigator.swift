@@ -33,6 +33,7 @@ struct AppNavigator: View {
                     .padding(50)
             }
         }
+        .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
         .onAppear {
 //            applicationSettings.load()
 //            DispatchQueue.main.async {

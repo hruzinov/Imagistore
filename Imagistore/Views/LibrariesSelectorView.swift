@@ -13,14 +13,16 @@ struct LibrariesSelectorView: View {
     @Binding var applicationSettings: ApplicationSettings
     @Binding var selectedLibrary: PhotosLibrary?
 
-    @State private var isShowingAddLibSheet: Bool = false
+    @State private var isShowingAddLibAlert: Bool = false
+    @State private var isShowingWrongNameAlert: Bool = false
+    @State private var editStage: EditingStages = .creating
+    @State private var editingLibrary: PhotosLibrary?
 
     @State var newLibraryName: String = ""
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                Divider()
+            List {
                 if librariesCollection.count > 0 {
                     ForEach(librariesCollection) { library in
                         Button(action: {
@@ -47,9 +49,29 @@ struct LibrariesSelectorView: View {
                             }
                             .foregroundColor(Color.primary)
                         })
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 5)
-                        Divider()
+                        .swipeActions(allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                library.deleteLibrary(in: viewContext) { error in
+                                    if let error {
+                                        DispatchQueue.main.async {
+                                            sceneSettings.errorAlertData = error.localizedDescription
+                                            sceneSettings.isShowingErrorAlert.toggle()
+                                        }
+                                    }
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+
+                            Button() {
+                                newLibraryName = library.name ?? "Library"
+                                editingLibrary = library
+                                editStage = .editing
+                                isShowingAddLibAlert.toggle()
+                            } label: {
+                                Label("Rename", systemImage: "pencil")
+                            }
+                        }
                     }
                 }
             }
@@ -57,51 +79,81 @@ struct LibrariesSelectorView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        isShowingAddLibSheet = true
+                        editStage = .creating
+                        isShowingAddLibAlert = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
+            .frame( maxWidth: .infinity)
+            .listStyle(GroupedListStyle())
 
-            .sheet(isPresented: $isShowingAddLibSheet, content: {
-                Form {
-                    Section("New Library") {
+            .alert("\(editStage.rawValue.capitalized) library", isPresented: $isShowingAddLibAlert) {
                         TextField("Library name", text: $newLibraryName)
                         Button {
-                            withAnimation {
-                                let newLib = PhotosLibrary(context: viewContext)
-                                newLib.uuid = UUID()
-                                newLib.name = newLibraryName
-                                newLib.photos = []
-                                newLib.lastChange = Date()
-                                newLib.version = Int16(PhotosLibrary.actualLibraryVersion)
+                            if newLibraryName.count > 0 {
+                                switch editStage {
+                                case .creating:
+                                    withAnimation {
+                                        let newLib = PhotosLibrary(context: viewContext)
+                                        newLib.uuid = UUID()
+                                        newLib.name = newLibraryName
+                                        newLib.photos = []
+                                        newLib.lastChange = Date()
+                                        newLib.version = Int16(PhotosLibrary.actualLibraryVersion)
 
-                                print(newLib.uuid)
-
-                                do {
-                                    try viewContext.save()
-                                } catch {
-                                    let nsError = error as NSError
-                                    debugPrint("Unable to save context: \(nsError), \(nsError.userInfo)")
+                                        do {
+                                            try viewContext.save()
+                                        } catch {
+                                            let nsError = error as NSError
+                                            debugPrint("Unable to save context: \(nsError), \(nsError.userInfo)")
+                                        }
+                                        newLibraryName = ""
+                                    }
+                                case .editing:
+                                    withAnimation {
+                                        if editingLibrary != nil {
+                                            editingLibrary?.name = newLibraryName
+                                        }
+                                        do {
+                                            try viewContext.save()
+                                        } catch {
+                                            let nsError = error as NSError
+                                            debugPrint("Unable to save context: \(nsError), \(nsError.userInfo)")
+                                        }
+                                        newLibraryName = ""
+                                    }
                                 }
+                            } else {
+                                isShowingWrongNameAlert.toggle()
                             }
-                            isShowingAddLibSheet = false
                         } label: {
-                            Text("Create")
-                        }.disabled(newLibraryName.count == 0)
-                    }
-                    Button(role: .destructive) {
-                        isShowingAddLibSheet = false
+                            Text("Save")
+                        }
+                    Button(role: .cancel) {
+                        newLibraryName = ""
+                        dismiss()
                     } label: {
                         Text("Cancel")
                     }
+            }
+            .alert("Wrong library name", isPresented: $isShowingWrongNameAlert) {
+                Text("The library name must contain at least 1 character")
+                Button {
+                    isShowingAddLibAlert.toggle()
+                } label: {
+                    Text("Ok")
                 }
-            })
+
+            }
         }
     }
 
     private func librarySelected(_ library: PhotosLibrary) {
         selectedLibrary = library
+    }
+    private enum EditingStages: String {
+        case creating, editing
     }
 }

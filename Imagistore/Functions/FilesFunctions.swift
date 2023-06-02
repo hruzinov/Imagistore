@@ -121,3 +121,16 @@ func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Voi
         }
     }
 }
+
+func removeFolder(_ library: PhotosLibrary, completion: @escaping (Bool, Error?) throws -> Void) {
+    if directoryExistsAtPath(photosFilePath(library.uuid).path) {
+        do {
+            try FileManager.default.removeItem(at: photosFilePath(library.uuid))
+            try completion (true, nil)
+        } catch {
+            try? completion(false, error)
+        }
+    } else {
+        try? completion (true, nil)
+    }
+}

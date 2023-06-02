@@ -53,13 +53,12 @@ struct ContentView: View {
             }
         })
         .onAppear {
-            photosLibrary.clearBin(photosLibrary, in: viewContext) { err in
+            photosLibrary.clearBin(in: viewContext) { err in
                 if let err {
                     sceneSettings.errorAlertData = err.localizedDescription
                     sceneSettings.isShowingErrorAlert.toggle()
                 }
             }
         }
-        .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
     }
 }
