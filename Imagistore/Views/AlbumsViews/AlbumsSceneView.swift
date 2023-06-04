@@ -3,41 +3,44 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.managedObjectContext) private var viewContext
     @StateObject var library: PhotosLibrary
+    var photos: FetchedResults<Photo>
+    var albums: FetchedResults<Album>
     @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
     @StateObject var imageHolder: UIImageHolder
-    var photos: FetchedResults<Photo>
-
-    var albums: [String] = []
 
     let rows1 = [
-        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7))
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2)),
     ]
     let rows2 = [
-        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7)),
-        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 1.7))
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2.2)),
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2.2))
     ]
 
     var body: some View {
         NavigationStack {
             VStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHGrid(rows: albums.count > 1 ? rows2 : rows1, spacing: 10) {
-                        NavigationLink(destination: {
-                            GallerySceneView(library: library, photos: photos, sortingArgument: $sortingArgument,
-                                             imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .normal)
-                        }, label: {
-                            UIAlbumBlockView(library: library, sortingArgument: $sortingArgument,
-                                             imageHolder: imageHolder, photos: photos)
-                        })
-
+                if albums.count > 0 {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHGrid(rows: albums.count > 2 ? rows2 : rows1) {
+                            ForEach(albums, id: \.self) { album in
+                                UIAlbumBlockViewNew(library: library,
+                                                    photos: photos,
+                                                    albums: albums,
+                                                    currentAlbum: album,
+                                                    sortingArgument: $sortingArgument,
+                                                    imageHolder: imageHolder, navToRoot: $navToRoot)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 15)
                 }
-                .padding(.horizontal, 15)
 
                 HStack {
                     Text("Other").font(.title2).bold()
@@ -48,7 +51,7 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: library, photos: photos, sortingArgument: $sortingArgument,
+                        GallerySceneView(library: library, photos: photos, albums: albums, sortingArgument: $sortingArgument,
                                          imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .deleted)
                     } label: {
                         HStack {
@@ -66,12 +69,7 @@ struct AlbumsSceneView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-
+                    NavigationLink(destination: NewAlbumSceneView(library: library), label: { Image(systemName: "plus") })
                 }
             }
             .navigationTitle("Albums")

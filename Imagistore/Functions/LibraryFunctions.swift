@@ -7,7 +7,7 @@ import CoreData
 import CloudKit
 
 func generateMiniatureData(_ uiImage: UIImage) -> Data? {
-    let miniatureMaxSize: CGFloat = 320
+    let miniatureMaxSize: CGFloat = 480
 
     let size: CGSize
     if uiImage.size.width > uiImage.size.height {
@@ -21,7 +21,7 @@ func generateMiniatureData(_ uiImage: UIImage) -> Data? {
     let uiImageMini = renderer.image { (_) in
         uiImage.draw(in: CGRect(origin: .zero, size: size))
     }
-    let data = uiImageMini.heic(compressionQuality: 0.1)
+    let data = uiImageMini.heic(compressionQuality: 0.5)
     return data
 }
 
@@ -109,9 +109,6 @@ extension PhotosLibrary {
             let forDeletion = try context.fetch(request)
             if forDeletion.count > 0 {
                 permanentRemove(forDeletion, in: context) { error in
-                    if let error {
-                        debugPrint("Im on step 4, error here")
-                    }
                     competition(error)
                 }
             }

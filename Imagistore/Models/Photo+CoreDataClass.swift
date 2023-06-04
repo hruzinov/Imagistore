@@ -18,6 +18,9 @@ func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgu
         .filter({ photo in
             photo.uuid != nil
         })
+        .filter({ item in
+            item.status == filter.rawValue
+        })
         .sorted(by: { ph1, ph2 in
             if filter == .deleted, let delDate1 = ph1.deletionDate, let delDate2 = ph2.deletionDate {
                 return delDate1 < delDate2
@@ -29,8 +32,5 @@ func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgu
                     return ph1.creationDate < ph2.creationDate
                 }
             }
-        })
-        .filter({ item in
-            item.status == filter.rawValue
         })
     }

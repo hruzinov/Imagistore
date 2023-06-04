@@ -43,36 +43,40 @@ func checkFileRecord(_ item: Photo) {
 func readImageFromFile(_ photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) async {
     if let uuid = photo.uuid, let cloudID = photo.fullsizeCloudID {
         let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
-        let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
-        if uiImage == nil {
-            print("TestDebug — no local file")
-            do {
-                let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
-                let photoAsset = record.value(forKey: "asset") as? CKAsset
-                var cloudUiImage: UIImage?
-                if let photoAsset, let photoURL = photoAsset.fileURL {
-                    cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
-                    print("TestDebug — generationg UIImage")
+        DispatchQueue.global(qos: .utility).async {
+            Task {
+                let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
+
+                if uiImage == nil {
+                    print("TestDebug — no local file")
+                    do {
+                        let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
+                        let photoAsset = record.value(forKey: "asset") as? CKAsset
+                        var cloudUiImage: UIImage?
+                        if let photoAsset, let photoURL = photoAsset.fileURL {
+                            cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
+                            print("TestDebug — generationg UIImage")
+                        }
+
+                        if cloudUiImage == nil {
+                            print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
+                            print("TestDebug — cloud image is nil")
+                        } else if writeImageToFile(uuid, uiImage: cloudUiImage!, library: photo.library) {
+                            print("TestDebug — writed to file")
+                            completion(cloudUiImage, nil)
+                        } else {
+                            print("TestDebug — some else")
+                            completion(nil, nil)
+                        }
+
+                    } catch {
+                        print("TestDebug — \(error.localizedDescription)")
+                        completion(nil, error)
+                    }
                 }
-
-
-                if cloudUiImage == nil {
-                    print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
-                    print("TestDebug — cloud image is nil")
-                } else if writeImageToFile(uuid, uiImage: cloudUiImage!, library: photo.library) {
-                    print("TestDebug — writed to file")
-                    completion(cloudUiImage, nil)
-                } else {
-                    print("TestDebug — some else")
-                    completion(nil, nil)
-                }
-
-            } catch {
-                print("TestDebug — \(error.localizedDescription)")
-                completion(nil, error)
+                completion(uiImage, nil)
             }
         }
-        completion(uiImage, nil)
     } else {
         completion(nil, nil)
     }

@@ -23,7 +23,9 @@ struct AppNavigator: View {
                     ContentView(photosLibrary: photosLibrary,
                                 photos: FetchRequest(sortDescriptors: [],
                                         predicate: NSPredicate(format: "library = %@", photosLibrary)),
-                                        applicationSettings: $applicationSettings, imageHolder: imageHolder)
+                                albums: FetchRequest(sortDescriptors: [],
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary.uuid as CVarArg)),
+                                applicationSettings: $applicationSettings, imageHolder: imageHolder)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
                 }

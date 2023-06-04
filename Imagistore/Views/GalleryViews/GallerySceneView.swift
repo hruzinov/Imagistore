@@ -12,9 +12,8 @@ struct GallerySceneView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
-    var filteredPhotos: [Photo] {
-        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
-    }
+    var albums: FetchedResults<Album>
+    @State var currentAlbum: Album?
 
     @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
@@ -28,37 +27,35 @@ struct GallerySceneView: View {
     @State var selectedImage: Photo?
     @State var selectingMode: Bool = false
     @State var selectedImagesArray: [Photo] = []
-    @State var isPresentingConfirm: Bool = false
+    @State var isPresentingConfirmDeletePhotos: Bool = false
+    @State var isPresentingConfirmDeleteAlbum: Bool = false
+    @State var isPresentingAddToAlbum: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
 
     var body: some View {
         NavigationStack {
             VStack {
-                if filteredPhotos.count > 0 {
-                    UIGalleryView(
-                        library: library,
-                        photos: filteredPhotos,
-                        photosSelector: photosSelector,
-                        sortingArgument: $sortingArgument,
-                        imageHolder: imageHolder,
-                        scrollTo: $scrollTo,
-                        scrollToBottom: $scrollToBottom,
-                        selectingMode: $selectingMode,
-                        selectedImagesArray: $selectedImagesArray,
-                        syncArr: $syncArr,
-                        isMainLibraryScreen: isMainLibraryScreen
-                    )
-                } else {
-                    Text(Int.random(in: 1...100) == 7 ?
-                         "These aren't the photos you're looking for." :
-                            "No photos or videos here").font(.title2).bold()
-                }
+                UIGalleryView(
+                    library: library,
+                    photos: photos,
+                    albums: albums,
+                    currentAlbum: currentAlbum,
+                    photosSelector: photosSelector,
+                    sortingArgument: $sortingArgument,
+                    imageHolder: imageHolder,
+                    scrollTo: $scrollTo,
+                    scrollToBottom: $scrollToBottom,
+                    selectingMode: $selectingMode,
+                    selectedImagesArray: $selectedImagesArray,
+                    syncArr: $syncArr,
+                    isMainLibraryScreen: isMainLibraryScreen
+                )
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingConfirm) {
+            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingConfirmDeletePhotos) {
                 Button("Delete photos", role: .destructive) {
                     if photosSelector == .deleted {
                         changePhotoStatus(to: .permanent)
@@ -71,9 +68,28 @@ struct GallerySceneView: View {
                     Text("You cannot undo this action")
                 }
             }
+            .confirmationDialog("Delete album \(currentAlbum?.title ?? "")", isPresented: $isPresentingConfirmDeleteAlbum) {
+                Button("Delete", role: .destructive) {
+                    if let currentAlbum {
+                        dismiss()
+                        viewContext.delete(currentAlbum)
+                        if let index = library.albums?.firstIndex(where: { $0 == currentAlbum.uuid }) {
+                            library.albums?.remove(at: index)
+                        }
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            sceneSettings.errorAlertData = error.localizedDescription
+                            sceneSettings.isShowingErrorAlert.toggle()
+                        }
+                    }
+                }
+            } message: {
+                Text("You cannot undo this action. Photos will not be deleted")
+            }
             .toolbar {
                 if isMainLibraryScreen, !selectingMode {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
                         PhotosPicker(
                             selection: $importSelectedItems,
                             matching: .images,
@@ -102,19 +118,33 @@ struct GallerySceneView: View {
                     }
                     if photosSelector != .deleted, !selectingMode {
                         Menu {
-                            Picker(selection: $sortingArgument.animation()) {
-                                Text("Creation date").tag(PhotosSortArgument.creationDate)
-                                Text("Importing date").tag(PhotosSortArgument.importDate)
-                            } label: {}
+                            Menu {
+                                Picker(selection: $sortingArgument.animation()) {
+                                    Text("Shooting date").tag(PhotosSortArgument.creationDate)
+                                    Text("Importing date").tag(PhotosSortArgument.importDate)
+                                } label: {}
+                            } label: {
+                                Label("Sorting by", systemImage: "arrow.up.arrow.down")
+                            }
+
+                            Divider()
+
+                            if currentAlbum != nil {
+                                Button(role: .destructive) {
+                                    isPresentingConfirmDeleteAlbum.toggle()
+                                } label: {
+                                    Label("Delete album", systemImage: "trash")
+                                }
+                            }
                         } label: {
-                            Image(systemName: "arrow.up.arrow.down")
+                            Image(systemName: "ellipsis.circle")
                         }
                     }
                 }
                 if selectingMode {
                     ToolbarItemGroup(placement: .bottomBar) {
                         if photosSelector == .deleted {
-                            Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
+                            Button { isPresentingConfirmDeletePhotos.toggle() } label: { Text("Delete") }
                                 .disabled(selectedImagesArray.count==0)
                             Spacer()
                             Text(selectedImagesArray.count > 0 ?
@@ -131,11 +161,49 @@ struct GallerySceneView: View {
                             )
                             .bold()
                             Spacer()
-                            Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
+                            Button { isPresentingConfirmDeletePhotos.toggle() } label: { Image(systemName: "trash") }
                                 .disabled(selectedImagesArray.count==0)
+                            Menu {
+                                if currentAlbum != nil {
+                                    Button {
+                                        withAnimation {
+                                            selectedImagesArray.forEach { img in
+                                                if let uuid = img.uuid, let index = currentAlbum?.photos.firstIndex(of: uuid) {
+                                                    currentAlbum?.photos.remove(at: index)
+                                                }
+                                            }
+                                        }
+                                        do {
+                                            try viewContext.save()
+                                            sceneSettings.isShowingTabBar = true
+                                            selectingMode.toggle()
+                                            selectedImagesArray = []
+                                        } catch {
+                                            sceneSettings.errorAlertData = error.localizedDescription
+                                            sceneSettings.isShowingErrorAlert.toggle()
+                                        }
+                                    } label: {
+                                        Label("Remove from album", systemImage: "rectangle.stack.badge.minus")
+                                    }
+                                }
+
+                                Button {
+                                    isPresentingAddToAlbum.toggle()
+                                } label: {
+                                    Label("Add to album", systemImage: "rectangle.stack.badge.plus")
+                                }
+
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                            }
+                            .disabled(selectedImagesArray.count==0)
                         }
                     }
                 }
+            }
+
+            .sheet(isPresented: $isPresentingAddToAlbum) {
+                AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: $selectingMode, imageHolder: imageHolder, selectedImagesArray: $selectedImagesArray)
             }
         }
         .onAppear {
@@ -193,7 +261,7 @@ struct GallerySceneView: View {
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             var cloudRecords = [CKRecord]()
-            var photosAssets = NSMutableArray()
+            let photosAssets = NSMutableArray()
             var lastUUID: UUID?
             for item in importSelectedItems {
                 withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }

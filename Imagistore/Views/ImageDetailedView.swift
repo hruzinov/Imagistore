@@ -8,37 +8,23 @@ struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var sceneSettings: SceneSettings
-
+    
     @StateObject var library: PhotosLibrary
     var photos: [Photo]
-
+    var photosResult: FetchedResults<Photo>
+    var albums: FetchedResults<Album>
+    
     @Binding var photosSelector: PhotoStatus
     @StateObject var imageHolder: UIImageHolder
-
+    
     @Binding var selectedImage: UUID?
     @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
-
+    @State var isPresentingAddToAlbum: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack {
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.backward")
-                    }
-                    Spacer()
-                    if let img = photos.first(where: {$0.uuid == selectedImage}), img.fileExtension == "png" {
-                        Text("PNG")
-                            .font(.callout)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .font(.title2)
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
-
                 VStack {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
@@ -49,22 +35,19 @@ struct ImageDetailedView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
-                                            .task { checkFileRecord(item) }
-                                    } else if let uiImage = imageHolder.data[uuid] {
+
+                                    }
+                                    else if let uiImage = imageHolder.data[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFit()
-                                            .overlay(alignment: .bottomTrailing, content: {
-                                                Image(systemName: "circle.dashed")
-                                                    .font(.title)
-                                                    .padding(10)
-                                                    .foregroundColor(.gray)
-                                            })
                                             .task {
                                                 await imageHolder.getFullUiImage(item) { err in
                                                     if let err {
-                                                        sceneSettings.errorAlertData = err.localizedDescription
-                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                                        DispatchQueue.main.async {
+                                                            sceneSettings.errorAlertData = err.localizedDescription
+                                                            sceneSettings.isShowingErrorAlert.toggle()
+                                                        }
                                                     }
                                                 }
                                             }
@@ -77,6 +60,7 @@ struct ImageDetailedView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .padding(.vertical, 10)
                 }
+                
                 ScrollViewReader { scroll in
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 2) {
@@ -109,11 +93,13 @@ struct ImageDetailedView: View {
                                     } else {
                                         Rectangle()
                                             .fill(Color.gray)
+                                            .frame(width: 50, height: 75, alignment: .center)
                                             .task {
-                                                if let uuid = item.uuid,
-                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
-                                                    imageHolder.data[uuid] = uiImage
-                                                    imageHolder.objectWillChange.send()
+                                                await imageHolder.getUiImage(item) { err in
+                                                    if let err {
+                                                        sceneSettings.errorAlertData = err.localizedDescription
+                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                                    }
                                                 }
                                             }
                                     }
@@ -133,6 +119,32 @@ struct ImageDetailedView: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Image(systemName: "chevron.backward")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button {
+                            isPresentingAddToAlbum.toggle()
+                        } label: {
+                            Label("Add to album", systemImage: "rectangle.stack.badge.plus")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+
+                }
+
                 ToolbarItemGroup(placement: .bottomBar) {
                     if photosSelector == .deleted {
                         Button { isPresentingConfirm.toggle() } label: { Text("Delete permanently") }
@@ -145,6 +157,10 @@ struct ImageDetailedView: View {
             .padding(.vertical, 10)
             .foregroundColor(.blue)
 
+            .sheet(isPresented: $isPresentingAddToAlbum) {
+                AddToAlbumView(photos: photosResult, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true), imageHolder: imageHolder, selectedImagesArray: .constant([]), selectedImage: selectedImage)
+            }
+            
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
                 Button("Delete photo", role: .destructive) {
                     if photosSelector == .deleted {
@@ -186,11 +202,11 @@ struct ImageDetailedView: View {
                     }
                 }
             }
-
+            
             let clearedPhotos = photos.filter { photo in
                 photo.status == photosSelector.rawValue
             }
-
+            
             if clearedPhotos.count == 0 {
                 DispatchQueue.main.async {
                     dismiss()

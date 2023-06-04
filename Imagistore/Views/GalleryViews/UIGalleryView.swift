@@ -7,8 +7,9 @@ import SwiftUI
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
-    var photos: [Photo]
-
+    var photos: FetchedResults<Photo>
+    var albums: FetchedResults<Album>
+    @State var currentAlbum: Album?
     @State var photosSelector: PhotoStatus
     @Binding var sortingArgument: PhotosSortArgument
     @StateObject var imageHolder: UIImageHolder
@@ -22,6 +23,22 @@ struct UIGalleryView: View {
     @State var goToDetailedView: Bool = false
     @State var isMainLibraryScreen: Bool = false
 
+    var filteredPhotos: [Photo] {
+        var phSorted = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+        if let currentAlbum {
+            phSorted = phSorted.filter { photo in
+                currentAlbum.photos.contains { phId in
+                    if let uuid = photo.uuid {
+                        return uuid == phId
+                    } else {
+                        return false
+                    }
+                }
+            }
+        }
+        return phSorted
+    }
+
     let columns = [
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
@@ -29,18 +46,21 @@ struct UIGalleryView: View {
     ]
 
     var body: some View {
-        ScrollViewReader { scroll in
-            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                    ForEach(photos) { item in
-                        GeometryReader { geometryReader in
-                            let size = geometryReader.size
-                            VStack {
-                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
+        if filteredPhotos.count > 0 {
+            ScrollViewReader { scroll in
+                ScrollView {
+                    LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
+                        ForEach(filteredPhotos) { item in
+                            GeometryReader { geometryReader in
+                                let size = geometryReader.size
+                                VStack {
+                                    if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
+                                            .clipped()
+                                            .contentShape(Path(CGRect(x: 0, y: 0, width: size.height, height: size.width)))
                                             .id(item.uuid)
                                             .overlay(
                                                 ZStack {
@@ -70,83 +90,90 @@ struct UIGalleryView: View {
                                                         .padding(5)
                                                 }
                                             })
+                                            .clipped()
                                     } else {
                                         Rectangle()
                                             .fill(Color.gray)
                                             .task {
-                                                if let uuid = item.uuid,
-                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
-                                                    imageHolder.data[uuid] = uiImage
-                                                    imageHolder.objectWillChange.send()
+                                                await imageHolder.getUiImage(item) { err in
+                                                    if let err {
+                                                        sceneSettings.errorAlertData = err.localizedDescription
+                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                                    }
                                                 }
                                             }
                                     }
-                            }
-                            .onTapGesture {
-                                if selectingMode {
-                                    if let index = selectedImagesArray.firstIndex(of: item) {
-                                        selectedImagesArray.remove(at: index)
+                                }
+                                .onTapGesture {
+                                    if selectingMode {
+                                        if let index = selectedImagesArray.firstIndex(of: item) {
+                                            selectedImagesArray.remove(at: index)
+                                        } else {
+                                            selectedImagesArray.append(item)
+                                        }
                                     } else {
-                                        selectedImagesArray.append(item)
-                                    }
-                                } else {
-                                    if let uuid = item.uuid {
-                                        openedImage = uuid
-                                        goToDetailedView.toggle()
+                                        if let uuid = item.uuid {
+                                            openedImage = uuid
+                                            goToDetailedView.toggle()
+                                        }
                                     }
                                 }
                             }
-                        }
-                        .clipped()
-                        .aspectRatio(1, contentMode: .fit)
-                    }
-                }
-                VStack {
-                    if isMainLibraryScreen {
-                        Text("\(photos.count) Photos")
-                            .font(.callout)
-                            .bold()
-                        if syncArr.count > 0 {
-                            Text("Syncing: \(syncArr.count) photos left")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        } else {
-                            Text("Synced")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            .clipped()
+                            .aspectRatio(1, contentMode: .fit)
                         }
                     }
-                }
-                .padding(.vertical, 10)
+                    VStack {
+                        if isMainLibraryScreen {
+                            Text("\(photos.count) Photos")
+                                .font(.callout)
+                                .bold()
+                            if syncArr.count > 0 {
+                                Text("Syncing: \(syncArr.count) photos left")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            } else {
+                                Text("Synced")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 10)
 
-                Rectangle()
-                    .frame(height: 50)
-                    .opacity(0)
-                    .id("bottomRectangle")
-            }
-            .onAppear { scrollToBottom.toggle() }
-            .onChange(of: scrollTo) { _ in
-                if let scrollTo {
-                    if sortingArgument == .importDate {
-                        scroll.scrollTo("bottomRectangle", anchor: .bottom)
-                    } else {
-                        scroll.scrollTo(scrollTo, anchor: .center)
+                    Rectangle()
+                        .frame(height: 50)
+                        .opacity(0)
+                        .id("bottomRectangle")
+                }
+                .onAppear { scrollToBottom.toggle() }
+                .onChange(of: scrollTo) { _ in
+                    if let scrollTo {
+                        if sortingArgument == .importDate {
+                            scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                        } else {
+                            scroll.scrollTo(scrollTo, anchor: .center)
+                        }
                     }
                 }
-            }
-            .onChange(of: openedImage) { _ in
-                scroll.scrollTo(openedImage)
-            }
-            .onChange(of: scrollToBottom) { _ in
-                if scrollToBottom {
-                    scroll.scrollTo("bottomRectangle", anchor: .bottom)
-                    scrollToBottom.toggle()
+                .onChange(of: openedImage) { _ in
+                    scroll.scrollTo(openedImage)
+                }
+                .onChange(of: scrollToBottom) { _ in
+                    if scrollToBottom {
+                        scroll.scrollTo("bottomRectangle", anchor: .bottom)
+                        scrollToBottom.toggle()
+                    }
+                }
+                .fullScreenCover(isPresented: $goToDetailedView) {
+                    ImageDetailedView(library: library, photos: filteredPhotos, photosResult: photos, albums: albums,
+                                      photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
                 }
             }
-            .fullScreenCover(isPresented: $goToDetailedView) {
-                ImageDetailedView(library: library, photos: photos,
-                        photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
-            }
+        } else {
+            Text(Int.random(in: 1...100) == 7 ?
+                 "These aren't the photos you're looking for." :
+                    "No photos or videos here").font(.title2).bold()
         }
     }
 }
