@@ -36,7 +36,7 @@ class UIImageHolder: ObservableObject {
     func getFullUiImage(_ photo: Photo, completion: @escaping (Error?) -> Void) async {
         await readImageFromFile(photo) { uiImage, error in
             if let uiImage, let uuid = photo.uuid {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                DispatchQueue.main.sync {
                     self.data.updateValue(uiImage, forKey: uuid)
                     self.fullsizeArr.append(uuid)
                     self.objectWillChange.send()

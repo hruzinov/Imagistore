@@ -1,7 +1,4 @@
 //
-//  AddToAlbumView.swift
-//  Imagistore
-//
 //  Created by Evhen Gruzinov on 04.06.2023.
 //
 

@@ -1,7 +1,4 @@
 //
-//  AlbumsGallerySceneView.swift
-//  Imagistore
-//
 //  Created by Evhen Gruzinov on 03.06.2023.
 //
 

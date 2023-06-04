@@ -1,9 +1,5 @@
 //
-//  Album+CoreDataClass.swift
-//  Imagistore
-//
 //  Created by Evhen Gruzinov on 03.06.2023.
-//
 //
 
 import Foundation
