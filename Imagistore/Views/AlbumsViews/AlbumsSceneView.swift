@@ -16,7 +16,7 @@ struct AlbumsSceneView: View {
     @StateObject var imageHolder: UIImageHolder
 
     let rows1 = [
-        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2)),
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2))
     ]
     let rows2 = [
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2.2)),
@@ -51,8 +51,9 @@ struct AlbumsSceneView: View {
                 VStack(spacing: 10) {
                     Divider()
                     NavigationLink {
-                        GallerySceneView(library: library, photos: photos, albums: albums, sortingArgument: $sortingArgument,
-                                         imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .deleted)
+                        GallerySceneView(library: library, photos: photos, albums: albums,
+                                sortingArgument: $sortingArgument, imageHolder: imageHolder, navToRoot: $navToRoot,
+                                scrollToBottom: .constant(false), photosSelector: .deleted)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)
@@ -69,7 +70,8 @@ struct AlbumsSceneView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: NewAlbumSceneView(library: library), label: { Image(systemName: "plus") })
+                    NavigationLink(destination: NewAlbumSceneView(library: library),
+                            label: { Image(systemName: "plus") })
                 }
             }
             .navigationTitle("Albums")

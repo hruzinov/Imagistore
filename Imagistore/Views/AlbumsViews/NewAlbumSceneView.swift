@@ -49,7 +49,7 @@ struct NewAlbumSceneView: View {
                                 sceneSettings.errorAlertData = error.localizedDescription
                                 sceneSettings.isShowingErrorAlert.toggle()
                             }
-                            
+
                         case .smart:
                             print("In production")
                             // do nothing

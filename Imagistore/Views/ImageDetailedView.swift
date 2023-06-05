@@ -8,20 +8,20 @@ struct ImageDetailedView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var sceneSettings: SceneSettings
-    
+
     @StateObject var library: PhotosLibrary
     var photos: [Photo]
     var photosResult: FetchedResults<Photo>
     var albums: FetchedResults<Album>
-    
+
     @Binding var photosSelector: PhotoStatus
     @StateObject var imageHolder: UIImageHolder
-    
+
     @Binding var selectedImage: UUID?
     @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -30,8 +30,8 @@ struct ImageDetailedView: View {
                         ForEach(photos, id: \.uuid) { item in
                             VStack {
                                 if let uuid = item.uuid {
-                                    if let uiImage = imageHolder.fullUiImage(uuid) {
-                                        Image(uiImage: uiImage)
+                                    if selectedImage == item.uuid, let fullUiImage = readImageFromFile(item) {
+                                        Image(uiImage: fullUiImage)
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
@@ -41,15 +41,9 @@ struct ImageDetailedView: View {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFit()
+                                            .pinchToZoom()
                                             .task {
-                                                await imageHolder.getFullUiImage(item) { err in
-                                                    if let err {
-                                                        DispatchQueue.main.async {
-                                                            sceneSettings.errorAlertData = err.localizedDescription
-                                                            sceneSettings.isShowingErrorAlert.toggle()
-                                                        }
-                                                    }
-                                                }
+                                                await imageHolder.loadFullImage(item)
                                             }
                                     }
                                 }
@@ -60,7 +54,8 @@ struct ImageDetailedView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .padding(.vertical, 10)
                 }
-                
+
+                // Disabled by slow animations
                 ScrollViewReader { scroll in
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 2) {
@@ -71,37 +66,23 @@ struct ImageDetailedView: View {
                                             self.selectedImage = uuid
                                             scrollTo = selectedImage
                                         } label: {
-                                            if selectedImage == item.uuid {
-                                                Image(uiImage: uiImage)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(maxHeight: 75, alignment: .center)
-                                                    .padding(5)
-                                                    .border(Color.gray, width: 4)
-                                                    .padding(.horizontal, 20)
-                                                    .clipped()
-                                                    .id(item.uuid)
-                                            } else {
-                                                Image(uiImage: uiImage)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 50, height: 75, alignment: .center)
-                                                    .clipped()
-                                                    .id(item.uuid)
-                                            }
-                                        }
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color.gray)
-                                            .frame(width: 50, height: 75, alignment: .center)
-                                            .task {
-                                                await imageHolder.getUiImage(item) { err in
-                                                    if let err {
-                                                        sceneSettings.errorAlertData = err.localizedDescription
-                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 75, height: 75, alignment: .center)
+                                                .clipped()
+                                                .id(item.uuid)
+                                                .overlay {
+                                                    if selectedImage == item.uuid {
+                                                        ZStack {
+                                                            Color.black.opacity(0.7)
+                                                            Image(systemName: "arrow.up.square")
+                                                                .foregroundColor(.white)
+                                                                .font(.title)
+                                                        }
                                                     }
                                                 }
-                                            }
+                                        }
                                     }
                                 }
                             }
@@ -158,9 +139,10 @@ struct ImageDetailedView: View {
             .foregroundColor(.blue)
 
             .sheet(isPresented: $isPresentingAddToAlbum) {
-                AddToAlbumView(photos: photosResult, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true), imageHolder: imageHolder, selectedImagesArray: .constant([]), selectedImage: selectedImage)
+                AddToAlbumView(photos: photosResult, albums: albums,
+                               isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true),
+                               imageHolder: imageHolder, selectedImagesArray: .constant([]), selectedImage: selectedImage)
             }
-            
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
                 Button("Delete photo", role: .destructive) {
                     if photosSelector == .deleted {
@@ -202,11 +184,11 @@ struct ImageDetailedView: View {
                     }
                 }
             }
-            
+
             let clearedPhotos = photos.filter { photo in
                 photo.status == photosSelector.rawValue
             }
-            
+
             if clearedPhotos.count == 0 {
                 DispatchQueue.main.async {
                     dismiss()

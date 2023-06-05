@@ -27,8 +27,8 @@ struct GallerySceneView: View {
     @State var selectedImage: Photo?
     @State var selectingMode: Bool = false
     @State var selectedImagesArray: [Photo] = []
-    @State var isPresentingConfirmDeletePhotos: Bool = false
-    @State var isPresentingConfirmDeleteAlbum: Bool = false
+    @State var isPresentingDeletePhotos: Bool = false
+    @State var isPresentingDeleteAlbum: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
@@ -55,7 +55,7 @@ struct GallerySceneView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingConfirmDeletePhotos) {
+            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingDeletePhotos) {
                 Button("Delete photos", role: .destructive) {
                     if photosSelector == .deleted {
                         changePhotoStatus(to: .permanent)
@@ -68,7 +68,7 @@ struct GallerySceneView: View {
                     Text("You cannot undo this action")
                 }
             }
-            .confirmationDialog("Delete album \(currentAlbum?.title ?? "")", isPresented: $isPresentingConfirmDeleteAlbum) {
+            .confirmationDialog("Delete album \(currentAlbum?.title ?? "")", isPresented: $isPresentingDeleteAlbum) {
                 Button("Delete", role: .destructive) {
                     if let currentAlbum {
                         dismiss()
@@ -131,7 +131,7 @@ struct GallerySceneView: View {
 
                             if currentAlbum != nil {
                                 Button(role: .destructive) {
-                                    isPresentingConfirmDeleteAlbum.toggle()
+                                    isPresentingDeleteAlbum.toggle()
                                 } label: {
                                     Label("Delete album", systemImage: "trash")
                                 }
@@ -144,7 +144,7 @@ struct GallerySceneView: View {
                 if selectingMode {
                     ToolbarItemGroup(placement: .bottomBar) {
                         if photosSelector == .deleted {
-                            Button { isPresentingConfirmDeletePhotos.toggle() } label: { Text("Delete") }
+                            Button { isPresentingDeletePhotos.toggle() } label: { Text("Delete") }
                                 .disabled(selectedImagesArray.count==0)
                             Spacer()
                             Text(selectedImagesArray.count > 0 ?
@@ -161,14 +161,15 @@ struct GallerySceneView: View {
                             )
                             .bold()
                             Spacer()
-                            Button { isPresentingConfirmDeletePhotos.toggle() } label: { Image(systemName: "trash") }
+                            Button { isPresentingDeletePhotos.toggle() } label: { Image(systemName: "trash") }
                                 .disabled(selectedImagesArray.count==0)
                             Menu {
                                 if currentAlbum != nil {
                                     Button {
                                         withAnimation {
                                             selectedImagesArray.forEach { img in
-                                                if let uuid = img.uuid, let index = currentAlbum?.photos.firstIndex(of: uuid) {
+                                                if let uuid = img.uuid,
+                                                   let index = currentAlbum?.photos.firstIndex(of: uuid) {
                                                     currentAlbum?.photos.remove(at: index)
                                                 }
                                             }
@@ -203,7 +204,9 @@ struct GallerySceneView: View {
             }
 
             .sheet(isPresented: $isPresentingAddToAlbum) {
-                AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: $selectingMode, imageHolder: imageHolder, selectedImagesArray: $selectedImagesArray)
+                AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
+                        selectingMode: $selectingMode, imageHolder: imageHolder,
+                        selectedImagesArray: $selectedImagesArray)
             }
         }
         .onAppear {
@@ -351,7 +354,9 @@ struct GallerySceneView: View {
                     if let error {
                         debugPrint(error)
                     } else {
-                        if let index = syncArr.firstIndex(where: { $0.uuidString == record?.value(forKey: "photo") as! String}) {
+                        if let index = syncArr.firstIndex(
+                                where: { $0.uuidString == record?.value(forKey: "photo") as? String}
+                        ) {
                             syncArr.remove(at: index)
                         }
                     }

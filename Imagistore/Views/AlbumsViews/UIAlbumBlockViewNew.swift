@@ -27,8 +27,9 @@ struct UIAlbumBlockViewNew: View {
 
     var body: some View {
         NavigationLink(destination: {
-            GallerySceneView(library: library, photos: photos, albums: albums, currentAlbum: currentAlbum, sortingArgument: $sortingArgument,
-                             imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: .constant(false), photosSelector: .normal)
+            GallerySceneView(library: library, photos: photos, albums: albums, currentAlbum: currentAlbum,
+                    sortingArgument: $sortingArgument, imageHolder: imageHolder, navToRoot: $navToRoot,
+                    scrollToBottom: .constant(false), photosSelector: .normal)
         }, label: {
             HStack {
                 if let lastImage = filteredPhotos.last, let lastID = lastImage.uuid {
@@ -41,14 +42,6 @@ struct UIAlbumBlockViewNew: View {
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(5)
-                    } else {
-                        ProgressView().progressViewStyle(.circular)
-                            .task {
-                                if let data = lastImage.miniature, let uiImage = UIImage(data: data) {
-                                    imageHolder.data[lastID] = uiImage
-                                    imageHolder.objectWillChange.send()
-                                }
-                            }
                     }
                 } else {
                     VStack {

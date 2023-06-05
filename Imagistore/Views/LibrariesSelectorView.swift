@@ -33,7 +33,9 @@ struct LibrariesSelectorView: View {
                             HStack {
                                 VStack(alignment: .leading) {
                                     HStack(spacing: 5) {
-                                        Text(library.name ?? "*No name*").font(.title2).bold().multilineTextAlignment(.leading)
+                                        Text(library.name ?? "*No name*")
+                                                .font(.title2).bold()
+                                                .multilineTextAlignment(.leading)
                                     }
                                     Text("Photos: \(library.photos.count)").font(.caption)
 
@@ -63,7 +65,7 @@ struct LibrariesSelectorView: View {
                                 Label("Delete", systemImage: "trash")
                             }
 
-                            Button() {
+                            Button {
                                 newLibraryName = library.name ?? "Library"
                                 editingLibrary = library
                                 editStage = .editing

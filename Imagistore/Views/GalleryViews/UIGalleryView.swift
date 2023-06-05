@@ -60,26 +60,26 @@ struct UIGalleryView: View {
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
                                             .clipped()
-                                            .contentShape(Path(CGRect(x: 0, y: 0, width: size.height, height: size.width)))
-                                            .id(item.uuid)
-                                            .overlay(
+                                            .contentShape(Path(CGRect(x: 0, y: 0,
+                                                    width: size.height, height: size.width)))
+                                            .overlay(content: {
                                                 ZStack {
                                                     if let deletionDate = item.deletionDate {
                                                         LinearGradient(colors: [.black.opacity(0), .black],
-                                                                       startPoint: .center, endPoint: .bottom)
+                                                                startPoint: .center, endPoint: .bottom)
                                                         VStack(alignment: .center) {
                                                             Spacer()
                                                             Text(DateTimeFunctions.daysLeftString(deletionDate))
-                                                                .font(.caption)
-                                                                .padding(5)
-                                                                .foregroundColor(
-                                                                    DateTimeFunctions
-                                                                        .daysLeft(deletionDate) < 3
-                                                                    ? .red : .white)
+                                                                    .font(.caption)
+                                                                    .padding(5)
+                                                                    .foregroundColor(
+                                                                            DateTimeFunctions
+                                                                                    .daysLeft(deletionDate) < 3
+                                                                                    ? .red : .white)
                                                         }
                                                     }
                                                 }
-                                            )
+                                            })
                                             .overlay(alignment: .bottomTrailing, content: {
                                                 if selectedImagesArray.contains(item) {
                                                     Image(systemName: "checkmark.circle.fill")
@@ -92,15 +92,11 @@ struct UIGalleryView: View {
                                             })
                                             .clipped()
                                     } else {
-                                        Rectangle()
-                                            .fill(Color.gray)
+                                        ProgressView()
+                                            .progressViewStyle(.circular)
+                                            .frame(width: size.height, height: size.width, alignment: .center)
                                             .task {
-                                                await imageHolder.getUiImage(item) { err in
-                                                    if let err {
-                                                        sceneSettings.errorAlertData = err.localizedDescription
-                                                        sceneSettings.isShowingErrorAlert.toggle()
-                                                    }
-                                                }
+                                                imageHolder.getUiImage(item)
                                             }
                                     }
                                 }
@@ -119,7 +115,7 @@ struct UIGalleryView: View {
                                     }
                                 }
                             }
-                            .clipped()
+                                    .id(item.uuid)
                             .aspectRatio(1, contentMode: .fit)
                         }
                     }
@@ -156,9 +152,12 @@ struct UIGalleryView: View {
                         }
                     }
                 }
-                .onChange(of: openedImage) { _ in
-                    scroll.scrollTo(openedImage)
-                }
+                .onChange(of: goToDetailedView, perform: { _ in
+                    if !goToDetailedView, openedImage != nil {
+                        scroll.scrollTo(openedImage)
+                    }
+                })
+
                 .onChange(of: scrollToBottom) { _ in
                     if scrollToBottom {
                         scroll.scrollTo("bottomRectangle", anchor: .bottom)
@@ -167,7 +166,8 @@ struct UIGalleryView: View {
                 }
                 .fullScreenCover(isPresented: $goToDetailedView) {
                     ImageDetailedView(library: library, photos: filteredPhotos, photosResult: photos, albums: albums,
-                                      photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
+                            photosSelector: $photosSelector,
+                            imageHolder: imageHolder, selectedImage: $openedImage)
                 }
             }
         } else {

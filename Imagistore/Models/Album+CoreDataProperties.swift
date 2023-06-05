@@ -5,11 +5,10 @@
 import Foundation
 import CoreData
 
-
 extension Album {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Album> {
-        return NSFetchRequest<Album>(entityName: "Album")
+    public class func fetchRequest() -> NSFetchRequest<Album> {
+        NSFetchRequest<Album>(entityName: "Album")
     }
 
     @NSManaged public var uuid: UUID
@@ -20,6 +19,6 @@ extension Album {
 
 }
 
-extension Album : Identifiable {
+extension Album: Identifiable {
 
 }

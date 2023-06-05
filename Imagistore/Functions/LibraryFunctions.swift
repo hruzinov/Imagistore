@@ -32,7 +32,7 @@ extension PhotosLibrary {
                 item.status = PhotoStatus.deleted.rawValue
                 item.deletionDate = Date()
             }
-            self.lastChange = Date()
+            lastChange = Date()
             try context.save()
         } catch {
             competition(error)
@@ -45,14 +45,15 @@ extension PhotosLibrary {
                 item.status = PhotoStatus.normal.rawValue
                 item.deletionDate = nil
             }
-            self.lastChange = Date()
+            lastChange = Date()
             try context.save()
         } catch {
             competition(error)
         }
         competition(nil)
     }
-    func permanentRemove(_ images: [Photo], in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
+    func permanentRemove(_ images: [Photo], in context: NSManagedObjectContext,
+                         competition: @escaping (Error?) -> Void) {
         do {
             var cloudIDArr = [CKRecord.ID]()
             images.forEach { photo in
@@ -73,7 +74,7 @@ extension PhotosLibrary {
                     competition(error)
                 }
             }
-            self.lastChange = Date()
+            lastChange = Date()
             try context.save()
         } catch {
             competition(error)

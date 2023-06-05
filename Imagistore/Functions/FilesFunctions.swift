@@ -16,8 +16,11 @@ private func directoryExistsAtPath(_ path: String) -> Bool {
     let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
     return exists && isDirectory.boolValue
 }
+func fileExistsAtPath(_ path: String) -> Bool {
+    FileManager.default.fileExists(atPath: path)
+}
 func imageFileURL (_ id: UUID, libraryID: UUID) -> URL {
-    return photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
+    photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
 }
 
 func checkFileRecord(_ item: Photo) {
@@ -40,47 +43,15 @@ func checkFileRecord(_ item: Photo) {
     }
 }
 
-func readImageFromFile(_ photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) async {
-    if let uuid = photo.uuid, let cloudID = photo.fullsizeCloudID {
+func readImageFromFile(_ photo: Photo) -> UIImage? {
+    if let uuid = photo.uuid {
         let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
-        DispatchQueue.global(qos: .utility).async {
-            Task {
-                let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
-
-                if uiImage == nil {
-                    print("TestDebug — no local file")
-                    do {
-                        let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
-                        let photoAsset = record.value(forKey: "asset") as? CKAsset
-                        var cloudUiImage: UIImage?
-                        if let photoAsset, let photoURL = photoAsset.fileURL {
-                            cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
-                            print("TestDebug — generationg UIImage")
-                        }
-
-                        if cloudUiImage == nil {
-                            print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
-                            print("TestDebug — cloud image is nil")
-                        } else if writeImageToFile(uuid, uiImage: cloudUiImage!, library: photo.library) {
-                            print("TestDebug — writed to file")
-                            completion(cloudUiImage, nil)
-                        } else {
-                            print("TestDebug — some else")
-                            completion(nil, nil)
-                        }
-
-                    } catch {
-                        print("TestDebug — \(error.localizedDescription)")
-                        completion(nil, error)
-                    }
-                }
-                completion(uiImage, nil)
-            }
-        }
-    } else {
-        completion(nil, nil)
+        let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
+        return uiImage
     }
+    return nil
 }
+
 func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) -> Bool {
     let data = uiImage.heic()
     let libraryPath = photosFilePath(library.uuid)
@@ -130,11 +101,11 @@ func removeFolder(_ library: PhotosLibrary, completion: @escaping (Bool, Error?)
     if directoryExistsAtPath(photosFilePath(library.uuid).path) {
         do {
             try FileManager.default.removeItem(at: photosFilePath(library.uuid))
-            try completion (true, nil)
+            try completion(true, nil)
         } catch {
             try? completion(false, error)
         }
     } else {
-        try? completion (true, nil)
+        try? completion(true, nil)
     }
 }

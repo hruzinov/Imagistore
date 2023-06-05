@@ -22,8 +22,8 @@ struct AddToAlbumView: View {
                 ForEach(albums) { alb in
                     Button {
                         if selectedImagesArray.count > 0 {
-                            selectedImagesArray.forEach { ph in
-                                if let uuid = ph.uuid {
+                            selectedImagesArray.forEach { img in
+                                if let uuid = img.uuid {
                                     alb.photos.append(uuid)
                                 }
                             }
@@ -62,15 +62,6 @@ struct AddToAlbumView: View {
                                         .clipped()
                                         .aspectRatio(1, contentMode: .fit)
                                         .cornerRadius(5)
-                                } else {
-                                    ProgressView().progressViewStyle(.circular)
-                                        .task {
-                                            if let data = photos.first(where: {$0.uuid == lastImageId})?.miniature,
-                                               let uiImage = UIImage(data: data) {
-                                                imageHolder.data[lastImageId] = uiImage
-                                                imageHolder.objectWillChange.send()
-                                            }
-                                        }
                                 }
                             } else {
                                 VStack {
