@@ -63,4 +63,6 @@ class SceneSettings: ObservableObject {
     @Published var infoBarFinal: Bool = false
 
     @Published var syncProgress: Double = 0
+
+    @Published var isShowBottomScroll: Bool = false
 }

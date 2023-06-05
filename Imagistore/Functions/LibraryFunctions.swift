@@ -65,6 +65,17 @@ extension PhotosLibrary {
                 if let cloudID = photo.fullsizeCloudID {
                     cloudIDArr.append(CKRecord.ID(recordName: cloudID))
                 }
+                if cloudIDArr.count > 300 {
+                    cloudDatabase.modifyRecords(saving: [], deleting: cloudIDArr) { result in
+                        switch result {
+                        case .success((_, let deletedRecords)):
+                            debugPrint(deletedRecords)
+                        case .failure(let error):
+                            competition(error)
+                        }
+                    }
+                    cloudIDArr = []
+                }
             }
             cloudDatabase.modifyRecords(saving: [], deleting: cloudIDArr) { result in
                 switch result {

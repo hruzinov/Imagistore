@@ -55,45 +55,46 @@ struct ImageDetailedView: View {
                     .padding(.vertical, 10)
                 }
 
-                // Disabled by slow animations
-                ScrollViewReader { scroll in
-                    ScrollView(.horizontal) {
-                        LazyHStack(spacing: 2) {
-                            ForEach(photos, id: \.uuid) { item in
-                                if let uuid = item.uuid {
-                                    if let uiImage = imageHolder.data[uuid] {
-                                        Button {
-                                            self.selectedImage = uuid
-                                            scrollTo = selectedImage
-                                        } label: {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 75, height: 75, alignment: .center)
-                                                .clipped()
-                                                .id(item.uuid)
-                                                .overlay {
-                                                    if selectedImage == item.uuid {
-                                                        ZStack {
-                                                            Color.black.opacity(0.7)
-                                                            Image(systemName: "arrow.up.square")
-                                                                .foregroundColor(.white)
-                                                                .font(.title)
+                if sceneSettings.isShowBottomScroll {
+                    ScrollViewReader { scroll in
+                        ScrollView(.horizontal) {
+                            LazyHStack(spacing: 2) {
+                                ForEach(photos, id: \.uuid) { item in
+                                    if let uuid = item.uuid {
+                                        if let uiImage = imageHolder.data[uuid] {
+                                            Button {
+                                                self.selectedImage = uuid
+                                                scrollTo = selectedImage
+                                            } label: {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 75, height: 75, alignment: .center)
+                                                    .clipped()
+                                                    .id(item.uuid)
+                                                    .overlay {
+                                                        if selectedImage == item.uuid {
+                                                            ZStack {
+                                                                Color.black.opacity(0.7)
+                                                                Image(systemName: "arrow.up.square")
+                                                                    .foregroundColor(.white)
+                                                                    .font(.title)
+                                                            }
                                                         }
                                                     }
-                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        .frame(height: 80)
-                        .onAppear {
-                            scroll.scrollTo(selectedImage, anchor: .center)
-                        }
-                        .onChange(of: selectedImage) { _ in
-                            withAnimation {
+                            .frame(height: 80)
+                            .onAppear {
                                 scroll.scrollTo(selectedImage, anchor: .center)
+                            }
+                            .onChange(of: selectedImage) { _ in
+                                //                            withAnimation {
+                                scroll.scrollTo(selectedImage, anchor: .center)
+                                //                            }
                             }
                         }
                     }
@@ -127,6 +128,21 @@ struct ImageDetailedView: View {
                 }
 
                 ToolbarItemGroup(placement: .bottomBar) {
+                    Button {
+                        withAnimation {
+                            sceneSettings.isShowBottomScroll.toggle()
+                        }
+                    } label: {
+                        ZStack {
+                            if sceneSettings.isShowBottomScroll {
+                                Color.accentColor
+                                    .cornerRadius(5)
+                            }
+                            Image(systemName: "rectangle.bottomhalf.inset.filled")
+                                .foregroundColor(sceneSettings.isShowBottomScroll ? .white : .accentColor)
+                        }
+                    }
+
                     if photosSelector == .deleted {
                         Button { isPresentingConfirm.toggle() } label: { Text("Delete permanently") }
                         Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
