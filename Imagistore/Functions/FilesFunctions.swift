@@ -46,6 +46,7 @@ func checkFileRecord(_ item: Photo) {
 func readImageFromFile(_ photo: Photo) -> UIImage? {
     if let uuid = photo.uuid {
         let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
+        print(fileExistsAtPath(filepath.path))
         let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
         return uiImage
     }
@@ -107,5 +108,37 @@ func removeFolder(_ library: PhotosLibrary, completion: @escaping (Bool, Error?)
         }
     } else {
         try? completion(true, nil)
+    }
+}
+
+func getCloudImage(_ photo: Photo, completion: @escaping (UIImage?, Error?) throws -> Void) {
+    if
+        let uuid = photo.uuid, !fileExistsAtPath(imageFileURL(uuid, libraryID: photo.library.uuid).path),
+        let cloudID = photo.fullsizeCloudID {
+        Task {
+            print("TestDebug — no local file")
+            do {
+                let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
+                let photoAsset = record.value(forKey: "asset") as? CKAsset
+                var cloudUiImage: UIImage?
+                if let photoAsset, let photoURL = photoAsset.fileURL {
+                    cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
+                    print("TestDebug — loaded UIImage from data")
+
+                    if cloudUiImage == nil {
+                        print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
+                        print("TestDebug — cloud image is nil")
+                    } else if let cloudUiImage, writeImageToFile(uuid, uiImage: cloudUiImage, library: photo.library) {
+                        let uiImage = cloudUiImage
+                        print("TestDebug — written to file")
+                        try? completion(uiImage, nil)
+                    } else {
+                        print("TestDebug — some else")
+                    }
+                }
+            } catch {
+                print("TestDebug — \(error.localizedDescription)")
+            }
+        }
     }
 }

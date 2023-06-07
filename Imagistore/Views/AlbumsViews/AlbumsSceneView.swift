@@ -4,6 +4,7 @@
 
 import SwiftUI
 import CoreData
+import PhotosUI
 
 struct AlbumsSceneView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -13,7 +14,6 @@ struct AlbumsSceneView: View {
     var albums: FetchedResults<Album>
     @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
-    @StateObject var imageHolder: UIImageHolder
 
     let rows1 = [
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2))
@@ -35,7 +35,7 @@ struct AlbumsSceneView: View {
                                                     albums: albums,
                                                     currentAlbum: album,
                                                     sortingArgument: $sortingArgument,
-                                                    imageHolder: imageHolder, navToRoot: $navToRoot)
+                                                    navToRoot: $navToRoot)
                             }
                         }
                     }
@@ -52,8 +52,7 @@ struct AlbumsSceneView: View {
                     Divider()
                     NavigationLink {
                         GallerySceneView(library: library, photos: photos, albums: albums,
-                                sortingArgument: $sortingArgument, imageHolder: imageHolder, navToRoot: $navToRoot,
-                                scrollToBottom: .constant(false), photosSelector: .deleted)
+                                         sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: .deleted)
                     } label: {
                         HStack {
                             Label("Recently Deleted", systemImage: "trash").font(.title3)

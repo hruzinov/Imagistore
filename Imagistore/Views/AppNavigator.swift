@@ -8,7 +8,6 @@ import CoreData
 struct AppNavigator: View {
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
-    @StateObject var imageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
     @EnvironmentObject var sceneSettings: SceneSettings
 
@@ -25,7 +24,7 @@ struct AppNavigator: View {
                                         predicate: NSPredicate(format: "library = %@", photosLibrary)),
                                 albums: FetchRequest(sortDescriptors: [],
                                         predicate: NSPredicate(format: "library = %@", photosLibrary.uuid as CVarArg)),
-                                applicationSettings: $applicationSettings, imageHolder: imageHolder)
+                                applicationSettings: $applicationSettings)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
                 }

@@ -13,7 +13,7 @@ enum PhotoStatus: String, Codable {
     case normal, deleted
 }
 
-func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgument, filter: PhotoStatus) -> [Photo] {
+func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgument, isDESC: Bool = true, filter: PhotoStatus) -> [Photo] {
     photos
         .filter({ photo in
             photo.uuid != nil
@@ -27,9 +27,17 @@ func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgu
             } else {
                 switch byArgument {
                 case .importDate:
-                    return ph1.importDate < ph2.importDate
+                    if isDESC {
+                        return ph1.importDate > ph2.importDate
+                    } else {
+                        return ph1.importDate < ph2.importDate
+                    }
                 case .creationDate:
-                    return ph1.creationDate < ph2.creationDate
+                    if isDESC {
+                        return ph1.creationDate > ph2.creationDate
+                    } else {
+                        return ph1.creationDate < ph2.creationDate
+                    }
                 }
             }
         })

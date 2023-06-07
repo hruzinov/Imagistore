@@ -12,7 +12,6 @@ struct AddToAlbumView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @Binding var isPresentingAddToAlbum: Bool
     @Binding var selectingMode: Bool
-    @StateObject var imageHolder: UIImageHolder
     @Binding var selectedImagesArray: [Photo]
     var selectedImage: UUID?
 
@@ -53,7 +52,8 @@ struct AddToAlbumView: View {
                     } label: {
                         HStack {
                             if let lastImageId = alb.photos.last {
-                                if let uiImage = imageHolder.data[lastImageId] {
+                                if let lastImage = photos.first(where: { $0.uuid == lastImageId }),
+                                let data = lastImage.miniature, let uiImage = UIImage(data: data) {
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)

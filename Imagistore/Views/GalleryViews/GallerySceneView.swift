@@ -16,10 +16,8 @@ struct GallerySceneView: View {
     @State var currentAlbum: Album?
 
     @Binding var sortingArgument: PhotosSortArgument
-    @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
-    @Binding var scrollToBottom: Bool
-
+    
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
     @State var isMainLibraryScreen: Bool = false
@@ -36,6 +34,28 @@ struct GallerySceneView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
+                if #available(iOS 17, *) {
+                    if isMainLibraryScreen {
+                        HStack {
+                            PhotosPicker(
+                                selection: $importSelectedItems,
+                                matching: .images,
+                                photoLibrary: .shared()
+                            ) {
+                                Label("Import", systemImage: "plus")
+                            }
+                            .onChange(of: importSelectedItems) { _ in
+                                if importSelectedItems.count > 0 {
+                                    importFromPhotosApp()
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal, 10)
+                    }
+                }
+
                 UIGalleryView(
                     library: library,
                     photos: photos,
@@ -43,9 +63,7 @@ struct GallerySceneView: View {
                     currentAlbum: currentAlbum,
                     photosSelector: photosSelector,
                     sortingArgument: $sortingArgument,
-                    imageHolder: imageHolder,
                     scrollTo: $scrollTo,
-                    scrollToBottom: $scrollToBottom,
                     selectingMode: $selectingMode,
                     selectedImagesArray: $selectedImagesArray,
                     syncArr: $syncArr,
@@ -90,16 +108,28 @@ struct GallerySceneView: View {
             .toolbar {
                 if isMainLibraryScreen, !selectingMode {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
-                        PhotosPicker(
-                            selection: $importSelectedItems,
-                            matching: .images,
-                            photoLibrary: .shared()
-                        ) {
-                            Image(systemName: "plus")
+                        #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
+                        if #available(iOS 17, *) {} else {
+                            PhotosPicker(
+                                selection: $importSelectedItems,
+                                matching: .images,
+                                photoLibrary: .shared()
+                            ) {
+                                Image(systemName: "plus")
+                            }
+                            .onChange(of: importSelectedItems) { _ in
+                                if importSelectedItems.count > 0 {
+                                    importFromPhotosApp()
+                                }
+                            }
                         }
-                        .onChange(of: importSelectedItems) { _ in
-                            if importSelectedItems.count > 0 {
-                                importFromPhotosApp()
+
+                        if syncArr.count > 0 {
+                            withAnimation {
+                                HStack {
+                                    Image(systemName: "arrow.clockwise.icloud.fill")
+                                    Text("\(syncArr.count) in sync").font(.caption)
+                                }
                             }
                         }
                     }
@@ -114,7 +144,7 @@ struct GallerySceneView: View {
                             selectedImagesArray = []
                         }
                     } label: {
-                        Text(selectingMode ? "Cancel" : "Select")
+                        Image(systemName: selectingMode ? "xmark.circle" : "checkmark.circle")
                     }
                     if photosSelector != .deleted, !selectingMode {
                         Menu {
@@ -161,8 +191,10 @@ struct GallerySceneView: View {
                             )
                             .bold()
                             Spacer()
-                            Button { isPresentingDeletePhotos.toggle() } label: { Image(systemName: "trash") }
-                                .disabled(selectedImagesArray.count==0)
+                            Button { isPresentingDeletePhotos.toggle() } label: {
+                                Image(systemName: "trash")
+                            }
+                                .disabled(selectedImagesArray.count == 0)
                             Menu {
                                 if currentAlbum != nil {
                                     Button {
@@ -197,7 +229,7 @@ struct GallerySceneView: View {
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                             }
-                            .disabled(selectedImagesArray.count==0)
+                            .disabled(selectedImagesArray.count == 0)
                         }
                     }
                 }
@@ -205,14 +237,13 @@ struct GallerySceneView: View {
 
             .sheet(isPresented: $isPresentingAddToAlbum) {
                 AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
-                        selectingMode: $selectingMode, imageHolder: imageHolder,
-                        selectedImagesArray: $selectedImagesArray)
+                        selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
         }
-        .onAppear {
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
-            }
-        }
+//        .onAppear {
+//            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
+//            }
+//        }
         .onDisappear {
             if selectingMode {
                 sceneSettings.isShowingTabBar = true
@@ -258,6 +289,7 @@ struct GallerySceneView: View {
     }
 
     private func importFromPhotosApp() {
+        print("Started importing...")
         Task {
             sceneSettings.infoBarData = "Importing..."; sceneSettings.infoBarFinal = false
             let importCount = importSelectedItems.count

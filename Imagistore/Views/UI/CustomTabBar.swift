@@ -22,9 +22,9 @@ struct CustomTabBar: View {
                 } label: {
                     VStack(spacing: 5) {
                         Image(systemName: "photo.artframe").font(.title2)
-                        Text("Library").font(.caption)
+                        Text("Photos").font(.caption)
                     }
-                    .foregroundColor(selection == .library ? .blue : .gray)
+                    .foregroundColor(selection == .library ? .accentColor : .gray)
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.top, 10)
@@ -38,7 +38,7 @@ struct CustomTabBar: View {
                         Image(systemName: "sparkles.rectangle.stack").font(.title2)
                         Text("Albums").font(.caption)
                     }
-                    .foregroundColor(selection == .albums ? .blue : .gray)
+                    .foregroundColor(selection == .albums ? .accentColor : .gray)
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.top, 10)

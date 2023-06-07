@@ -10,7 +10,6 @@ struct UIAlbumBlockViewNew: View {
     var albums: FetchedResults<Album>
     @State var currentAlbum: Album
     @Binding var sortingArgument: PhotosSortArgument
-    @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
 
     var filteredPhotos: [Photo] {
@@ -28,12 +27,10 @@ struct UIAlbumBlockViewNew: View {
     var body: some View {
         NavigationLink(destination: {
             GallerySceneView(library: library, photos: photos, albums: albums, currentAlbum: currentAlbum,
-                    sortingArgument: $sortingArgument, imageHolder: imageHolder, navToRoot: $navToRoot,
-                    scrollToBottom: .constant(false), photosSelector: .normal)
+                    sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: .normal)
         }, label: {
             HStack {
-                if let lastImage = filteredPhotos.last, let lastID = lastImage.uuid {
-                    if let uiImage = imageHolder.data[lastID] {
+                if let lastImage = filteredPhotos.last, let data = lastImage.miniature, let uiImage = UIImage(data: data) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -42,7 +39,6 @@ struct UIAlbumBlockViewNew: View {
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(5)
-                    }
                 } else {
                     VStack {
                         Spacer()
@@ -62,10 +58,12 @@ struct UIAlbumBlockViewNew: View {
                     LinearGradient(colors: [.black.opacity(0), .black], startPoint: .center, endPoint: .bottom)
                     VStack {
                         Spacer()
-                        HStack {
+                        HStack(alignment: .center) {
                             Text(currentAlbum.title)
                                 .padding(5)
                                 .bold()
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
                             Spacer()
                             Text(String(filteredPhotos.count))
                         }
