@@ -27,7 +27,6 @@ struct AlbumsSceneView: View {
         NavigationStack {
             VStack {
                     ScrollView {
-//                        LazyHGrid(rows: albums.count > 1 ? rows2 : rows1) {
                         LazyVGrid(columns: rows2) {
                             ForEach(albums, id: \.self) { album in
                                 UIAlbumBlockViewNew(library: library,

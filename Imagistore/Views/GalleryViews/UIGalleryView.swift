@@ -120,8 +120,10 @@ struct UIGalleryView: View {
                 }
                 .onChange(of: scrollTo) { _ in
                     if let scrollTo {
-                        if sortingArgument == .importDate {
+                        if sortingArgument == .importDateDesc {
                             scroll.scrollTo("topRectangle", anchor: .top)
+                        } else if sortingArgument == .importDateAsc {
+                            scroll.scrollTo("bottomRectangle", anchor: .bottom)
                         } else {
                             scroll.scrollTo(scrollTo, anchor: .center)
                         }
@@ -138,9 +140,7 @@ struct UIGalleryView: View {
                 }
             }
         } else {
-            Text(Int.random(in: 1...100) == 7 ?
-                 "These aren't the photos you're looking for." :
-                    "No photos or videos here").font(.title2).bold()
+            Text("No photos or videos here").font(.title2).bold()
         }
     }
 }

@@ -12,7 +12,7 @@ struct ContentView: View {
     @FetchRequest var photos: FetchedResults<Photo>
     @FetchRequest var albums: FetchedResults<Album>
 
-    @State var sortingArgument: PhotosSortArgument = .importDate
+    @State var sortingArgument: PhotosSortArgument = .importDateDesc
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
     @State var viewLoaded: Bool = false

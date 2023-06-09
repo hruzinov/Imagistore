@@ -150,8 +150,10 @@ struct GallerySceneView: View {
                         Menu {
                             Menu {
                                 Picker(selection: $sortingArgument.animation()) {
-                                    Text("Shooting date").tag(PhotosSortArgument.creationDate)
-                                    Text("Importing date").tag(PhotosSortArgument.importDate)
+                                    Text("Shooting date ↑").tag(PhotosSortArgument.creationDateDesc)
+                                    Text("Shooting date ↓").tag(PhotosSortArgument.creationDateAsc)
+                                    Text("Importing date ↑").tag(PhotosSortArgument.importDateDesc)
+                                    Text("Importing date ↓").tag(PhotosSortArgument.importDateAsc)
                                 } label: {}
                             } label: {
                                 Label("Sorting by", systemImage: "arrow.up.arrow.down")
@@ -240,10 +242,10 @@ struct GallerySceneView: View {
                         selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
         }
-//        .onAppear {
-//            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
-//            }
-//        }
+        .onAppear {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
+            }
+        }
         .onDisappear {
             if selectingMode {
                 sceneSettings.isShowingTabBar = true
@@ -341,21 +343,17 @@ struct GallerySceneView: View {
                             syncArr.append(uuid)
                             cloudRecords.append(photoCloudRecord)
 
-                            do {
-                                library.lastChange = Date()
-                                try viewContext.save()
-                                count+=1
-                                lastUUID = uuid
-
-                            } catch {
-                                sceneSettings.errorAlertData = error.localizedDescription
-                                sceneSettings.isShowingErrorAlert.toggle()
-                            }
+                            count+=1
+                            lastUUID = uuid
                         }
                     }
                 }
             }
+
             do {
+                library.lastChange = Date()
+                try viewContext.save()
+
                 try PHPhotoLibrary.shared().performChangesAndWait {
                     PHAssetChangeRequest.deleteAssets(photosAssets)
                 }

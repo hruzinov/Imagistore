@@ -26,18 +26,14 @@ func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgu
                 return delDate1 < delDate2
             } else {
                 switch byArgument {
-                case .importDate:
-                    if isDESC {
-                        return ph1.importDate > ph2.importDate
-                    } else {
-                        return ph1.importDate < ph2.importDate
-                    }
-                case .creationDate:
-                    if isDESC {
-                        return ph1.creationDate > ph2.creationDate
-                    } else {
-                        return ph1.creationDate < ph2.creationDate
-                    }
+                case .importDateDesc:
+                    return ph1.importDate > ph2.importDate
+                case .creationDateDesc:
+                    return ph1.creationDate > ph2.creationDate
+                case .importDateAsc:
+                    return ph1.importDate < ph2.importDate
+                case .creationDateAsc:
+                    return ph1.creationDate < ph2.creationDate
                 }
             }
         })
