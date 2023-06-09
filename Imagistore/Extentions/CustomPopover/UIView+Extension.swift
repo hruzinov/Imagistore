@@ -1,7 +1,4 @@
 //
-//  UIView+Extension.swift
-//  Popovers
-//
 //  Copyright © 2021 PSPDFKit GmbH. All rights reserved.
 //
 

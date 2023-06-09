@@ -17,14 +17,14 @@ struct PersistenceController {
 
         // Only initialize the schema when building the app with the
         // Debug build configuration.
-        #if DEBUG
-        do {
-            // Use the container to initialize the development schema.
-            try container.initializeCloudKitSchema(options: [])
-        } catch {
-            // Handle any errors.
-        }
-        #endif
+//        #if DEBUG
+//        do {
+//            // Use the container to initialize the development schema.
+//            try container.initializeCloudKitSchema(options: [])
+//        } catch {
+//            // Handle any errors.
+//        }
+//        #endif
 
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {

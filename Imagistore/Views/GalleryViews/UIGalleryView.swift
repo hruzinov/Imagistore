@@ -7,13 +7,12 @@ import SwiftUI
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
-    var photos: [Photo]
-
+    var photos: FetchedResults<Photo>
+    var albums: FetchedResults<Album>
+    @State var currentAlbum: Album?
     @State var photosSelector: PhotoStatus
     @Binding var sortingArgument: PhotosSortArgument
-    @StateObject var imageHolder: UIImageHolder
     @Binding var scrollTo: UUID?
-    @Binding var scrollToBottom: Bool
     @Binding var selectingMode: Bool
     @Binding var selectedImagesArray: [Photo]
     @Binding var syncArr: [UUID]
@@ -22,6 +21,22 @@ struct UIGalleryView: View {
     @State var goToDetailedView: Bool = false
     @State var isMainLibraryScreen: Bool = false
 
+    var filteredPhotos: [Photo] {
+        var phSorted = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+        if let currentAlbum {
+            phSorted = phSorted.filter { photo in
+                currentAlbum.photos.contains { phId in
+                    if let uuid = photo.uuid {
+                        return uuid == phId
+                    } else {
+                        return false
+                    }
+                }
+            }
+        }
+        return phSorted
+    }
+
     let columns = [
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
@@ -29,124 +44,103 @@ struct UIGalleryView: View {
     ]
 
     var body: some View {
-        ScrollViewReader { scroll in
-            ScrollView {
-                LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
-                    ForEach(photos) { item in
-                        GeometryReader { geometryReader in
-                            let size = geometryReader.size
-                            VStack {
-                                if let uuid = item.uuid, let uiImage = imageHolder.data[uuid] {
+        if filteredPhotos.count > 0 {
+            ScrollViewReader { scroll in
+                ScrollView {
+                    Rectangle()
+                        .opacity(0)
+                        .id("topRectangle")
+                    LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
+                        ForEach(filteredPhotos) { item in
+                            GeometryReader { geometryReader in
+                                let size = geometryReader.size
+                                VStack {
+                                    if let data = item.miniature, let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: size.height, height: size.width, alignment: .center)
-                                            .id(item.uuid)
-                                            .overlay(
+                                            .clipped()
+                                            .contentShape(Path(CGRect(x: 0, y: 0,
+                                                    width: size.height, height: size.width)))
+                                            .overlay(content: {
                                                 ZStack {
                                                     if let deletionDate = item.deletionDate {
                                                         LinearGradient(colors: [.black.opacity(0), .black],
-                                                                       startPoint: .center, endPoint: .bottom)
+                                                                startPoint: .center, endPoint: .bottom)
                                                         VStack(alignment: .center) {
                                                             Spacer()
                                                             Text(DateTimeFunctions.daysLeftString(deletionDate))
-                                                                .font(.caption)
-                                                                .padding(5)
-                                                                .foregroundColor(
-                                                                    DateTimeFunctions
-                                                                        .daysLeft(deletionDate) < 3
-                                                                    ? .red : .white)
+                                                                    .font(.caption)
+                                                                    .padding(5)
+                                                                    .foregroundColor(
+                                                                            DateTimeFunctions
+                                                                                    .daysLeft(deletionDate) < 3
+                                                                                    ? .red : .white)
                                                         }
                                                     }
                                                 }
-                                            )
+                                            })
                                             .overlay(alignment: .bottomTrailing, content: {
                                                 if selectedImagesArray.contains(item) {
                                                     Image(systemName: "checkmark.circle.fill")
                                                         .font(.title2)
                                                         .foregroundColor(Color.accentColor)
                                                         .padding(1)
-                                                        .background(Circle().fill(.white))
+                                                        .background(Circle().fill(Color("AccentColorOpposite")))
                                                         .padding(5)
                                                 }
                                             })
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color.gray)
-                                            .task {
-                                                if let uuid = item.uuid,
-                                                   let data = item.miniature, let uiImage = UIImage(data: data) {
-                                                    imageHolder.data[uuid] = uiImage
-                                                    imageHolder.objectWillChange.send()
-                                                }
-                                            }
+                                            .clipped()
                                     }
-                            }
-                            .onTapGesture {
-                                if selectingMode {
-                                    if let index = selectedImagesArray.firstIndex(of: item) {
-                                        selectedImagesArray.remove(at: index)
+                                }
+                                .onTapGesture {
+                                    if selectingMode {
+                                        if let index = selectedImagesArray.firstIndex(of: item) {
+                                            selectedImagesArray.remove(at: index)
+                                        } else {
+                                            selectedImagesArray.append(item)
+                                        }
                                     } else {
-                                        selectedImagesArray.append(item)
-                                    }
-                                } else {
-                                    if let uuid = item.uuid {
-                                        openedImage = uuid
-                                        goToDetailedView.toggle()
+                                        if let uuid = item.uuid {
+                                            openedImage = uuid
+                                            goToDetailedView.toggle()
+                                        }
                                     }
                                 }
                             }
+                                    .id(item.uuid)
+                            .aspectRatio(1, contentMode: .fit)
                         }
-                        .clipped()
-                        .aspectRatio(1, contentMode: .fit)
                     }
+                    Rectangle()
+                        .frame(height: 50)
+                        .opacity(0)
+                        .id("bottomRectangle")
                 }
-                VStack {
-                    if isMainLibraryScreen {
-                        Text("\(photos.count) Photos")
-                            .font(.callout)
-                            .bold()
-                        if syncArr.count > 0 {
-                            Text("Syncing: \(syncArr.count) photos left")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                .onChange(of: scrollTo) { _ in
+                    if let scrollTo {
+                        if sortingArgument == .importDateDesc {
+                            scroll.scrollTo("topRectangle", anchor: .top)
+                        } else if sortingArgument == .importDateAsc {
+                            scroll.scrollTo("bottomRectangle", anchor: .bottom)
                         } else {
-                            Text("Synced")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            scroll.scrollTo(scrollTo, anchor: .center)
                         }
                     }
                 }
-                .padding(.vertical, 10)
-
-                Rectangle()
-                    .frame(height: 50)
-                    .opacity(0)
-                    .id("bottomRectangle")
-            }
-            .onAppear { scrollToBottom.toggle() }
-            .onChange(of: scrollTo) { _ in
-                if let scrollTo {
-                    if sortingArgument == .importDate {
-                        scroll.scrollTo("bottomRectangle", anchor: .bottom)
-                    } else {
-                        scroll.scrollTo(scrollTo, anchor: .center)
+                .onChange(of: goToDetailedView, perform: { _ in
+                    if !goToDetailedView, openedImage != nil {
+                        scroll.scrollTo(openedImage)
                     }
+                })
+                .fullScreenCover(isPresented: $goToDetailedView) {
+                    ImageDetailedView(library: library, photos: filteredPhotos, photosResult: photos, albums: albums,
+                            photosSelector: $photosSelector, selectedImage: $openedImage)
                 }
             }
-            .onChange(of: openedImage) { _ in
-                scroll.scrollTo(openedImage, anchor: .center)
-            }
-            .onChange(of: scrollToBottom) { _ in
-                if scrollToBottom {
-                    scroll.scrollTo("bottomRectangle", anchor: .bottom)
-                    scrollToBottom.toggle()
-                }
-            }
-            .fullScreenCover(isPresented: $goToDetailedView) {
-                ImageDetailedView(library: library, photos: photos,
-                        photosSelector: $photosSelector, imageHolder: imageHolder, selectedImage: $openedImage)
-            }
+        } else {
+            Text("No photos or videos here").font(.title2).bold()
         }
     }
 }

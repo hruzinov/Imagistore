@@ -8,7 +8,6 @@ import CoreData
 struct AppNavigator: View {
     @State var photosLibrary: PhotosLibrary?
     @State var applicationSettings = ApplicationSettings()
-    @StateObject var imageHolder: UIImageHolder = UIImageHolder()
     @State var loaded = false
     @EnvironmentObject var sceneSettings: SceneSettings
 
@@ -23,7 +22,9 @@ struct AppNavigator: View {
                     ContentView(photosLibrary: photosLibrary,
                                 photos: FetchRequest(sortDescriptors: [],
                                         predicate: NSPredicate(format: "library = %@", photosLibrary)),
-                                        applicationSettings: $applicationSettings, imageHolder: imageHolder)
+                                albums: FetchRequest(sortDescriptors: [],
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary.uuid as CVarArg)),
+                                applicationSettings: $applicationSettings)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
                 }
@@ -33,6 +34,7 @@ struct AppNavigator: View {
                     .padding(50)
             }
         }
+        .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
         .onAppear {
 //            applicationSettings.load()
 //            DispatchQueue.main.async {

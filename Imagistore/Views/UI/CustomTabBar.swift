@@ -21,8 +21,8 @@ struct CustomTabBar: View {
                     }
                 } label: {
                     VStack(spacing: 5) {
-                        Image(systemName: "photo.artframe").font(.title2)
-                        Text("Library").font(.caption)
+                        Image(systemName: "photo.fill").font(.title2)
+                        Text("Photos").font(.caption).bold()
                     }
                     .foregroundColor(selection == .library ? .blue : .gray)
                     .frame(maxWidth: .infinity)
@@ -36,7 +36,7 @@ struct CustomTabBar: View {
                 } label: {
                     VStack(spacing: 5) {
                         Image(systemName: "sparkles.rectangle.stack").font(.title2)
-                        Text("Albums").font(.caption)
+                        Text("Albums").font(.caption).bold()
                     }
                     .foregroundColor(selection == .albums ? .blue : .gray)
                     .frame(maxWidth: .infinity)

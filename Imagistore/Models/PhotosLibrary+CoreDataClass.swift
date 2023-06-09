@@ -15,7 +15,8 @@ public class PhotosLibrary: NSManagedObject {
 }
 
 enum PhotosSortArgument: String {
-    case importDate, creationDate
+    case importDateDesc, creationDateDesc
+    case importDateAsc, creationDateAsc
 }
 
 enum RemovingDirection: String {

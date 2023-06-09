@@ -16,6 +16,7 @@ extension PhotosLibrary {
     @NSManaged public var name: String?
     @NSManaged public var lastChange: Date
     @NSManaged public var photos: NSSet
+    @NSManaged public var albums: [UUID]?
 
 }
 
@@ -37,5 +38,22 @@ extension PhotosLibrary {
 
     @objc(removePhotos:)
     @NSManaged public func removeFromPhotos(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for albums
+extension PhotosLibrary {
+
+    @objc(addAlbumsObject:)
+    @NSManaged public func addToAlbums(_ value: Album)
+
+    @objc(removeAlbumsObject:)
+    @NSManaged public func removeFromAlbums(_ value: Album)
+
+    @objc(addAlbums:)
+    @NSManaged public func addToAlbums(_ values: NSSet)
+
+    @objc(removeAlbums:)
+    @NSManaged public func removeFromAlbums(_ values: NSSet)
 
 }

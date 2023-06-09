@@ -12,15 +12,12 @@ struct GallerySceneView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
-    var filteredPhotos: [Photo] {
-        sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
-    }
+    var albums: FetchedResults<Album>
+    @State var currentAlbum: Album?
 
     @Binding var sortingArgument: PhotosSortArgument
-    @StateObject var imageHolder: UIImageHolder
     @Binding var navToRoot: Bool
-    @Binding var scrollToBottom: Bool
-
+    
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
     @State var isMainLibraryScreen: Bool = false
@@ -28,37 +25,55 @@ struct GallerySceneView: View {
     @State var selectedImage: Photo?
     @State var selectingMode: Bool = false
     @State var selectedImagesArray: [Photo] = []
-    @State var isPresentingConfirm: Bool = false
+    @State var isPresentingDeletePhotos: Bool = false
+    @State var isPresentingDeleteAlbum: Bool = false
+    @State var isPresentingAddToAlbum: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
 
     var body: some View {
         NavigationStack {
             VStack {
-                if filteredPhotos.count > 0 {
-                    UIGalleryView(
-                        library: library,
-                        photos: filteredPhotos,
-                        photosSelector: photosSelector,
-                        sortingArgument: $sortingArgument,
-                        imageHolder: imageHolder,
-                        scrollTo: $scrollTo,
-                        scrollToBottom: $scrollToBottom,
-                        selectingMode: $selectingMode,
-                        selectedImagesArray: $selectedImagesArray,
-                        syncArr: $syncArr,
-                        isMainLibraryScreen: isMainLibraryScreen
-                    )
-                } else {
-                    Text(Int.random(in: 1...100) == 7 ?
-                         "These aren't the photos you're looking for." :
-                            "No photos or videos here").font(.title2).bold()
+                #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
+                if #available(iOS 17, *) {
+                    if isMainLibraryScreen {
+                        HStack {
+                            PhotosPicker(
+                                selection: $importSelectedItems,
+                                matching: .images,
+                                photoLibrary: .shared()
+                            ) {
+                                Label("Import", systemImage: "plus")
+                            }
+                            .onChange(of: importSelectedItems) { _ in
+                                if importSelectedItems.count > 0 {
+                                    importFromPhotosApp()
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal, 10)
+                    }
                 }
+
+                UIGalleryView(
+                    library: library,
+                    photos: photos,
+                    albums: albums,
+                    currentAlbum: currentAlbum,
+                    photosSelector: photosSelector,
+                    sortingArgument: $sortingArgument,
+                    scrollTo: $scrollTo,
+                    selectingMode: $selectingMode,
+                    selectedImagesArray: $selectedImagesArray,
+                    syncArr: $syncArr,
+                    isMainLibraryScreen: isMainLibraryScreen
+                )
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingConfirm) {
+            .confirmationDialog("Delete \(selectedImagesArray.count) photos", isPresented: $isPresentingDeletePhotos) {
                 Button("Delete photos", role: .destructive) {
                     if photosSelector == .deleted {
                         changePhotoStatus(to: .permanent)
@@ -71,19 +86,50 @@ struct GallerySceneView: View {
                     Text("You cannot undo this action")
                 }
             }
+            .confirmationDialog("Delete album \(currentAlbum?.title ?? "")", isPresented: $isPresentingDeleteAlbum) {
+                Button("Delete", role: .destructive) {
+                    if let currentAlbum {
+                        dismiss()
+                        viewContext.delete(currentAlbum)
+                        if let index = library.albums?.firstIndex(where: { $0 == currentAlbum.uuid }) {
+                            library.albums?.remove(at: index)
+                        }
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            sceneSettings.errorAlertData = error.localizedDescription
+                            sceneSettings.isShowingErrorAlert.toggle()
+                        }
+                    }
+                }
+            } message: {
+                Text("You cannot undo this action. Photos will not be deleted")
+            }
             .toolbar {
                 if isMainLibraryScreen, !selectingMode {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        PhotosPicker(
-                            selection: $importSelectedItems,
-                            matching: .images,
-                            photoLibrary: .shared()
-                        ) {
-                            Image(systemName: "plus")
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
+                        #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
+                        if #available(iOS 17, *) {} else {
+                            PhotosPicker(
+                                selection: $importSelectedItems,
+                                matching: .images,
+                                photoLibrary: .shared()
+                            ) {
+                                Image(systemName: "plus")
+                            }
+                            .onChange(of: importSelectedItems) { _ in
+                                if importSelectedItems.count > 0 {
+                                    importFromPhotosApp()
+                                }
+                            }
                         }
-                        .onChange(of: importSelectedItems) { _ in
-                            if importSelectedItems.count > 0 {
-                                importFromPhotosApp()
+
+                        if syncArr.count > 0 {
+                            withAnimation {
+                                HStack {
+                                    Image(systemName: "arrow.clockwise.icloud.fill")
+                                    Text("\(syncArr.count) in sync").font(.caption).bold()
+                                }
                             }
                         }
                     }
@@ -98,23 +144,39 @@ struct GallerySceneView: View {
                             selectedImagesArray = []
                         }
                     } label: {
-                        Text(selectingMode ? "Cancel" : "Select")
+                        Image(systemName: selectingMode ? "xmark.circle" : "checkmark.circle")
                     }
                     if photosSelector != .deleted, !selectingMode {
                         Menu {
-                            Picker(selection: $sortingArgument.animation()) {
-                                Text("Creation date").tag(PhotosSortArgument.creationDate)
-                                Text("Importing date").tag(PhotosSortArgument.importDate)
-                            } label: {}
+                            Menu {
+                                Picker(selection: $sortingArgument.animation()) {
+                                    Text("Shooting date ↑").tag(PhotosSortArgument.creationDateDesc)
+                                    Text("Shooting date ↓").tag(PhotosSortArgument.creationDateAsc)
+                                    Text("Importing date ↑").tag(PhotosSortArgument.importDateDesc)
+                                    Text("Importing date ↓").tag(PhotosSortArgument.importDateAsc)
+                                } label: {}
+                            } label: {
+                                Label("Sorting by", systemImage: "arrow.up.arrow.down")
+                            }
+
+                            Divider()
+
+                            if currentAlbum != nil {
+                                Button(role: .destructive) {
+                                    isPresentingDeleteAlbum.toggle()
+                                } label: {
+                                    Label("Delete album", systemImage: "trash")
+                                }
+                            }
                         } label: {
-                            Image(systemName: "arrow.up.arrow.down")
+                            Image(systemName: "ellipsis.circle")
                         }
                     }
                 }
                 if selectingMode {
                     ToolbarItemGroup(placement: .bottomBar) {
                         if photosSelector == .deleted {
-                            Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
+                            Button { isPresentingDeletePhotos.toggle() } label: { Text("Delete") }
                                 .disabled(selectedImagesArray.count==0)
                             Spacer()
                             Text(selectedImagesArray.count > 0 ?
@@ -131,15 +193,57 @@ struct GallerySceneView: View {
                             )
                             .bold()
                             Spacer()
-                            Button { isPresentingConfirm.toggle() } label: { Image(systemName: "trash") }
-                                .disabled(selectedImagesArray.count==0)
+                            Button { isPresentingDeletePhotos.toggle() } label: {
+                                Image(systemName: "trash")
+                            }
+                                .disabled(selectedImagesArray.count == 0)
+                            Menu {
+                                if currentAlbum != nil {
+                                    Button {
+                                        withAnimation {
+                                            selectedImagesArray.forEach { img in
+                                                if let uuid = img.uuid,
+                                                   let index = currentAlbum?.photos.firstIndex(of: uuid) {
+                                                    currentAlbum?.photos.remove(at: index)
+                                                }
+                                            }
+                                        }
+                                        do {
+                                            try viewContext.save()
+                                            sceneSettings.isShowingTabBar = true
+                                            selectingMode.toggle()
+                                            selectedImagesArray = []
+                                        } catch {
+                                            sceneSettings.errorAlertData = error.localizedDescription
+                                            sceneSettings.isShowingErrorAlert.toggle()
+                                        }
+                                    } label: {
+                                        Label("Remove from album", systemImage: "rectangle.stack.badge.minus")
+                                    }
+                                }
+
+                                Button {
+                                    isPresentingAddToAlbum.toggle()
+                                } label: {
+                                    Label("Add to album", systemImage: "rectangle.stack.badge.plus")
+                                }
+
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                            }
+                            .disabled(selectedImagesArray.count == 0)
                         }
                     }
                 }
             }
+
+            .sheet(isPresented: $isPresentingAddToAlbum) {
+                AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
+                        selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
+            }
         }
         .onAppear {
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
             }
         }
         .onDisappear {
@@ -173,7 +277,7 @@ struct GallerySceneView: View {
                     }
                 }
             case .permanent:
-                library.permanentRemove(selectedImagesArray, library: library, in: viewContext) { err in
+                library.permanentRemove(selectedImagesArray, in: viewContext) { err in
                     if let err {
                         sceneSettings.errorAlertData = err.localizedDescription
                         sceneSettings.isShowingErrorAlert.toggle()
@@ -187,12 +291,14 @@ struct GallerySceneView: View {
     }
 
     private func importFromPhotosApp() {
+        print("Started importing...")
         Task {
             sceneSettings.infoBarData = "Importing..."; sceneSettings.infoBarFinal = false
             let importCount = importSelectedItems.count
             withAnimation { sceneSettings.isShowingInfoBar.toggle() }
             var count = 0
             var cloudRecords = [CKRecord]()
+            let photosAssets = NSMutableArray()
             var lastUUID: UUID?
             for item in importSelectedItems {
                 withAnimation { sceneSettings.infoBarProgress = Double(count) / Double(importSelectedItems.count) }
@@ -203,7 +309,12 @@ struct GallerySceneView: View {
                         let creationDate: Date
                         if let localID = item.itemIdentifier {
                             let asset = PHAsset.fetchAssets(withLocalIdentifiers: [localID], options: nil).firstObject
-                            creationDate = asset?.creationDate ?? Date()
+                            if let asset {
+                                creationDate = asset.creationDate ?? Date()
+                                photosAssets.add(asset)
+                            } else {
+                                creationDate = Date()
+                            }
                         } else { creationDate = Date() }
 
                         let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension
@@ -232,19 +343,27 @@ struct GallerySceneView: View {
                             syncArr.append(uuid)
                             cloudRecords.append(photoCloudRecord)
 
-                            do {
-                                try viewContext.save()
-                                count+=1
-                                lastUUID = uuid
-
-                            } catch {
-                                sceneSettings.errorAlertData = error.localizedDescription
-                                sceneSettings.isShowingErrorAlert.toggle()
-                            }
+                            count+=1
+                            lastUUID = uuid
                         }
                     }
                 }
             }
+
+            do {
+                library.lastChange = Date()
+                try viewContext.save()
+
+                try PHPhotoLibrary.shared().performChangesAndWait {
+                    PHAssetChangeRequest.deleteAssets(photosAssets)
+                }
+            } catch {
+                if (error as NSError).code != 3072 {
+                    sceneSettings.errorAlertData = error.localizedDescription
+                    sceneSettings.isShowingErrorAlert.toggle()
+                }
+            }
+
             withAnimation {
                 scrollTo = lastUUID
                 sceneSettings.infoBarFinal = true; sceneSettings.infoBarData = "\(count) photos saved"
@@ -265,7 +384,9 @@ struct GallerySceneView: View {
                     if let error {
                         debugPrint(error)
                     } else {
-                        if let index = syncArr.firstIndex(where: { $0.uuidString == record?.value(forKey: "photo") as! String}) {
+                        if let index = syncArr.firstIndex(
+                                where: { $0.uuidString == record?.value(forKey: "photo") as? String}
+                        ) {
                             syncArr.remove(at: index)
                         }
                     }

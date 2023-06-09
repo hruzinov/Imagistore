@@ -1,36 +1,39 @@
+////
+////  Created by Evhen Gruzinov on 17.04.2023.
+////
 //
-//  Created by Evhen Gruzinov on 17.04.2023.
+//import SwiftUI
+//import CloudKit
 //
-
-import SwiftUI
-
-class UIImageHolder: ObservableObject {
-    var data: [UUID: UIImage]
-    var notFound: [UUID]
-    private var fullsizeArr: [UUID]
-
-    init() {
-        data = [:]
-        fullsizeArr = []
-        notFound = []
-    }
-
-    func fullUiImage(_ id: UUID) -> UIImage? {
-        if fullsizeArr.contains(where: { $0 == id }), let uiImage = data[id] {
-            return uiImage
-        } else {
-            return nil
-        }
-    }
-    func getFullUiImage(_ photo: Photo, completion: @escaping (Error?) -> Void) async {
-        await readImageFromFile(photo) { uiImage, error in
-            if let uiImage, let uuid = photo.uuid {
-                DispatchQueue.main.async {
-                    self.data.updateValue(uiImage, forKey: uuid)
-                    self.fullsizeArr.append(uuid)
-                    self.objectWillChange.send()
-                }
-            }
-        }
-    }
-}
+//class UIImageHolder: ObservableObject {
+//    @Published var data: [UUID: UIImage]
+//    private var fullsizeArr: [UUID]
+//
+//    init() {
+//        data = [:]
+//        fullsizeArr = []
+//    }
+//
+////    func getAllUiImages(_ photos: FetchedResults<Photo>) async -> Bool {
+////        photos.forEach { photo in
+////            if let uuid = photo.uuid, photo.status == PhotoStatus.normal.rawValue,
+////               let data = photo.miniature, let uiImage = UIImage(data: data) {
+////                DispatchQueue.main.async {
+////                    self.data.updateValue(uiImage, forKey: uuid)
+////                }
+////            }
+////        }
+////        return true
+////    }
+////    func getUiImage(_ photo: Photo) {
+////        DispatchQueue.global().async {
+////            if let uuid = photo.uuid,
+////               let data = photo.miniature, let uiImage = UIImage(data: data) {
+////                DispatchQueue.main.async {
+////                    self.data.updateValue(uiImage, forKey: uuid)
+////                }
+////            }
+////        }
+////    }
+//
+//}

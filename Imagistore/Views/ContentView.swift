@@ -10,56 +10,64 @@ struct ContentView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest var photos: FetchedResults<Photo>
+    @FetchRequest var albums: FetchedResults<Album>
 
-    @State var sortingArgument: PhotosSortArgument = .importDate
+    @State var sortingArgument: PhotosSortArgument = .importDateDesc
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
-    @State var scrollToBottom: Bool = false
+    @State var viewLoaded: Bool = false
 
     @Binding var applicationSettings: ApplicationSettings
-    @StateObject var imageHolder: UIImageHolder
 
     var handler: Binding<Tab> { Binding(
         get: { selectedTab },
         set: {
-            if $0 == .library && $0 == selectedTab { scrollToBottom = true }
-            else if $0 == .albums && $0 == selectedTab { navToRoot = true }
+            if $0 == .albums && $0 == selectedTab { navToRoot = true }
             self.selectedTab = $0
         }
     )}
 
     var body: some View {
-        VStack {
-            TabView(selection: handler) {
-                GallerySceneView(library: photosLibrary, photos: photos, sortingArgument: $sortingArgument,
-                                 imageHolder: imageHolder, navToRoot: $navToRoot, scrollToBottom: $scrollToBottom,
-                                 photosSelector: .normal, isMainLibraryScreen: true)
-                .tag(Tab.library)
-                AlbumsSceneView(library: photosLibrary, sortingArgument: $sortingArgument,
-                                navToRoot: $navToRoot, imageHolder: imageHolder, photos: photos)
-                .tag(Tab.albums)
-            }
-            .overlay(alignment: .bottom) {
-                CustomTabBar(selection: handler)
-            }
-            .toolbar(.hidden, for: .tabBar)
-        }
-
-        .overlay(alignment: .center, content: {
-            if sceneSettings.isShowingInfoBar {
-                UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
-                                      progressValue: $sceneSettings.infoBarProgress,
-                                      progressFinal: $sceneSettings.infoBarFinal)
-            }
-        })
-        .onAppear {
-            photosLibrary.clearBin(photosLibrary, in: viewContext) { err in
-                if let err {
-                    sceneSettings.errorAlertData = err.localizedDescription
-                    sceneSettings.isShowingErrorAlert.toggle()
+        if viewLoaded {
+            VStack {
+                TabView(selection: handler) {
+                    GallerySceneView(library: photosLibrary, photos: photos, albums: albums,
+                                     sortingArgument: $sortingArgument,
+                                     navToRoot: $navToRoot, photosSelector: .normal, isMainLibraryScreen: true)
+                    .tag(Tab.library)
+                    AlbumsSceneView(library: photosLibrary, photos: photos, albums: albums,
+                                    sortingArgument: $sortingArgument, navToRoot: $navToRoot)
+                    .tag(Tab.albums)
                 }
+                .overlay(alignment: .bottom) {
+                    CustomTabBar(selection: handler)
+                }
+                .toolbar(.hidden, for: .tabBar)
             }
+            .overlay(alignment: .center, content: {
+                if sceneSettings.isShowingInfoBar {
+                    UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
+                                          progressValue: $sceneSettings.infoBarProgress,
+                                          progressFinal: $sceneSettings.infoBarFinal)
+                }
+            })
+        } else {
+            ProgressView("Loading library...").progressViewStyle(.circular)
+                .task {
+                    DispatchQueue.main.async {
+                        Task {
+                            photosLibrary.clearBin(in: viewContext) { err in
+                                if let err {
+                                    sceneSettings.errorAlertData = err.localizedDescription
+                                    sceneSettings.isShowingErrorAlert.toggle()
+                                }
+                            }
+//                            if await imageHolder.getAllUiImages(photos) {
+                                viewLoaded.toggle()
+//                            }
+                        }
+                    }
+                }
         }
-        .alert(sceneSettings.errorAlertData, isPresented: $sceneSettings.isShowingErrorAlert) {}
     }
 }
