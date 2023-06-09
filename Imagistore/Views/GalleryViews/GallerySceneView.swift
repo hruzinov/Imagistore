@@ -128,7 +128,7 @@ struct GallerySceneView: View {
                             withAnimation {
                                 HStack {
                                     Image(systemName: "arrow.clockwise.icloud.fill")
-                                    Text("\(syncArr.count) in sync").font(.caption)
+                                    Text("\(syncArr.count) in sync").font(.caption).bold()
                                 }
                             }
                         }

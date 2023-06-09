@@ -46,7 +46,6 @@ func checkFileRecord(_ item: Photo) {
 func readImageFromFile(_ photo: Photo) -> UIImage? {
     if let uuid = photo.uuid {
         let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
-        print(fileExistsAtPath(filepath.path))
         let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
         return uiImage
     }

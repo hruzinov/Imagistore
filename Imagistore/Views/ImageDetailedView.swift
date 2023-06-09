@@ -36,6 +36,11 @@ struct ImageDetailedView: View {
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
+                                    } else if let uiImage = tempFullsizeImages[uuid] {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .pinchToZoom()
                                     } else {
                                         Image(uiImage: UIImage(data: miniature) ?? UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()

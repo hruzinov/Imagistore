@@ -8,30 +8,35 @@ struct UIAlbumBlockViewNew: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
-    @State var currentAlbum: Album
+    @State var currentAlbum: Album?
     @Binding var sortingArgument: PhotosSortArgument
+    @State var photosSelector: PhotoStatus
     @Binding var navToRoot: Bool
 
     var filteredPhotos: [Photo] {
-        sortedPhotos(photos, by: sortingArgument, filter: .normal).filter { photo in
-            currentAlbum.photos.contains { phId in
-                if let uuid = photo.uuid {
-                    return uuid == phId
-                } else {
-                    return false
+        var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+        if let currentAlbum {
+            filteredPhotos = filteredPhotos.filter { photo in
+                currentAlbum.photos.contains { phId in
+                    if let uuid = photo.uuid {
+                        return uuid == phId
+                    } else {
+                        return false
+                    }
                 }
             }
         }
+        return filteredPhotos
     }
 
     var body: some View {
         NavigationLink(destination: {
             GallerySceneView(library: library, photos: photos, albums: albums, currentAlbum: currentAlbum,
-                    sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: .normal)
+                             sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: photosSelector)
         }, label: {
             HStack {
                 if let lastImage = filteredPhotos.last, let data = lastImage.miniature, let uiImage = UIImage(data: data) {
-                        Image(uiImage: uiImage)
+                    Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: UIScreen.main.bounds.width / 2.3,
@@ -39,6 +44,7 @@ struct UIAlbumBlockViewNew: View {
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(5)
+                            .blur(radius: photosSelector == .deleted ? 15 : 0)
                 } else {
                     VStack {
                         Spacer()
@@ -59,13 +65,25 @@ struct UIAlbumBlockViewNew: View {
                     VStack {
                         Spacer()
                         HStack(alignment: .center) {
-                            Text(currentAlbum.title)
-                                .padding(5)
-                                .bold()
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(2)
-                            Spacer()
-                            Text(String(filteredPhotos.count))
+                            switch photosSelector {
+                            case .normal:
+                                if let currentAlbum {
+                                    Text(currentAlbum.title)
+                                        .padding(5)
+                                        .bold()
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(2)
+                                    Spacer()
+                                    Text(String(filteredPhotos.count))
+                                }
+                            case .deleted:
+                                Text("Deleted photos")
+                                    .padding(5)
+                                    .bold()
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
+                                Spacer()
+                            }
                         }
                     }
                     .font(.subheadline)

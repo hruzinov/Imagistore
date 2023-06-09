@@ -220,9 +220,9 @@
 		497647F329C0C0EE001C3FE4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */,
 				49D6A84329E1B8FF00E17E5C /* CustomTabBar.swift */,
 				495E8DF629D3143800D6F117 /* PinchZoomView.swift */,
+				49097FEF29E9718A0023E36F /* UICircleProgressPupUp.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
