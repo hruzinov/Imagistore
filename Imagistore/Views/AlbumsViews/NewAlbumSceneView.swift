@@ -14,7 +14,7 @@ struct NewAlbumSceneView: View {
     @State var library: PhotosLibrary
     @State var albumTitle: String = ""
     @State var albumType: AlbumType = .simple
-    @State var filterOptions: [[String: Any]] = [[:]]
+    @State var filterOptions: [[String: Any]] = []
 
     @State var newKeywordFilter: String? = nil
     @State var filterMode: String = "AND"
@@ -57,16 +57,17 @@ struct NewAlbumSceneView: View {
                                     }
                             }
                         }
+                        if filterOptions.count > 1 {
+                            Picker("Filter mode:", selection: $filterMode) {
+                                Text("AND").tag("AND")
+                                Text("OR").tag("OR")
+                            }.pickerStyle(.menu)
+                        }
 
                         NavigationLink {
                             SelectTag(allKeywords: allKeywords, selectedKeywords: $selectedKeywords, filterOptions: $filterOptions)
                         } label: {
-                            Label("Add keyword", systemImage: "plis")
-                        }
-
-                        Picker("Filter mode:", selection: $filterMode) {
-                            Text("AND").tag("AND")
-                            Text("OR").tag("OR")
+                            Label("Add keyword", systemImage: "plus")
                         }
                     }
                 }
