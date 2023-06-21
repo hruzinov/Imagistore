@@ -16,20 +16,26 @@ struct UIAlbumBlockView: View {
     var filteredPhotos: [Photo] {
         var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
         if let currentAlbum {
-            if let filterOptions = currentAlbum.filterOptions {
+            if let filterOptions = currentAlbum.filterOptions, let filterMode = currentAlbum.filterMode {
                 filteredPhotos = filteredPhotos.filter { photo in
                     var matchFilters = true
-                    filterOptions.forEach { option in
+                    for option in filterOptions {
                         if let type = option["type"] as? String, type == "tagFilter" {
                             if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
                                 if logicalNot {
                                     if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
                                         matchFilters = false
+                                    } else if filterMode == "OR" {
+                                        matchFilters = true
+                                        break
                                     }
                                 } else {
                                     if let photoKeywords = photo.keywords {
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
+                                        } else if filterMode == "OR" {
+                                            matchFilters = true
+                                            break
                                         }
                                     } else { matchFilters = false }
                                 }

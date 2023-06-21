@@ -17,6 +17,7 @@ struct NewAlbumSceneView: View {
     @State var filterOptions: [[String: Any]] = [[:]]
 
     @State var newKeywordFilter: String? = nil
+    @State var filterMode: String = "AND"
 
     var allKeywords: [String] {
         var allKeywords = [String]()
@@ -62,6 +63,11 @@ struct NewAlbumSceneView: View {
                         } label: {
                             Label("Add keyword", systemImage: "plis")
                         }
+
+                        Picker("Filter mode:", selection: $filterMode) {
+                            Text("AND").tag("AND")
+                            Text("OR").tag("OR")
+                        }
                     }
                 }
             }
@@ -98,7 +104,8 @@ struct NewAlbumSceneView: View {
                             newAlbum.title = albumTitle
                             newAlbum.creationDate = Date()
                             newAlbum.photos = [UUID]()
-                            newAlbum.filterOptions =  filterOptions
+                            newAlbum.filterOptions = filterOptions
+                            newAlbum.filterMode = filterMode
                             do {
                                 try viewContext.save()
                                 dismiss()

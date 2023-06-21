@@ -21,6 +21,7 @@ extension Album {
     @NSManaged public var photos: [UUID]
     @NSManaged public var title: String
     @NSManaged public var creationDate: Date
+    @NSManaged public var filterMode: String?
     @NSManaged public var filterOptions: [[String: Any]]?
 //    filterOptions schema
 //    [
