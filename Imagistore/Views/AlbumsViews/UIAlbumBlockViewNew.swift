@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct UIAlbumBlockViewNew: View {
+struct UIAlbumBlockView: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
@@ -16,12 +16,38 @@ struct UIAlbumBlockViewNew: View {
     var filteredPhotos: [Photo] {
         var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
         if let currentAlbum {
-            filteredPhotos = filteredPhotos.filter { photo in
-                currentAlbum.photos.contains { phId in
-                    if let uuid = photo.uuid {
-                        return uuid == phId
-                    } else {
-                        return false
+            if let filterOptions = currentAlbum.filterOptions {
+                filteredPhotos = filteredPhotos.filter { photo in
+                    var matchFilters = true
+                    filterOptions.forEach { option in
+                        if let type = option["type"] as? String, type == "tagFilter" {
+                            if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
+                                if logicalNot {
+                                    if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
+                                        matchFilters = false
+                                    }
+                                } else {
+                                    if let photoKeywords = photo.keywords {
+                                        if !photoKeywords.contains(keyword) {
+                                            matchFilters = false
+                                        }
+                                    } else { matchFilters = false }
+                                }
+                            } else {
+                                matchFilters = false
+                            }
+                        }
+                    }
+                    return matchFilters
+                }
+            } else {
+                filteredPhotos = filteredPhotos.filter { photo in
+                    currentAlbum.photos.contains { phId in
+                        if let uuid = photo.uuid {
+                            return uuid == phId
+                        } else {
+                            return false
+                        }
                     }
                 }
             }
@@ -35,7 +61,8 @@ struct UIAlbumBlockViewNew: View {
                              sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: photosSelector)
         }, label: {
             HStack {
-                if let lastImage = filteredPhotos.last, let data = lastImage.miniature, let uiImage = UIImage(data: data) {
+                if let lastImage = filteredPhotos.last,
+                   let data = lastImage.miniature, let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)

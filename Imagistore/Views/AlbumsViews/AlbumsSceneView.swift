@@ -29,7 +29,7 @@ struct AlbumsSceneView: View {
                     ScrollView {
                         LazyVGrid(columns: rows2) {
                             ForEach(albums, id: \.self) { album in
-                                UIAlbumBlockViewNew(library: library,
+                                UIAlbumBlockView(library: library,
                                                     photos: photos,
                                                     albums: albums,
                                                     currentAlbum: album,
@@ -41,7 +41,7 @@ struct AlbumsSceneView: View {
                             if photos.filter({ img in
                                 img.status == PhotoStatus.deleted.rawValue
                             }).count > 0 {
-                                UIAlbumBlockViewNew(library: library,
+                                UIAlbumBlockView(library: library,
                                                     photos: photos,
                                                     albums: albums,
                                                     currentAlbum: nil,
@@ -55,7 +55,7 @@ struct AlbumsSceneView: View {
                 }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: NewAlbumSceneView(library: library),
+                    NavigationLink(destination: NewAlbumSceneView(photos: photos, library: library),
                             label: { Image(systemName: "plus") })
                 }
             }

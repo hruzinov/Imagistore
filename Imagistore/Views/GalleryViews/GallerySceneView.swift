@@ -17,7 +17,7 @@ struct GallerySceneView: View {
 
     @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
-    
+
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
     @State var isMainLibraryScreen: Bool = false
@@ -109,7 +109,7 @@ struct GallerySceneView: View {
                 if isMainLibraryScreen, !selectingMode {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
-                        if #available(iOS 17, *) {} else {
+                        if #unavailable(iOS 17) {
                             PhotosPicker(
                                 selection: $importSelectedItems,
                                 matching: .images,
@@ -243,7 +243,7 @@ struct GallerySceneView: View {
             }
         }
         .onAppear {
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
         }
         .onDisappear {

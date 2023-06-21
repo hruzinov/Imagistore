@@ -5,6 +5,11 @@
 import Foundation
 import CoreData
 
+@objc(Album)
+public class Album: NSManagedObject {
+
+}
+
 extension Album {
 
     public class func fetchRequest() -> NSFetchRequest<Album> {
@@ -16,9 +21,22 @@ extension Album {
     @NSManaged public var photos: [UUID]
     @NSManaged public var title: String
     @NSManaged public var creationDate: Date
+    @NSManaged public var filterOptions: [[String: Any]]?
+//    filterOptions schema
+//    [
+//        [
+//            "optionType": option type,
+//            "optionData": filter option
+//        ]
+//    ]
 
 }
 
 extension Album: Identifiable {
 
+}
+
+enum AlbumType: String, CaseIterable, Identifiable {
+    case simple, smart
+    var id: Self { self }
 }

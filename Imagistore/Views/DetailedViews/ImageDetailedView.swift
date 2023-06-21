@@ -19,6 +19,7 @@ struct ImageDetailedView: View {
     @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
+    @State var isPresentingEditTags: Bool = false
 
     @State var tempFullsizeImages: [UUID: UIImage] = [:]
 
@@ -42,7 +43,8 @@ struct ImageDetailedView: View {
                                             .scaledToFit()
                                             .pinchToZoom()
                                     } else {
-                                        Image(uiImage: UIImage(data: miniature) ?? UIImage(systemName: "photo.on.rectangle.angled")!)
+                                        Image(uiImage: UIImage(data: miniature) ??
+                                                UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()
                                             .scaledToFit()
                                             .onAppear {
@@ -129,6 +131,13 @@ struct ImageDetailedView: View {
                         } label: {
                             Label("Add to album", systemImage: "rectangle.stack.badge.plus")
                         }
+                        Divider()
+                        Button {
+                            isPresentingEditTags.toggle()
+                        } label: {
+                            Label("Edit keywords", systemImage: "text.word.spacing")
+                        }
+
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
@@ -139,7 +148,7 @@ struct ImageDetailedView: View {
                     if photosSelector == .deleted {
                         Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
                     }
-                    
+
                     Button {
                         withAnimation {
                             sceneSettings.isShowBottomScroll.toggle()
@@ -154,7 +163,7 @@ struct ImageDetailedView: View {
                                 .foregroundColor(sceneSettings.isShowBottomScroll ? .white : .accentColor)
                         }
                     }
-                    
+
                     if photosSelector == .deleted {
                         Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
                     } else {
@@ -168,6 +177,11 @@ struct ImageDetailedView: View {
                                isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true),
                                selectedImagesArray: .constant([]), selectedImage: selectedImage)
             }
+            .sheet(isPresented: $isPresentingEditTags, content: {
+                if let selectedImage {
+                    EditTagsView(selectedImage: selectedImage, photos: photosResult)
+                }
+            })
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
                 Button("Delete photo", role: .destructive) {
                     if photosSelector == .deleted {
@@ -183,6 +197,8 @@ struct ImageDetailedView: View {
             }
         }
     }
+
+
     private func changePhotoStatus(to destination: RemovingDirection) {
         let changedPhoto = photos.first(where: { $0.uuid == selectedImage })
         if let changedPhoto, let photoIndex = photos.firstIndex(of: changedPhoto) {
