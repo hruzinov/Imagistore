@@ -52,9 +52,6 @@ struct NewAlbumSceneView: View {
 
                             if let type, type == "tagFilter", let keyword = filter["filterBy"] as? String {
                                 Text("**Tag \(filter["logicalNot"] as! Bool ? "is not" : "is"):** \(keyword)")
-                                    .onAppear {
-                                        print(filter)
-                                    }
                             }
                         }
                         if filterOptions.count > 1 {

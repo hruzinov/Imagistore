@@ -28,6 +28,7 @@ struct GallerySceneView: View {
     @State var isPresentingDeletePhotos: Bool = false
     @State var isPresentingDeleteAlbum: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
+    @State var isPresentingEditTags: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
 
@@ -228,6 +229,14 @@ struct GallerySceneView: View {
                                     Label("Add to album", systemImage: "rectangle.stack.badge.plus")
                                 }
 
+                                Divider()
+
+                                Button {
+                                    isPresentingEditTags.toggle()
+                                } label: {
+                                    Label("Edit keywords", systemImage: "text.word.spacing")
+                                }
+
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                             }
@@ -241,6 +250,11 @@ struct GallerySceneView: View {
                 AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
                         selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
+            .sheet(isPresented: $isPresentingEditTags, content: {
+                if selectedImagesArray.count > 0 {
+                    EditTagsView(selectedImages: selectedImagesArray.map { $0.uuid! }, photos: photos)
+                }
+            })
         }
         .onAppear {
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
@@ -343,6 +357,13 @@ struct GallerySceneView: View {
                             syncArr.append(uuid)
                             cloudRecords.append(photoCloudRecord)
 
+//                            do {
+//                                try viewContext.save()
+//                            } catch {
+//                                sceneSettings.errorAlertData = error.localizedDescription
+//                                sceneSettings.isShowingErrorAlert.toggle()
+//                            }
+
                             count+=1
                             lastUUID = uuid
                         }
@@ -353,7 +374,6 @@ struct GallerySceneView: View {
             do {
                 library.lastChange = Date()
                 try viewContext.save()
-
                 try PHPhotoLibrary.shared().performChangesAndWait {
                     PHAssetChangeRequest.deleteAssets(photosAssets)
                 }

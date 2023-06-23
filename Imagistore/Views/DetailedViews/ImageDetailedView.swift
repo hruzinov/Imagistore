@@ -26,6 +26,20 @@ struct ImageDetailedView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
+                if #available(iOS 17, *) {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Image(systemName: "chevron.backward")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                }
                 VStack {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
@@ -111,17 +125,20 @@ struct ImageDetailedView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                Text("Back")
+            #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
+                if #unavailable(iOS 17) {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        HStack {
+                            Button {
+                                dismiss()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "chevron.backward")
+                                    Text("Back")
+                                }
                             }
+                            Spacer()
                         }
-                        Spacer()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -149,6 +166,8 @@ struct ImageDetailedView: View {
                         Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
                     }
 
+                    Spacer()
+
                     Button {
                         withAnimation {
                             sceneSettings.isShowBottomScroll.toggle()
@@ -163,6 +182,8 @@ struct ImageDetailedView: View {
                                 .foregroundColor(sceneSettings.isShowBottomScroll ? .white : .accentColor)
                         }
                     }
+
+                    Spacer()
 
                     if photosSelector == .deleted {
                         Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
@@ -179,7 +200,7 @@ struct ImageDetailedView: View {
             }
             .sheet(isPresented: $isPresentingEditTags, content: {
                 if let selectedImage {
-                    EditTagsView(selectedImage: selectedImage, photos: photosResult)
+                    EditTagsView(selectedImages: [selectedImage], photos: photosResult)
                 }
             })
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {

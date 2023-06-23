@@ -117,6 +117,7 @@
 		4917584629F90D8F00CD33D4 /* AlbumsViews */ = {
 			isa = PBXGroup;
 			children = (
+				496CF9762A44B8C300E93A84 /* Tags */,
 				4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */,
 				4948C1922A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift */,
 				4948C1902A2B48E200E0C360 /* NewAlbumSceneView.swift */,
@@ -209,12 +210,19 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		496CF9762A44B8C300E93A84 /* Tags */ = {
+			isa = PBXGroup;
+			children = (
+				497410812A41B75C00262BCA /* EditTagsView.swift */,
+				4914609F2A41C87400BAA9A4 /* TagsCloudUIView.swift */,
+			);
+			path = Tags;
+			sourceTree = "<group>";
+		};
 		497410802A41B74200262BCA /* DetailedViews */ = {
 			isa = PBXGroup;
 			children = (
 				49273B6329BE413E00ECF488 /* ImageDetailedView.swift */,
-				497410812A41B75C00262BCA /* EditTagsView.swift */,
-				4914609F2A41C87400BAA9A4 /* TagsCloudUIView.swift */,
 			);
 			path = DetailedViews;
 			sourceTree = "<group>";

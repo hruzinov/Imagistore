@@ -12,6 +12,9 @@ public class Photo: NSManagedObject {
 enum PhotoStatus: String, Codable {
     case normal, deleted
 }
+enum KeywordState {
+    case inAll, partical, none
+}
 
 extension Photo {
 
