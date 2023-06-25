@@ -200,7 +200,7 @@ struct ImageDetailedView: View {
             }
             .sheet(isPresented: $isPresentingEditTags, content: {
                 if let selectedImage {
-                    EditTagsView(selectedImages: [selectedImage], photos: photosResult)
+                    EditTagsView(selectedImages: [selectedImage], photos: photosResult, isChanged: .constant(false))
                 }
             })
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {

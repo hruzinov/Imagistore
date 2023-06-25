@@ -9,6 +9,7 @@ struct TagsCloudUIView: View {
     var keywords: [String: KeywordState]
     var selectedImages: [UUID]
     @Binding var photos: FetchedResults<Photo>
+    @Binding var isChanged: Bool
 
     @State private var totalHeight = CGFloat.zero
     
@@ -32,29 +33,31 @@ struct TagsCloudUIView: View {
 
         return ZStack(alignment: .topLeading) {
             ForEach(sortedKeywords, id: \.key) { tag, state in
-                self.item(for: tag, state: state)
-                    .padding([.horizontal, .vertical], 4)
-                    .alignmentGuide(.leading, computeValue: { d in
-                        if (abs(width - d.width) > geometry.size.width)
-                        {
-                            width = 0
-                            height -= d.height
-                        }
-                        let result = width
-                        if tag == sortedKeywords.last!.key {
-                            width = 0 //last item
-                        } else {
-                            width -= d.width
-                        }
-                        return result
-                    })
-                    .alignmentGuide(.top, computeValue: {d in
-                        let result = height
-                        if tag == sortedKeywords.last!.key {
-                            height = 0 // last item
-                        }
-                        return result
-                    })
+                if tag != "anyKeyword" {
+                    self.item(for: tag, state: state)
+                        .padding([.horizontal, .vertical], 4)
+                        .alignmentGuide(.leading, computeValue: { d in
+                            if (abs(width - d.width) > geometry.size.width)
+                            {
+                                width = 0
+                                height -= d.height
+                            }
+                            let result = width
+                            if tag == sortedKeywords.last!.key {
+                                width = 0 //last item
+                            } else {
+                                width -= d.width
+                            }
+                            return result
+                        })
+                        .alignmentGuide(.top, computeValue: {d in
+                            let result = height
+                            if tag == sortedKeywords.last!.key {
+                                height = 0 // last item
+                            }
+                            return result
+                        })
+                }
             }
         }.background(viewHeightReader($totalHeight))
     }
@@ -85,6 +88,7 @@ struct TagsCloudUIView: View {
                     withAnimation {
                         do {
                             try viewContext.save()
+                            isChanged = true
                         } catch {
                             debugPrint(error)
                         }
@@ -107,6 +111,7 @@ struct TagsCloudUIView: View {
                     withAnimation {
                         do {
                             try viewContext.save()
+                            isChanged = true
                         } catch {
                             debugPrint(error)
                         }

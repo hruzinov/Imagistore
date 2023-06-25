@@ -18,6 +18,7 @@ struct NewAlbumSceneView: View {
 
     @State var newKeywordFilter: String? = nil
     @State var filterMode: String = "AND"
+    @State var isAnyKeywordSelected = false
 
     var allKeywords: [String] {
         var allKeywords = [String]()
@@ -46,25 +47,54 @@ struct NewAlbumSceneView: View {
                     }.pickerStyle(.segmented)
 
                     if albumType == .smart {
-                        ForEach(0..<filterOptions.count, id: \.self) { index in
-                            let filter = filterOptions[index]
-                            let type = filter["type"] as? String
-
-                            if let type, type == "tagFilter", let keyword = filter["filterBy"] as? String {
-                                Text("**Tag \(filter["logicalNot"] as! Bool ? "is not" : "is"):** \(keyword)")
+                        List {
+                            ForEach(0..<filterOptions.count, id: \.self) { index in
+                                let filter = filterOptions[index]
+                                let type = filter["type"] as? String
+                                
+                                if let type, type == "tagFilter", let keyword = filter["filterBy"] as? String {
+                                    if keyword == "anyKeyword" {
+                                        Text(filter["logicalNot"] as! Bool ? "Not contain keywords" : "Contain any keyword")
+                                            .swipeActions {
+                                                Button(role: .destructive) {
+                                                    withAnimation {
+                                                        filterOptions.remove(at: index)
+                                                        isAnyKeywordSelected = false
+                                                    }
+                                                } label: {
+                                                    Image(systemName: "trash")
+                                                }
+                                            }
+                                            .onAppear {
+                                                isAnyKeywordSelected = true
+                                            }
+                                    } else if !isAnyKeywordSelected {
+                                        Text("Keyword \(filter["logicalNot"] as! Bool ? "is not" : "is"): \(keyword)")
+                                            .swipeActions {
+                                                Button(role: .destructive) {
+                                                    filterOptions.remove(at: index)
+                                                } label: {
+                                                    Image(systemName: "trash")
+                                                }
+                                            }
+                                    }
+                                }
                             }
                         }
-                        if filterOptions.count > 1 {
-                            Picker("Filter mode:", selection: $filterMode) {
-                                Text("AND").tag("AND")
-                                Text("OR").tag("OR")
-                            }.pickerStyle(.menu)
-                        }
 
-                        NavigationLink {
-                            SelectTag(allKeywords: allKeywords, selectedKeywords: $selectedKeywords, filterOptions: $filterOptions)
-                        } label: {
-                            Label("Add keyword", systemImage: "plus")
+                        if !isAnyKeywordSelected {
+                            if filterOptions.count > 1 {
+                                Picker("Filtering mode:", selection: $filterMode) {
+                                    Text("AND").tag("AND")
+                                    Text("OR").tag("OR")
+                                }.pickerStyle(.menu)
+                            }
+
+                            NavigationLink {
+                                SelectTag(allKeywords: allKeywords, selectedKeywords: $selectedKeywords, filterOptions: $filterOptions)
+                            } label: {
+                                Label("Add keyword", systemImage: "plus")
+                            }
                         }
                     }
                 }
@@ -138,9 +168,24 @@ private struct SelectTag: View {
     var body: some View {
         Form {
             Picker("", selection: $logicalNot) {
-                Text("Tag is").tag(false)
-                Text("Tag is not").tag(true)
+                Text("Keyword is").tag(false)
+                Text("Keyword is not").tag(true)
             }.pickerStyle(.segmented)
+
+            Button {
+                filterOptions.append(
+                    [
+                        "type": "tagFilter",
+                        "filterBy": "anyKeyword",
+                        "logicalNot": logicalNot
+                    ]
+                )
+                selectedKeywords.append("Any keyword")
+                dismiss()
+            } label: {
+                Text("Any keyword")
+            }
+
             ForEach(allKeywords, id: \.self) { keyword in
                 if !selectedKeywords.contains(keyword) {
                     Button {

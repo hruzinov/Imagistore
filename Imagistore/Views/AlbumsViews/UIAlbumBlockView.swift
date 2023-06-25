@@ -23,6 +23,10 @@ struct UIAlbumBlockView: View {
                         if let type = option["type"] as? String, type == "tagFilter" {
                             if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
                                 if logicalNot {
+                                    if let keys = photo.keywords, keys.count > 0 {
+                                        return false
+                                    }
+
                                     if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
                                         matchFilters = false
                                     } else if filterMode == "OR" {
@@ -31,6 +35,10 @@ struct UIAlbumBlockView: View {
                                     }
                                 } else {
                                     if let photoKeywords = photo.keywords {
+                                        if photoKeywords.count > 0 {
+                                            return true
+                                        }
+
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
                                         } else if filterMode == "OR" {

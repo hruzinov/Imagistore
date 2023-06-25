@@ -29,6 +29,7 @@ struct GallerySceneView: View {
     @State var isPresentingDeleteAlbum: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
     @State var isPresentingEditTags: Bool = false
+    @State var isPhotosChanged: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
 
@@ -199,7 +200,7 @@ struct GallerySceneView: View {
                             }
                                 .disabled(selectedImagesArray.count == 0)
                             Menu {
-                                if currentAlbum != nil {
+                                if currentAlbum != nil, currentAlbum?.filterOptions == nil {
                                     Button {
                                         withAnimation {
                                             selectedImagesArray.forEach { img in
@@ -250,9 +251,16 @@ struct GallerySceneView: View {
                 AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
                         selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
-            .sheet(isPresented: $isPresentingEditTags, content: {
+            .sheet(isPresented: $isPresentingEditTags, onDismiss: {
+                if isPhotosChanged {
+                    selectedImagesArray = []
+                    selectingMode = false
+                    isPhotosChanged = false
+                }
+            }, content: {
                 if selectedImagesArray.count > 0 {
-                    EditTagsView(selectedImages: selectedImagesArray.map { $0.uuid! }, photos: photos)
+                    EditTagsView(selectedImages: selectedImagesArray.map { $0.uuid! },
+                                 photos: photos, isChanged: $isPhotosChanged)
                 }
             })
         }

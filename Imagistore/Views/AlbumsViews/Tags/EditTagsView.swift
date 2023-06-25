@@ -10,6 +10,8 @@ struct EditTagsView: View {
     @State var newKeyword: String = ""
     @State var selectedImages: [UUID]
     @State var photos: FetchedResults<Photo>
+    @Binding var isChanged: Bool
+
     var allKeywords: [String] {
         var keys: [String] = []
         for image in photos {
@@ -89,7 +91,7 @@ struct EditTagsView: View {
                                             selectedPhoto.keywords = []
                                         }
                                         
-                                        if !selectedPhoto.keywords!.contains(newKeyword) {
+                                        if newKeyword != "anyKeyword", !selectedPhoto.keywords!.contains(newKeyword) {
                                             selectedPhoto.keywords?.append(newKeyword)
                                         }
                                         
@@ -98,6 +100,7 @@ struct EditTagsView: View {
                             }
                             do {
                                 try viewContext.save()
+                                isChanged = true
                             } catch {
                                 debugPrint(error)
                             }
@@ -108,9 +111,10 @@ struct EditTagsView: View {
                             .background(Color.white)
                     }.disabled(newKeyword.count == 0)
                 }
-                TagsCloudUIView(keywords: selectedImagesKeywords, selectedImages: selectedImages, photos: $photos)
+                TagsCloudUIView(keywords: selectedImagesKeywords, selectedImages: selectedImages,
+                                photos: $photos, isChanged: $isChanged)
                     .padding(.top, 10)
-                TagsCloudUIView(keywords: freeKeywords, selectedImages: selectedImages, photos: $photos)
+                TagsCloudUIView(keywords: freeKeywords, selectedImages: selectedImages, photos: $photos, isChanged: $isChanged)
             }
         }
     }

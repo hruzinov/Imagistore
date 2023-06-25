@@ -18,7 +18,7 @@
 		493752FE29BE2F81006F9CD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */; };
 		493E5CED29EB1F9C008A1A38 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */; };
 		4948C1912A2B48E200E0C360 /* NewAlbumSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4948C1902A2B48E200E0C360 /* NewAlbumSceneView.swift */; };
-		4948C1932A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4948C1922A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift */; };
+		4948C1932A2B6A3900E0C360 /* UIAlbumBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4948C1922A2B6A3900E0C360 /* UIAlbumBlockView.swift */; };
 		4948C1B92A2B899500E0C360 /* Album+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4948C1B72A2B899500E0C360 /* Album+CoreData.swift */; };
 		495E8DF729D3143800D6F117 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E8DF629D3143800D6F117 /* PinchZoomView.swift */; };
 		496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */; };
@@ -56,7 +56,7 @@
 		493752FD29BE2F81006F9CD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		493E5CEC29EAE4B2008A1A38 /* Imagistore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Imagistore.entitlements; sourceTree = "<group>"; };
 		4948C1902A2B48E200E0C360 /* NewAlbumSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAlbumSceneView.swift; sourceTree = "<group>"; };
-		4948C1922A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlbumBlockViewNew.swift; sourceTree = "<group>"; };
+		4948C1922A2B6A3900E0C360 /* UIAlbumBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlbumBlockView.swift; sourceTree = "<group>"; };
 		4948C1B72A2B899500E0C360 /* Album+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Album+CoreData.swift"; sourceTree = "<group>"; };
 		495E8DF629D3143800D6F117 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		496EA0F529E6FE2400C9F67F /* TimeFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFunctions.swift; sourceTree = "<group>"; };
@@ -119,7 +119,7 @@
 			children = (
 				496CF9762A44B8C300E93A84 /* Tags */,
 				4977099D29D6FAD000BC0BBC /* AlbumsSceneView.swift */,
-				4948C1922A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift */,
+				4948C1922A2B6A3900E0C360 /* UIAlbumBlockView.swift */,
 				4948C1902A2B48E200E0C360 /* NewAlbumSceneView.swift */,
 				499EEC522A2D29CB001170A2 /* AddToAlbumView.swift */,
 			);
@@ -324,7 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				491460A02A41C87400BAA9A4 /* TagsCloudUIView.swift in Sources */,
-				4948C1932A2B6A3900E0C360 /* UIAlbumBlockViewNew.swift in Sources */,
+				4948C1932A2B6A3900E0C360 /* UIAlbumBlockView.swift in Sources */,
 				49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */,
 				49CB4CD029F050DD00C8687F /* AlwaysPopoverModifier.swift in Sources */,
 				49CB4CD129F050DD00C8687F /* ContentViewController.swift in Sources */,
@@ -485,7 +485,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -502,16 +502,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.0;
+				MARKETING_VERSION = 0.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,7";
 			};
 			name = Debug;
 		};
@@ -523,7 +524,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -540,16 +541,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.0;
+				MARKETING_VERSION = 0.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,7";
 			};
 			name = Release;
 		};
