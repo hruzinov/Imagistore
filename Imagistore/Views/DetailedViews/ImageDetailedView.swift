@@ -19,12 +19,27 @@ struct ImageDetailedView: View {
     @State var scrollTo: UUID?
     @State var isPresentingConfirm: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
+    @State var isPresentingEditTags: Bool = false
 
     @State var tempFullsizeImages: [UUID: UIImage] = [:]
 
     var body: some View {
         NavigationStack {
             VStack {
+                #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
+                if #available(iOS 17, *) {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Image(systemName: "chevron.backward")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                }
                 VStack {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
@@ -42,7 +57,8 @@ struct ImageDetailedView: View {
                                             .scaledToFit()
                                             .pinchToZoom()
                                     } else {
-                                        Image(uiImage: UIImage(data: miniature) ?? UIImage(systemName: "photo.on.rectangle.angled")!)
+                                        Image(uiImage: UIImage(data: miniature) ??
+                                                UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()
                                             .scaledToFit()
                                             .onAppear {
@@ -109,17 +125,20 @@ struct ImageDetailedView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                Text("Back")
+            #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
+                if #unavailable(iOS 17) {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        HStack {
+                            Button {
+                                dismiss()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "chevron.backward")
+                                    Text("Back")
+                                }
                             }
+                            Spacer()
                         }
-                        Spacer()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -129,6 +148,13 @@ struct ImageDetailedView: View {
                         } label: {
                             Label("Add to album", systemImage: "rectangle.stack.badge.plus")
                         }
+                        Divider()
+                        Button {
+                            isPresentingEditTags.toggle()
+                        } label: {
+                            Label("Edit keywords", systemImage: "text.word.spacing")
+                        }
+
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
@@ -139,7 +165,9 @@ struct ImageDetailedView: View {
                     if photosSelector == .deleted {
                         Button { isPresentingConfirm.toggle() } label: { Text("Delete") }
                     }
-                    
+
+                    Spacer()
+
                     Button {
                         withAnimation {
                             sceneSettings.isShowBottomScroll.toggle()
@@ -154,7 +182,9 @@ struct ImageDetailedView: View {
                                 .foregroundColor(sceneSettings.isShowBottomScroll ? .white : .accentColor)
                         }
                     }
-                    
+
+                    Spacer()
+
                     if photosSelector == .deleted {
                         Button { changePhotoStatus(to: .recover) } label: { Text("Recover") }
                     } else {
@@ -168,6 +198,11 @@ struct ImageDetailedView: View {
                                isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true),
                                selectedImagesArray: .constant([]), selectedImage: selectedImage)
             }
+            .sheet(isPresented: $isPresentingEditTags, content: {
+                if let selectedImage {
+                    EditTagsView(selectedImages: [selectedImage], photos: photosResult, isChanged: .constant(false))
+                }
+            })
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {
                 Button("Delete photo", role: .destructive) {
                     if photosSelector == .deleted {
@@ -183,6 +218,8 @@ struct ImageDetailedView: View {
             }
         }
     }
+
+
     private func changePhotoStatus(to destination: RemovingDirection) {
         let changedPhoto = photos.first(where: { $0.uuid == selectedImage })
         if let changedPhoto, let photoIndex = photos.firstIndex(of: changedPhoto) {

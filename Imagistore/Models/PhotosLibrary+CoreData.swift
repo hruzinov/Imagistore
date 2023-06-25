@@ -5,6 +5,15 @@
 import Foundation
 import CoreData
 
+@objc(PhotosLibrary)
+public class PhotosLibrary: NSManagedObject {
+    static var actualLibraryVersion = 1
+
+    lazy var idPredicate = {
+        NSPredicate(format: "uuid = %@", self.uuid as CVarArg)
+    }()
+}
+
 extension PhotosLibrary {
 
     public class func fetchRequest() -> NSFetchRequest<PhotosLibrary> {
@@ -56,4 +65,16 @@ extension PhotosLibrary {
     @objc(removeAlbums:)
     @NSManaged public func removeFromAlbums(_ values: NSSet)
 
+}
+
+
+enum PhotosSortArgument: String {
+    case importDateDesc, creationDateDesc
+    case importDateAsc, creationDateAsc
+}
+
+enum RemovingDirection: String {
+    case bin
+    case recover
+    case permanent
 }

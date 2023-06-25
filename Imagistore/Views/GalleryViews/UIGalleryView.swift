@@ -22,19 +22,59 @@ struct UIGalleryView: View {
     @State var isMainLibraryScreen: Bool = false
 
     var filteredPhotos: [Photo] {
-        var phSorted = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
+        var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
         if let currentAlbum {
-            phSorted = phSorted.filter { photo in
-                currentAlbum.photos.contains { phId in
-                    if let uuid = photo.uuid {
-                        return uuid == phId
-                    } else {
-                        return false
+            if let filterOptions = currentAlbum.filterOptions, let filterMode = currentAlbum.filterMode {
+                filteredPhotos = filteredPhotos.filter { photo in
+                    var matchFilters = true
+                    for option in filterOptions {
+                        if let type = option["type"] as? String, type == "tagFilter" {
+                            if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
+                                if logicalNot {
+                                    if let keys = photo.keywords, keys.count > 0 {
+                                        return false
+                                    }
+
+                                    if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
+                                        matchFilters = false
+                                    } else if filterMode == "OR" {
+                                        matchFilters = true
+                                        break
+                                    }
+                                } else {
+                                    if let photoKeywords = photo.keywords {
+                                        if photoKeywords.count > 0 {
+                                            return true
+                                        }
+
+                                        if !photoKeywords.contains(keyword) {
+                                            matchFilters = false
+                                        } else if filterMode == "OR" {
+                                            matchFilters = true
+                                            break
+                                        }
+                                    } else { matchFilters = false }
+                                }
+                            } else {
+                                matchFilters = false
+                            }
+                        }
+                    }
+                    return matchFilters
+                }
+            } else {
+                filteredPhotos = filteredPhotos.filter { photo in
+                    currentAlbum.photos.contains { phId in
+                        if let uuid = photo.uuid {
+                            return uuid == phId
+                        } else {
+                            return false
+                        }
                     }
                 }
             }
         }
-        return phSorted
+        return filteredPhotos
     }
 
     let columns = [

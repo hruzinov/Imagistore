@@ -17,7 +17,7 @@ struct GallerySceneView: View {
 
     @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
-    
+
     @State private var importSelectedItems = [PhotosPickerItem]()
     @State var photosSelector: PhotoStatus
     @State var isMainLibraryScreen: Bool = false
@@ -28,6 +28,8 @@ struct GallerySceneView: View {
     @State var isPresentingDeletePhotos: Bool = false
     @State var isPresentingDeleteAlbum: Bool = false
     @State var isPresentingAddToAlbum: Bool = false
+    @State var isPresentingEditTags: Bool = false
+    @State var isPhotosChanged: Bool = false
     @State var scrollTo: UUID?
     @State var syncArr = [UUID]()
 
@@ -109,7 +111,7 @@ struct GallerySceneView: View {
                 if isMainLibraryScreen, !selectingMode {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
-                        if #available(iOS 17, *) {} else {
+                        if #unavailable(iOS 17) {
                             PhotosPicker(
                                 selection: $importSelectedItems,
                                 matching: .images,
@@ -198,7 +200,7 @@ struct GallerySceneView: View {
                             }
                                 .disabled(selectedImagesArray.count == 0)
                             Menu {
-                                if currentAlbum != nil {
+                                if currentAlbum != nil, currentAlbum?.filterOptions == nil {
                                     Button {
                                         withAnimation {
                                             selectedImagesArray.forEach { img in
@@ -228,6 +230,14 @@ struct GallerySceneView: View {
                                     Label("Add to album", systemImage: "rectangle.stack.badge.plus")
                                 }
 
+                                Divider()
+
+                                Button {
+                                    isPresentingEditTags.toggle()
+                                } label: {
+                                    Label("Edit keywords", systemImage: "text.word.spacing")
+                                }
+
                             } label: {
                                 Image(systemName: "ellipsis.circle")
                             }
@@ -241,9 +251,21 @@ struct GallerySceneView: View {
                 AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
                         selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
+            .sheet(isPresented: $isPresentingEditTags, onDismiss: {
+                if isPhotosChanged {
+                    selectedImagesArray = []
+                    selectingMode = false
+                    isPhotosChanged = false
+                }
+            }, content: {
+                if selectedImagesArray.count > 0 {
+                    EditTagsView(selectedImages: selectedImagesArray.map { $0.uuid! },
+                                 photos: photos, isChanged: $isPhotosChanged)
+                }
+            })
         }
         .onAppear {
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { result in
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in
             }
         }
         .onDisappear {
@@ -343,6 +365,13 @@ struct GallerySceneView: View {
                             syncArr.append(uuid)
                             cloudRecords.append(photoCloudRecord)
 
+//                            do {
+//                                try viewContext.save()
+//                            } catch {
+//                                sceneSettings.errorAlertData = error.localizedDescription
+//                                sceneSettings.isShowingErrorAlert.toggle()
+//                            }
+
                             count+=1
                             lastUUID = uuid
                         }
@@ -353,7 +382,6 @@ struct GallerySceneView: View {
             do {
                 library.lastChange = Date()
                 try viewContext.save()
-
                 try PHPhotoLibrary.shared().performChangesAndWait {
                     PHAssetChangeRequest.deleteAssets(photosAssets)
                 }

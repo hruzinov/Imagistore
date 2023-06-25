@@ -9,7 +9,9 @@ struct LibrariesSelectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject var sceneSettings: SceneSettings
 
-    @FetchRequest(sortDescriptors: [SortDescriptor(\.lastChange, order: .reverse)]) var librariesCollection: FetchedResults<PhotosLibrary>
+    @FetchRequest(sortDescriptors: [SortDescriptor(\.lastChange, order: .reverse)])
+    var librariesCollection: FetchedResults<PhotosLibrary>
+
     @Binding var applicationSettings: ApplicationSettings
     @Binding var selectedLibrary: PhotosLibrary?
 

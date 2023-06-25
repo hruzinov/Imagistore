@@ -12,8 +12,34 @@ public class Photo: NSManagedObject {
 enum PhotoStatus: String, Codable {
     case normal, deleted
 }
+enum KeywordState {
+    case inAll, partical, none
+}
 
-func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgument, isDESC: Bool = true, filter: PhotoStatus) -> [Photo] {
+extension Photo {
+
+    public class func fetchRequest() -> NSFetchRequest<Photo> {
+        NSFetchRequest<Photo>(entityName: "Photo")
+    }
+
+    @NSManaged public var uuid: UUID?
+    @NSManaged public var library: PhotosLibrary
+    @NSManaged public var status: String
+    @NSManaged public var creationDate: Date
+    @NSManaged public var importDate: Date
+    @NSManaged public var deletionDate: Date?
+    @NSManaged public var fileExtension: String?
+    @NSManaged public var miniature: Data?
+    @NSManaged public var fullsizeCloudID: String?
+    @NSManaged public var keywords: [String]?
+
+}
+
+extension Photo: Identifiable {
+
+}
+
+func sortedPhotos(_ photos: FetchedResults<Photo>, by byArgument: PhotosSortArgument, filter: PhotoStatus) -> [Photo] {
     photos
         .filter({ photo in
             photo.uuid != nil
