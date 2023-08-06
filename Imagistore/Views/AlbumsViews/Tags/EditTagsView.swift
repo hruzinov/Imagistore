@@ -19,16 +19,18 @@ struct EditTagsView: View {
                 keys += imageKeywords
             }
         }
-        return keys
+        return Array(Set(keys))
     }
     var selectedImagesKeywords: [String: KeywordState] {
         var keysDict: [String: KeywordState] = [:]
         var selectedKeywords: [String] = []
+
         for selectedImage in selectedImages {
             if let keywords = photos.first(where: {$0.uuid == selectedImage})?.keywords {
                 selectedKeywords += keywords
             }
         }
+        selectedKeywords = Array(Set(selectedKeywords))
 
         for key in selectedKeywords {
             var isInAll = true
