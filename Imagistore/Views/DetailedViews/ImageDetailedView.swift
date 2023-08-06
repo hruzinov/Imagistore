@@ -26,20 +26,6 @@ struct ImageDetailedView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
-                if #available(iOS 17, *) {
-                    HStack {
-                        Button {
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                Text("Back")
-                            }
-                        }
-                        Spacer()
-                    }
-                }
                 VStack {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
@@ -48,9 +34,9 @@ struct ImageDetailedView: View {
                                     if fileExistsAtPath(imageFileURL(uuid, libraryID: item.library.uuid).path) {
                                         Image(uiImage: readImageFromFile(item) ?? UIImage(data: miniature) ??
                                               UIImage(systemName: "photo.on.rectangle.angled")!)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .pinchToZoom()
+                                        .resizable()
+                                        .scaledToFit()
+                                        .pinchToZoom()
                                     } else if let uiImage = tempFullsizeImages[uuid] {
                                         Image(uiImage: uiImage)
                                             .resizable()
@@ -58,19 +44,19 @@ struct ImageDetailedView: View {
                                             .pinchToZoom()
                                     } else {
                                         Image(uiImage: UIImage(data: miniature) ??
-                                                UIImage(systemName: "photo.on.rectangle.angled")!)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .onAppear {
-                                                getCloudImage(item) { uiImage, err in
-                                                    if let err {
-                                                        sceneSettings.errorAlertData = err.localizedDescription
-                                                        sceneSettings.isShowingErrorAlert.toggle()
-                                                    } else if let uiImage {
-                                                        tempFullsizeImages.updateValue(uiImage, forKey: uuid)
-                                                    }
+                                              UIImage(systemName: "photo.on.rectangle.angled")!)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .onAppear {
+                                            getCloudImage(item) { uiImage, err in
+                                                if let err {
+                                                    sceneSettings.errorAlertData = err.localizedDescription
+                                                    sceneSettings.isShowingErrorAlert.toggle()
+                                                } else if let uiImage {
+                                                    tempFullsizeImages.updateValue(uiImage, forKey: uuid)
                                                 }
                                             }
+                                        }
                                     }
                                 }
                             }
@@ -125,20 +111,15 @@ struct ImageDetailedView: View {
                 }
             }
             .toolbar {
-            #warning("Temporary fix for iOS 17 beta 2: dismiss() does not work in toolbar")
-                if #unavailable(iOS 17) {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        HStack {
-                            Button {
-                                dismiss()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "chevron.backward")
-                                    Text("Back")
-                                }
-                            }
-                            Spacer()
+
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.backward")
                         }
+                        Spacer()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {

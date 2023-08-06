@@ -36,28 +36,6 @@ struct GallerySceneView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
-                if #available(iOS 17, *) {
-                    if isMainLibraryScreen {
-                        HStack {
-                            PhotosPicker(
-                                selection: $importSelectedItems,
-                                matching: .images,
-                                photoLibrary: .shared()
-                            ) {
-                                Label("Import", systemImage: "plus")
-                            }
-                            .onChange(of: importSelectedItems) { _ in
-                                if importSelectedItems.count > 0 {
-                                    importFromPhotosApp()
-                                }
-                            }
-                            Spacer()
-                        }
-                        .padding(.horizontal, 10)
-                    }
-                }
-
                 UIGalleryView(
                     library: library,
                     photos: photos,
@@ -110,19 +88,16 @@ struct GallerySceneView: View {
             .toolbar {
                 if isMainLibraryScreen, !selectingMode {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
-                        #warning("Temporary fix for iOS 17: PhotosPicker does not work in toolbar")
-                        if #unavailable(iOS 17) {
-                            PhotosPicker(
-                                selection: $importSelectedItems,
-                                matching: .images,
-                                photoLibrary: .shared()
-                            ) {
-                                Image(systemName: "plus")
-                            }
-                            .onChange(of: importSelectedItems) { _ in
-                                if importSelectedItems.count > 0 {
-                                    importFromPhotosApp()
-                                }
+                        PhotosPicker(
+                            selection: $importSelectedItems,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            Image(systemName: "plus")
+                        }
+                        .onChange(of: importSelectedItems) { _ in
+                            if importSelectedItems.count > 0 {
+                                importFromPhotosApp()
                             }
                         }
 
@@ -198,7 +173,7 @@ struct GallerySceneView: View {
                             Button { isPresentingDeletePhotos.toggle() } label: {
                                 Image(systemName: "trash")
                             }
-                                .disabled(selectedImagesArray.count == 0)
+                            .disabled(selectedImagesArray.count == 0)
                             Menu {
                                 if currentAlbum != nil, currentAlbum?.filterOptions == nil {
                                     Button {
@@ -249,7 +224,7 @@ struct GallerySceneView: View {
 
             .sheet(isPresented: $isPresentingAddToAlbum) {
                 AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
-                        selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
+                               selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
             .sheet(isPresented: $isPresentingEditTags, onDismiss: {
                 if isPhotosChanged {
@@ -365,12 +340,12 @@ struct GallerySceneView: View {
                             syncArr.append(uuid)
                             cloudRecords.append(photoCloudRecord)
 
-//                            do {
-//                                try viewContext.save()
-//                            } catch {
-//                                sceneSettings.errorAlertData = error.localizedDescription
-//                                sceneSettings.isShowingErrorAlert.toggle()
-//                            }
+                            //                            do {
+                            //                                try viewContext.save()
+                            //                            } catch {
+                            //                                sceneSettings.errorAlertData = error.localizedDescription
+                            //                                sceneSettings.isShowingErrorAlert.toggle()
+                            //                            }
 
                             count+=1
                             lastUUID = uuid
@@ -413,7 +388,7 @@ struct GallerySceneView: View {
                         debugPrint(error)
                     } else {
                         if let index = syncArr.firstIndex(
-                                where: { $0.uuidString == record?.value(forKey: "photo") as? String}
+                            where: { $0.uuidString == record?.value(forKey: "photo") as? String}
                         ) {
                             syncArr.remove(at: index)
                         }
