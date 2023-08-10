@@ -31,32 +31,39 @@ struct ImageDetailedView: View {
                         ForEach(photos, id: \.uuid) { item in
                             VStack {
                                 if let uuid = item.uuid, let miniature = item.miniature {
-                                    if fileExistsAtPath(imageFileURL(uuid, libraryID: item.library.uuid).path) {
-                                        Image(uiImage: readImageFromFile(item) ?? UIImage(data: miniature) ??
-                                              UIImage(systemName: "photo.on.rectangle.angled")!)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .pinchToZoom()
-                                    } else if let uiImage = tempFullsizeImages[uuid] {
-                                        Image(uiImage: uiImage)
+                                    if item.uuid == selectedImage! {
+                                        if fileExistsAtPath(imageFileURL(uuid, libraryID: item.library.uuid).path) {
+                                            Image(uiImage: readImageFromFile(item) ?? UIImage(data: miniature) ??
+                                                  UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()
                                             .scaledToFit()
                                             .pinchToZoom()
+                                        } else if let uiImage = tempFullsizeImages[uuid] {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .pinchToZoom()
+                                        } else {
+                                            Image(uiImage: UIImage(data: miniature) ??
+                                                  UIImage(systemName: "photo.on.rectangle.angled")!)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .onAppear {
+                                                getCloudImage(item) { uiImage, err in
+                                                    if let err {
+                                                        sceneSettings.errorAlertData = err.localizedDescription
+                                                        sceneSettings.isShowingErrorAlert.toggle()
+                                                    } else if let uiImage {
+                                                        tempFullsizeImages.updateValue(uiImage, forKey: uuid)
+                                                    }
+                                                }
+                                            }
+                                        }
                                     } else {
                                         Image(uiImage: UIImage(data: miniature) ??
                                               UIImage(systemName: "photo.on.rectangle.angled")!)
                                         .resizable()
                                         .scaledToFit()
-                                        .onAppear {
-                                            getCloudImage(item) { uiImage, err in
-                                                if let err {
-                                                    sceneSettings.errorAlertData = err.localizedDescription
-                                                    sceneSettings.isShowingErrorAlert.toggle()
-                                                } else if let uiImage {
-                                                    tempFullsizeImages.updateValue(uiImage, forKey: uuid)
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }
