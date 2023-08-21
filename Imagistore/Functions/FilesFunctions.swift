@@ -19,8 +19,8 @@ private func directoryExistsAtPath(_ path: String) -> Bool {
 func fileExistsAtPath(_ path: String) -> Bool {
     FileManager.default.fileExists(atPath: path)
 }
-func imageFileURL (_ id: UUID, libraryID: UUID) -> URL {
-    photosFilePath(libraryID).appendingPathComponent(id.uuidString + ".heic")
+func imageFileURL (_ id: UUID, fileExtension: String, libraryID: UUID) -> URL {
+    photosFilePath(libraryID).appendingPathComponent(id.uuidString + "." + fileExtension)
 }
 
 func checkFileRecord(_ item: Photo) {
@@ -29,7 +29,7 @@ func checkFileRecord(_ item: Photo) {
             if let error {
                 debugPrint(error)
             } else if record == nil, let uuid = item.uuid {
-                let imageAsset = CKAsset(fileURL: imageFileURL(uuid, libraryID: item.library.uuid))
+                let imageAsset = CKAsset(fileURL: imageFileURL(uuid, fileExtension: item.fileExtension!, libraryID: item.library.uuid))
                 let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
                 photoCloudRecord["library"] = item.library.uuid.uuidString as CKRecordValue
                 photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
@@ -44,16 +44,28 @@ func checkFileRecord(_ item: Photo) {
 }
 
 func readImageFromFile(_ photo: Photo) -> UIImage? {
-    if let uuid = photo.uuid {
-        let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
+    if let uuid = photo.uuid, let fileExtension = photo.fileExtension{
+        let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + "." + fileExtension)
         let uiImage: UIImage? = UIImage(contentsOfFile: filepath.path)
+        if uiImage == nil {
+            let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(uuid.uuidString + ".heic")
+            return UIImage(contentsOfFile: filepath.path)
+        }
         return uiImage
     }
     return nil
 }
 
-func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) -> Bool {
-    let data = uiImage.heic()
+func writeImageToFile(_ uuid: UUID, uiImage: UIImage, fileExtension: String, library: PhotosLibrary) -> Bool {
+    var data: Data?
+    if fileExtension == "jpeg" {
+        data = uiImage.jpegData(compressionQuality: 1)
+    } else if fileExtension == "png" {
+        data = uiImage.pngData()
+    } else {
+        data = uiImage.heic()
+    }
+
     let libraryPath = photosFilePath(library.uuid)
 
     if let data {
@@ -66,8 +78,7 @@ func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) ->
                 return false
             }
         }
-
-        let filepath = libraryPath.appendingPathComponent(uuid.uuidString + ".heic")
+        let filepath = libraryPath.appendingPathComponent(uuid.uuidString + "." + fileExtension)
         do {
             try data.write(to: filepath)
         } catch {
@@ -80,7 +91,7 @@ func writeImageToFile(_ uuid: UUID, uiImage: UIImage, library: PhotosLibrary) ->
 }
 
 func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Void) {
-    let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(photo.uuid!.uuidString + ".heic")
+    let filepath = photosFilePath(photo.library.uuid).appendingPathComponent(photo.uuid!.uuidString + "." + photo.fileExtension!)
     do {
         try FileManager.default.removeItem(atPath: filepath.path)
         print("Image file deleted from path \(filepath)")
@@ -89,6 +100,8 @@ func removeImageFile(_ photo: Photo, completion: @escaping (Bool, Error?) -> Voi
         switch error._code {
         case 4:
             print("An obscure image has been deleted")
+            let filepathH = photosFilePath(photo.library.uuid).appendingPathComponent(photo.uuid!.uuidString + ".heic")
+            try? FileManager.default.removeItem(atPath: filepathH.path)
             completion(true, nil)
         default:
             print(error)
@@ -112,7 +125,7 @@ func removeFolder(_ library: PhotosLibrary, completion: @escaping (Bool, Error?)
 
 func getCloudImage(_ photo: Photo, completion: @escaping (UIImage?, Error?) throws -> Void) {
     if
-        let uuid = photo.uuid, !fileExistsAtPath(imageFileURL(uuid, libraryID: photo.library.uuid).path),
+        let uuid = photo.uuid, !fileExistsAtPath(imageFileURL(uuid, fileExtension: photo.fileExtension!, libraryID: photo.library.uuid).path),
         let cloudID = photo.fullsizeCloudID {
         Task {
             print("TestDebug — no local file")
@@ -120,14 +133,14 @@ func getCloudImage(_ photo: Photo, completion: @escaping (UIImage?, Error?) thro
                 let record = try await cloudDatabase.record(for: CKRecord.ID(recordName: cloudID))
                 let photoAsset = record.value(forKey: "asset") as? CKAsset
                 var cloudUiImage: UIImage?
-                if let photoAsset, let photoURL = photoAsset.fileURL {
+                if let photoAsset, let photoURL = photoAsset.fileURL, let fileExtension = photo.fileExtension {
                     cloudUiImage = UIImage(data: try Data(contentsOf: photoURL))
                     print("TestDebug — loaded UIImage from data")
 
                     if cloudUiImage == nil {
                         print("Image file not found: \(photo.uuid?.uuidString ?? "No UUID")")
                         print("TestDebug — cloud image is nil")
-                    } else if let cloudUiImage, writeImageToFile(uuid, uiImage: cloudUiImage, library: photo.library) {
+                    } else if let cloudUiImage, writeImageToFile(uuid, uiImage: cloudUiImage, fileExtension: fileExtension, library: photo.library) {
                         let uiImage = cloudUiImage
                         print("TestDebug — written to file")
                         try? completion(uiImage, nil)

@@ -15,6 +15,7 @@ struct ContentView: View {
     @State var sortingArgument: PhotosSortArgument = .importDateDesc
     @State var selectedTab: Tab = .library
     @State var navToRoot: Bool = false
+    @Binding var goToPhotosLibrary: Bool
     @State var viewLoaded: Bool = false
 
     @Binding var applicationSettings: ApplicationSettings
@@ -38,6 +39,8 @@ struct ContentView: View {
                     AlbumsSceneView(library: photosLibrary, photos: photos, albums: albums,
                                     sortingArgument: $sortingArgument, navToRoot: $navToRoot)
                     .tag(Tab.albums)
+                    SettingsSceneView(goToPhotosLibrary: $goToPhotosLibrary)
+                    .tag(Tab.settings)
                 }
                 .overlay(alignment: .bottom) {
                     CustomTabBar(selection: handler)

@@ -5,7 +5,7 @@
 import SwiftUI
 
 enum Tab: String, CaseIterable {
-    case library, albums
+    case library, albums, settings
 }
 
 struct CustomTabBar: View {
@@ -39,6 +39,20 @@ struct CustomTabBar: View {
                         Text("Albums").font(.caption).bold()
                     }
                     .foregroundColor(selection == .albums ? .blue : .gray)
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.top, 10)
+
+                Button {
+                    withAnimation(.easeInOut) {
+                        selection = .settings
+                    }
+                } label: {
+                    VStack(spacing: 5) {
+                        Image(systemName: "gear").font(.title2)
+                        Text("Settings").font(.caption).bold()
+                    }
+                    .foregroundColor(selection == .settings ? .blue : .gray)
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.top, 10)

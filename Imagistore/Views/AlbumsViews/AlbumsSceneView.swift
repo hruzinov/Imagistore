@@ -26,40 +26,48 @@ struct AlbumsSceneView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                    ScrollView {
-                        LazyVGrid(columns: rows2) {
-                            ForEach(albums, id: \.self) { album in
-                                UIAlbumBlockView(library: library,
-                                                    photos: photos,
-                                                    albums: albums,
-                                                    currentAlbum: album,
-                                                    sortingArgument: $sortingArgument,
-                                                    photosSelector: .normal,
-                                                    navToRoot: $navToRoot)
-                            }
 
-                            if photos.filter({ img in
-                                img.status == PhotoStatus.deleted.rawValue
-                            }).count > 0 {
-                                UIAlbumBlockView(library: library,
-                                                    photos: photos,
-                                                    albums: albums,
-                                                    currentAlbum: nil,
-                                                    sortingArgument: $sortingArgument,
-                                                    photosSelector: .deleted,
-                                                    navToRoot: $navToRoot)
-                            }
+                if albums.count == 0 && photos.filter({ img in
+                    img.status == PhotoStatus.deleted.rawValue
+                }).count == 0 {
+                    Text("You don't have any albums yet")
+                        .padding(.top, 15)
+                }
+
+                ScrollView {
+                    LazyVGrid(columns: rows2) {
+                        ForEach(albums, id: \.self) { album in
+                            UIAlbumBlockView(library: library,
+                                             photos: photos,
+                                             albums: albums,
+                                             currentAlbum: album,
+                                             sortingArgument: $sortingArgument,
+                                             photosSelector: .normal,
+                                             navToRoot: $navToRoot)
+                        }
+
+                        if photos.filter({ img in
+                            img.status == PhotoStatus.deleted.rawValue
+                        }).count > 0 {
+                            UIAlbumBlockView(library: library,
+                                             photos: photos,
+                                             albums: albums,
+                                             currentAlbum: nil,
+                                             sortingArgument: $sortingArgument,
+                                             photosSelector: .deleted,
+                                             navToRoot: $navToRoot)
                         }
                     }
-                    .padding(.horizontal, 15)
                 }
+                .padding(.horizontal, 15)
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: NewAlbumSceneView(photos: photos, library: library),
-                            label: { Image(systemName: "plus") })
+                                   label: { Image(systemName: "plus") })
                 }
             }
             .navigationTitle("Albums")
-            }
         }
+    }
 }

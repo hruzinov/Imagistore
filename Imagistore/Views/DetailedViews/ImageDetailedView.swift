@@ -32,7 +32,8 @@ struct ImageDetailedView: View {
                             VStack {
                                 if let uuid = item.uuid, let miniature = item.miniature {
                                     if item.uuid == selectedImage! {
-                                        if fileExistsAtPath(imageFileURL(uuid, libraryID: item.library.uuid).path) {
+                                        if fileExistsAtPath(imageFileURL(uuid, fileExtension: item.fileExtension!, libraryID: item.library.uuid).path) ||
+                                            fileExistsAtPath(imageFileURL(uuid, fileExtension: "heic", libraryID: item.library.uuid).path) {
                                             Image(uiImage: readImageFromFile(item) ?? UIImage(data: miniature) ??
                                                   UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()

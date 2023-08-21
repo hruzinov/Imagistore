@@ -40,6 +40,7 @@
 		49F0CE872A07AD4000E65888 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE862A07AD4000E65888 /* PersistenceController.swift */; };
 		49F0CE8A2A07AD8800E65888 /* LibrariesStorage.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE882A07AD8800E65888 /* LibrariesStorage.xcdatamodeld */; };
 		49F0CE912A07BC9800E65888 /* PhotosLibrary+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreData.swift */; };
+		49F293C02A93DAE50034BF63 /* SettingsSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F293BF2A93DAE50034BF63 /* SettingsSceneView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +81,7 @@
 		49F0CE862A07AD4000E65888 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		49F0CE892A07AD8800E65888 /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
 		49F0CE8F2A07BC9800E65888 /* PhotosLibrary+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhotosLibrary+CoreData.swift"; sourceTree = "<group>"; };
+		49F293BF2A93DAE50034BF63 /* SettingsSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +208,7 @@
 				49CAAC1F29E3FC3100C51AA3 /* ContentView.swift */,
 				49E99ADE29F172ED00309D38 /* LibrariesSelectorView.swift */,
 				49DEB46E29E8179600B4D86F /* LaunchScreen.storyboard */,
+				49F293BF2A93DAE50034BF63 /* SettingsSceneView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				49CB4CCE29F050DD00C8687F /* View+Modifiers.swift in Sources */,
 				49737E5929EBF18E00168A63 /* AppNavigator.swift in Sources */,
 				496EA0F629E6FE2400C9F67F /* TimeFunctions.swift in Sources */,
+				49F293C02A93DAE50034BF63 /* SettingsSceneView.swift in Sources */,
 				49737E5429EBE19600168A63 /* UIImage+heic.swift in Sources */,
 				49D6A84429E1B8FF00E17E5C /* CustomTabBar.swift in Sources */,
 				491289AC29C080FF000D138A /* FilesFunctions.swift in Sources */,
@@ -485,7 +489,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -502,14 +506,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 0.7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,7";
@@ -524,7 +528,7 @@
 				CODE_SIGN_ENTITLEMENTS = Imagistore/Imagistore.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 32;
 				DEVELOPMENT_ASSET_PATHS = "\"Imagistore/Other/Preview Content\"";
 				DEVELOPMENT_TEAM = G4PV26QJD2;
 				ENABLE_PREVIEWS = YES;
@@ -541,14 +545,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 0.7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gruzinov.Imagistore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,7";

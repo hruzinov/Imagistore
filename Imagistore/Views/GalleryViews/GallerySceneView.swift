@@ -103,9 +103,9 @@ struct GallerySceneView: View {
 
                         if syncArr.count > 0 {
                             withAnimation {
-                                HStack {
-                                    Image(systemName: "arrow.clockwise.icloud.fill")
+                                HStack(spacing: 5) {
                                     Text("\(syncArr.count) in sync").font(.caption).bold()
+                                    ProgressView()
                                 }
                             }
                         }
@@ -314,11 +314,11 @@ struct GallerySceneView: View {
                             }
                         } else { creationDate = Date() }
 
-                        let fileExtension = item.supportedContentTypes.first?.preferredFilenameExtension
+                        let fileExtension: String = item.supportedContentTypes.first?.preferredFilenameExtension ?? "heic"
                         let uuid = UUID()
                         let data = generateMiniatureData(uiImage)
 
-                        if writeImageToFile(uuid, uiImage: uiImage, library: library) {
+                        if writeImageToFile(uuid, uiImage: uiImage, fileExtension: fileExtension, library: library) {
                             let newPhoto = Photo(context: viewContext)
                             newPhoto.uuid = uuid
                             newPhoto.library = library
@@ -330,7 +330,8 @@ struct GallerySceneView: View {
                             newPhoto.miniature = data
                             library.addToPhotos(newPhoto)
 
-                            let imageAsset = CKAsset(fileURL: imageFileURL(uuid, libraryID: library.uuid))
+                            let imageAsset = CKAsset(fileURL: imageFileURL(uuid,
+                                                    fileExtension: fileExtension, libraryID: library.uuid))
 
                             let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
                             photoCloudRecord["library"] = library.uuid.uuidString as CKRecordValue
@@ -346,10 +347,9 @@ struct GallerySceneView: View {
                             //                                sceneSettings.errorAlertData = error.localizedDescription
                             //                                sceneSettings.isShowingErrorAlert.toggle()
                             //                            }
-
-                            count+=1
-                            lastUUID = uuid
                         }
+                        lastUUID = uuid
+                        count+=1
                     }
                 }
             }
