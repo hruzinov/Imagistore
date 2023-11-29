@@ -30,10 +30,11 @@ struct ImageDetailedView: View {
                     TabView(selection: $selectedImage) {
                         ForEach(photos, id: \.uuid) { item in
                             VStack {
-                                if let uuid = item.uuid, let miniature = item.miniature {
+                                if let uuid = item.uuid, 
+                                    let miniature = getMiniature(for: uuid, context: viewContext) {
                                     if item.uuid == selectedImage! {
-                                        if fileExistsAtPath(imageFileURL(uuid, fileExtension: item.fileExtension!, libraryID: item.library.uuid).path) ||
-                                            fileExistsAtPath(imageFileURL(uuid, fileExtension: "heic", libraryID: item.library.uuid).path) {
+                                        if fileExistsAtPath(imageFileURL(uuid, fileExtension: item.fileExtension!, libraryID: item.libraryID).path) ||
+                                            fileExistsAtPath(imageFileURL(uuid, fileExtension: "heic", libraryID: item.libraryID).path) {
                                             Image(uiImage: readImageFromFile(item) ?? UIImage(data: miniature) ??
                                                   UIImage(systemName: "photo.on.rectangle.angled")!)
                                             .resizable()
@@ -81,7 +82,7 @@ struct ImageDetailedView: View {
                             LazyHStack(spacing: 2) {
                                 ForEach(photos, id: \.uuid) { item in
                                     if let uuid = item.uuid {
-                                        if let data = item.miniature, let uiImage = UIImage(data: data) {
+                                        if let data = getMiniature(for: uuid, context: viewContext), let uiImage = UIImage(data: data) {
                                             Button {
                                                 self.selectedImage = uuid
                                                 scrollTo = selectedImage

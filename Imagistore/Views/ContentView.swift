@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import CloudKit
 import CoreData
 
 struct ContentView: View {
@@ -47,6 +48,18 @@ struct ContentView: View {
                 }
                 .toolbar(.hidden, for: .tabBar)
             }
+            .task {
+                Task {
+//                    for photo in photos {
+//                        let newMiniature = Miniature(context: viewContext)
+//                        newMiniature.uuid = photo.uuid!
+//                        newMiniature.miniature = photo.miniature!
+//                        photo.lastChange = Date.now
+//                        try! viewContext.save()
+//                    }
+//                    print("ALL GOOD")
+                }
+            }
             .overlay(alignment: .center, content: {
                 if sceneSettings.isShowingInfoBar {
                     UICircleProgressPupUp(progressText: $sceneSettings.infoBarData,
@@ -73,4 +86,15 @@ struct ContentView: View {
                 }
         }
     }
+}
+
+func saveToCloudKit() {
+
+//    let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
+//    photoCloudRecord["library"] = library.uuid.uuidString as CKRecordValue
+//    photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
+//    photoCloudRecord["asset"] = imageAsset
+//    newPhoto.fullsizeCloudID = photoCloudRecord.recordID.recordName
+//    syncArr.append(uuid)
+//    cloudRecords.append(photoCloudRecord)
 }

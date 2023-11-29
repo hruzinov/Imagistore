@@ -39,7 +39,7 @@ struct LibrariesSelectorView: View {
                                                 .font(.title2).bold()
                                                 .multilineTextAlignment(.leading)
                                     }
-                                    Text("Photos: \(library.photos.count)").font(.caption)
+                                    Text("Photos: \(library.photosIDs.count)").font(.caption)
 
                                     #if DEBUG
                                     Text("ID: \(library.uuid.uuidString)").font(.caption)
@@ -103,7 +103,7 @@ struct LibrariesSelectorView: View {
                                         let newLib = PhotosLibrary(context: viewContext)
                                         newLib.uuid = UUID()
                                         newLib.name = newLibraryName
-                                        newLib.photos = []
+                                        newLib.photosIDs = []
                                         newLib.lastChange = Date()
                                         newLib.version = Int16(PhotosLibrary.actualLibraryVersion)
 

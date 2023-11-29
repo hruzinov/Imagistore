@@ -5,6 +5,7 @@
 import SwiftUI
 
 struct UIAlbumBlockView: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
@@ -23,9 +24,9 @@ struct UIAlbumBlockView: View {
                         if let type = option["type"] as? String, type == "tagFilter" {
                             if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
                                 if logicalNot {
-                                    if let keys = photo.keywords, keys.count > 0 {
-                                        return false
-                                    }
+//                                    if let keys = photo.keywords, keys.count > 0 {
+//                                        return false
+//                                    }
 
                                     if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
                                         matchFilters = false
@@ -35,9 +36,9 @@ struct UIAlbumBlockView: View {
                                     }
                                 } else {
                                     if let photoKeywords = photo.keywords {
-                                        if photoKeywords.count > 0 {
-                                            return true
-                                        }
+//                                        if photoKeywords.count > 0 {
+//                                            return true
+//                                        }
 
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
@@ -76,7 +77,8 @@ struct UIAlbumBlockView: View {
         }, label: {
             HStack {
                 if let lastImage = filteredPhotos.last,
-                   let data = lastImage.miniature, let uiImage = UIImage(data: data) {
+                   let data = getMiniature(for: lastImage.uuid!, context: viewContext),
+                   let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)

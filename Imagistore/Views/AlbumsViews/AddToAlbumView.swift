@@ -53,8 +53,7 @@ struct AddToAlbumView: View {
                         } label: {
                             HStack {
                                 if let lastImageId = alb.photos.last {
-                                    if let lastImage = photos.first(where: { $0.uuid == lastImageId }),
-                                       let data = lastImage.miniature, let uiImage = UIImage(data: data) {
+                                    if let data = getMiniature(for: lastImageId, context: viewContext), let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .aspectRatio(contentMode: .fill)

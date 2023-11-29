@@ -24,31 +24,31 @@ extension PhotosLibrary {
     @NSManaged public var uuid: UUID
     @NSManaged public var name: String?
     @NSManaged public var lastChange: Date
-    @NSManaged public var photos: NSSet
     @NSManaged public var albums: [UUID]?
+    @NSManaged public var photosIDs: [UUID]
 
 }
 
 extension PhotosLibrary: Identifiable {
 
 }
-
-// MARK: Generated accessors for photos
-extension PhotosLibrary {
-
-    @objc(addPhotosObject:)
-    @NSManaged public func addToPhotos(_ value: Photo)
-
-    @objc(removePhotosObject:)
-    @NSManaged public func removeFromPhotos(_ value: Photo)
-
-    @objc(addPhotos:)
-    @NSManaged public func addToPhotos(_ values: NSSet)
-
-    @objc(removePhotos:)
-    @NSManaged public func removeFromPhotos(_ values: NSSet)
-
-}
+//
+//// MARK: Generated accessors for photos
+//extension PhotosLibrary {
+//
+//    @objc(addPhotosObject:)
+//    @NSManaged public func addToPhotos(_ value: Photo)
+//
+//    @objc(removePhotosObject:)
+//    @NSManaged public func removeFromPhotos(_ value: Photo)
+//
+//    @objc(addPhotos:)
+//    @NSManaged public func addToPhotos(_ values: NSSet)
+//
+//    @objc(removePhotos:)
+//    @NSManaged public func removeFromPhotos(_ values: NSSet)
+//
+//}
 
 // MARK: Generated accessors for albums
 extension PhotosLibrary {

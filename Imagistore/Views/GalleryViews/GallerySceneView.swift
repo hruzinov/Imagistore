@@ -318,17 +318,20 @@ struct GallerySceneView: View {
                         let uuid = UUID()
                         let data = generateMiniatureData(uiImage)
 
-                        if writeImageToFile(uuid, uiImage: uiImage, fileExtension: fileExtension, library: library) {
+                        if writeImageToFile(uuid, uiImage: uiImage, fileExtension: fileExtension, library: library.uuid) {
                             let newPhoto = Photo(context: viewContext)
                             newPhoto.uuid = uuid
-                            newPhoto.library = library
+                            newPhoto.libraryID = library.uuid
                             newPhoto.status = PhotoStatus.normal.rawValue
                             newPhoto.creationDate = creationDate
                             newPhoto.importDate = Date()
                             newPhoto.deletionDate = nil
                             newPhoto.fileExtension = fileExtension
-                            newPhoto.miniature = data
-                            library.addToPhotos(newPhoto)
+                            library.photosIDs.append(uuid)
+
+                            let newMiniature = Miniature(context: viewContext)
+                            newMiniature.uuid = uuid
+                            newMiniature.miniature = data
 
                             let imageAsset = CKAsset(fileURL: imageFileURL(uuid,
                                                     fileExtension: fileExtension, libraryID: library.uuid))

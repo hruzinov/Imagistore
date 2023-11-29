@@ -6,6 +6,7 @@ import SwiftUI
 
 struct UIGalleryView: View {
     @EnvironmentObject var sceneSettings: SceneSettings
+    @Environment(\.managedObjectContext) private var viewContext
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
@@ -31,9 +32,9 @@ struct UIGalleryView: View {
                         if let type = option["type"] as? String, type == "tagFilter" {
                             if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
                                 if logicalNot {
-                                    if let keys = photo.keywords, keys.count > 0 {
-                                        return false
-                                    }
+//                                    if let keys = photo.keywords, keys.count > 0 {
+//                                        return false
+//                                    }
 
                                     if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
                                         matchFilters = false
@@ -43,9 +44,10 @@ struct UIGalleryView: View {
                                     }
                                 } else {
                                     if let photoKeywords = photo.keywords {
-                                        if photoKeywords.count > 0 {
-                                            return true
-                                        }
+//                                        if photoKeywords.count == 0 {
+//                                            print("PROBLEM HERE")
+//                                            return true
+//                                        }
 
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
@@ -77,7 +79,14 @@ struct UIGalleryView: View {
         return filteredPhotos
     }
 
-    let columns = [
+    let columnsPhone = [
+        GridItem(.flexible(), spacing: 1),
+        GridItem(.flexible(), spacing: 1),
+        GridItem(.flexible(), spacing: 1)
+    ]
+    let columnsPad = [
+        GridItem(.flexible(), spacing: 1),
+        GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1),
         GridItem(.flexible(), spacing: 1)
@@ -90,12 +99,14 @@ struct UIGalleryView: View {
                     Rectangle()
                         .opacity(0)
                         .id("topRectangle")
-                    LazyVGrid(columns: columns, alignment: .center, spacing: 1) {
+                    LazyVGrid(columns:
+                                UIDevice.current.userInterfaceIdiom == .phone ?
+                              columnsPhone : columnsPad, alignment: .center, spacing: 1) {
                         ForEach(filteredPhotos) { item in
                             GeometryReader { geometryReader in
                                 let size = geometryReader.size
                                 VStack {
-                                    if let data = item.miniature, let uiImage = UIImage(data: data) {
+                                    if let data = getMiniature(for: item.uuid!, context: viewContext), let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()

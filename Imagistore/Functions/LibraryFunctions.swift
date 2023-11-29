@@ -61,7 +61,8 @@ extension PhotosLibrary {
                 removeImageFile(photo) { _, error in
                     if let error { competition(error) }
                 }
-                self.removeFromPhotos(photo)
+                context.delete(photo)
+//                self.removeFromPhotos(photo)
                 if let cloudID = photo.fullsizeCloudID {
                     cloudIDArr.append(CKRecord.ID(recordName: cloudID))
                 }
@@ -94,7 +95,7 @@ extension PhotosLibrary {
     }
     func clearBin(in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         let request = Photo.fetchRequest()
-        let libPredicate = NSPredicate(format: "library = %@", self as CVarArg)
+        let libPredicate = NSPredicate(format: "libraryID = %@", self.uuid as CVarArg)
         let deletedPredicate = NSPredicate(format: "deletionDate < %@", DateTimeFunctions.deletionDate as CVarArg)
         request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [libPredicate, deletedPredicate])
 
@@ -115,7 +116,7 @@ extension PhotosLibrary {
 
     func deleteLibrary(in context: NSManagedObjectContext, competition: @escaping (Error?) -> Void) {
         let request = Photo.fetchRequest()
-        request.predicate = NSPredicate(format: "library = %@", self as CVarArg)
+        request.predicate = NSPredicate(format: "libraryID = %@", self.uuid as CVarArg)
 
         do {
             let forDeletion = try context.fetch(request)

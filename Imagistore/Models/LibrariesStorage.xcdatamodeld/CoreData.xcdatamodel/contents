@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22158.8" systemVersion="23A5257q" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23C5047e" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Album" representedClassName="Album" syncable="YES">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="filterMode" optional="YES" attributeType="String"/>
@@ -9,6 +9,10 @@
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
+    <entity name="Miniature" representedClassName="Miniature" syncable="YES">
+        <attribute name="miniature" optional="YES" attributeType="Binary"/>
+        <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
     <entity name="Photo" representedClassName="Photo" syncable="YES">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="deletionDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -16,17 +20,17 @@
         <attribute name="fullsizeCloudID" optional="YES" attributeType="String"/>
         <attribute name="importDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="keywords" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
-        <attribute name="miniature" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="lastChange" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="libraryID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="library" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PhotosLibrary" inverseName="photos" inverseEntity="PhotosLibrary"/>
     </entity>
     <entity name="PhotosLibrary" representedClassName="PhotosLibrary" syncable="YES">
-        <attribute name="albums" optional="YES" attributeType="Transformable" valueTransformerName="" customClassName="[UUID]"/>
+        <attribute name="albums" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[UUID]"/>
         <attribute name="lastChange" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="photosIDs" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[UUID]"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="version" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="library" inverseEntity="Photo"/>
     </entity>
 </model>
