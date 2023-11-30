@@ -14,7 +14,7 @@ struct NewAlbumSceneView: View {
     @State var library: PhotosLibrary
     @State var albumTitle: String = ""
     @State var albumType: AlbumType = .simple
-    @State var filterOptions: [[String: Any]] = []
+    @State var filterOptions: [[String: String]] = []
 
     @State var newKeywordFilter: String? = nil
     @State var filterMode: String = "AND"
@@ -23,7 +23,7 @@ struct NewAlbumSceneView: View {
     var allKeywords: [String] {
         var allKeywords = [String]()
         photos.forEach { photo in
-            if let keywords = photo.keywords {
+            if let keywords = JSONToSet(photo.keywordsJSON) {
                 keywords.forEach { tag in
                     if !allKeywords.contains(tag) {
                         allKeywords.append(tag)
@@ -50,11 +50,11 @@ struct NewAlbumSceneView: View {
                         List {
                             ForEach(0..<filterOptions.count, id: \.self) { index in
                                 let filter = filterOptions[index]
-                                let type = filter["type"] as? String
+                                let type = filter["type"]
                                 
-                                if let type, type == "tagFilter", let keyword = filter["filterBy"] as? String {
+                                if let type, type == "tagFilter", let keyword = filter["filterBy"] {
                                     if keyword == "anyKeyword" {
-                                        Text(filter["logicalNot"] as! Bool ? "Not contain keywords" : "Contain any keyword")
+                                        Text(filter["logicalNot"] == "true" ? "Not contain keywords" : "Contain any keyword")
                                             .swipeActions {
                                                 Button(role: .destructive) {
                                                     withAnimation {
@@ -69,7 +69,7 @@ struct NewAlbumSceneView: View {
                                                 isAnyKeywordSelected = true
                                             }
                                     } else if !isAnyKeywordSelected {
-                                        Text("Keyword \(filter["logicalNot"] as! Bool ? "is not" : "is"): \(keyword)")
+                                        Text("Keyword \(filter["logicalNot"] == "true" ? "is not" : "is"): \(keyword)")
                                             .swipeActions {
                                                 Button(role: .destructive) {
                                                     filterOptions.remove(at: index)
@@ -107,7 +107,7 @@ struct NewAlbumSceneView: View {
                             let newAlbum = Album(context: viewContext)
                             newAlbum.uuid = UUID()
                             newAlbum.library = library.uuid
-                            newAlbum.photos = [UUID]()
+                            newAlbum.photosSet = setToJSON(Set<String>())!
                             newAlbum.title = albumTitle
                             newAlbum.creationDate = Date()
 
@@ -131,8 +131,8 @@ struct NewAlbumSceneView: View {
                             newAlbum.library = library.uuid
                             newAlbum.title = albumTitle
                             newAlbum.creationDate = Date()
-                            newAlbum.photos = [UUID]()
-                            newAlbum.filterOptions = filterOptions
+                            newAlbum.photosSet = setToJSON(Set<String>())!
+                            newAlbum.filterOptionsSet = optionsToJSON(filterOptions)
                             newAlbum.filterMode = filterMode
                             do {
                                 try viewContext.save()
@@ -161,7 +161,7 @@ private struct SelectTag: View {
     @Environment(\.dismiss) private var dismiss
     @State var allKeywords: [String]
     @Binding var selectedKeywords: [String]
-    @Binding var filterOptions: [[String: Any]]
+    @Binding var filterOptions: [[String: String]]
 
     @State var logicalNot = false
 
@@ -177,7 +177,7 @@ private struct SelectTag: View {
                     [
                         "type": "tagFilter",
                         "filterBy": "anyKeyword",
-                        "logicalNot": logicalNot
+                        "logicalNot": logicalNot ? "true" : "false"
                     ]
                 )
                 selectedKeywords.append("Any keyword")
@@ -193,7 +193,7 @@ private struct SelectTag: View {
                             [
                                 "type": "tagFilter",
                                 "filterBy": keyword,
-                                "logicalNot": logicalNot
+                                "logicalNot": logicalNot ? "true" : "false"
                             ]
                         )
                         selectedKeywords.append(keyword)

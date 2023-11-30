@@ -9,6 +9,7 @@ struct AddToAlbumView: View {
     @Environment(\.managedObjectContext) private var viewContext
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
     @EnvironmentObject var sceneSettings: SceneSettings
     @Binding var isPresentingAddToAlbum: Bool
     @Binding var selectingMode: Bool
@@ -19,17 +20,21 @@ struct AddToAlbumView: View {
         NavigationStack {
             List {
                 ForEach(albums) { alb in
-                    if alb.filterOptions == nil {
+                    if alb.filterOptionsSet == nil {
                         Button {
                             if selectedImagesArray.count > 0 {
                                 selectedImagesArray.forEach { img in
                                     if let uuid = img.uuid {
-                                        alb.photos.append(uuid)
+                                        var currentSet = JSONToSet(alb.photosSet)
+                                        currentSet?.insert(uuid.uuidString)
+                                        alb.photosSet = setToJSON(currentSet ?? Set<String>())!
                                     }
                                 }
                                 selectedImagesArray = []
                             } else if let selectedImage {
-                                alb.photos.append(selectedImage)
+                                var currentSet = JSONToSet(alb.photosSet)
+                                currentSet?.insert(selectedImage.uuidString)
+                                alb.photosSet = setToJSON(currentSet ?? Set<String>())!
                             }
                             
                             do {
@@ -52,8 +57,9 @@ struct AddToAlbumView: View {
                             isPresentingAddToAlbum.toggle()
                         } label: {
                             HStack {
-                                if let lastImageId = alb.photos.last {
-                                    if let data = getMiniature(for: lastImageId, context: viewContext), let uiImage = UIImage(data: data) {
+                                if let lastImageId = JSONToArray(alb.photosSet)?.last {
+                                    if let data = miniatures.first(where: { $0.uuid == UUID(uuidString: lastImageId)})?.miniature,
+                                        let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .aspectRatio(contentMode: .fill)

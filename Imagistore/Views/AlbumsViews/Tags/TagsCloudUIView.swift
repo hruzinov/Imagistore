@@ -8,6 +8,7 @@ struct TagsCloudUIView: View {
     @Environment(\.managedObjectContext) private var viewContext
     var keywords: [String: KeywordState]
     var selectedImages: [UUID]
+    var library: PhotosLibrary
     @Binding var photos: FetchedResults<Photo>
     @Binding var isChanged: Bool
 
@@ -78,15 +79,16 @@ struct TagsCloudUIView: View {
             if state == .none || state == .partical {
                 Button {
                     for selectedImage in selectedImages {
-                        if photos.first(where: {$0.uuid == selectedImage})?.keywords == nil {
-                            photos.first(where: {$0.uuid == selectedImage})?.keywords = []
+                        if photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON == nil {
+                            photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON = setToJSON([])
                         }
-                        if photos.first(where: {$0.uuid == selectedImage})?.keywords?.firstIndex(of: text) == nil {
-                            photos.first(where: {$0.uuid == selectedImage})?.keywords?.append(text)
-                        }
+                        var tagsSet = JSONToSet(photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON)!
+                        tagsSet.insert(text)
+                        photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON = setToJSON(tagsSet)
                     }
                     withAnimation {
                         do {
+                            library.lastChange = Date.now
                             try viewContext.save()
                             isChanged = true
                         } catch {
@@ -104,12 +106,15 @@ struct TagsCloudUIView: View {
             if state == .inAll || state == .partical {
                 Button {
                     for selectedImage in selectedImages {
-                        if let tagIndex = photos.first(where: {$0.uuid == selectedImage})?.keywords?.firstIndex(of: text) {
-                            photos.first(where: {$0.uuid == selectedImage})?.keywords?.remove(at: tagIndex)
+                        var tagsSet = JSONToSet(photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON)!
+                        if tagsSet.contains(text) {
+                            tagsSet.remove(text)
+                            photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON = setToJSON(tagsSet)
                         }
                     }
                     withAnimation {
                         do {
+                            library.lastChange = Date.now
                             try viewContext.save()
                             isChanged = true
                         } catch {

@@ -3,13 +3,14 @@
     <entity name="Album" representedClassName="Album" syncable="YES">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="filterMode" optional="YES" attributeType="String"/>
-        <attribute name="filterOptions" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[[String: [String: Any]]]"/>
+        <attribute name="filterOptionsSet" optional="YES" attributeType="String" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[[String: [String: Any]]]"/>
         <attribute name="library" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="photos" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[UUID]"/>
+        <attribute name="photosSet" optional="YES" attributeType="String" valueTransformerName="NSSecureUnarchiveFromData" customClassName="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="Miniature" representedClassName="Miniature" syncable="YES">
+        <attribute name="library" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="miniature" optional="YES" attributeType="Binary"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
@@ -19,7 +20,7 @@
         <attribute name="fileExtension" optional="YES" attributeType="String"/>
         <attribute name="fullsizeCloudID" optional="YES" attributeType="String"/>
         <attribute name="importDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="keywords" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="keywordsJSON" optional="YES" attributeType="String" valueTransformerName="NSSecureUnarchiveFromData" customClassName="Set&lt;String&gt;"/>
         <attribute name="lastChange" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="libraryID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="status" optional="YES" attributeType="String"/>
@@ -31,6 +32,5 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="photosIDs" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[UUID]"/>
         <attribute name="uuid" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="version" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
 </model>

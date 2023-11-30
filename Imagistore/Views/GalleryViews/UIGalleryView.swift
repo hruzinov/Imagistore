@@ -10,6 +10,7 @@ struct UIGalleryView: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
     @State var currentAlbum: Album?
     @State var photosSelector: PhotoStatus
     @Binding var sortingArgument: PhotosSortArgument
@@ -25,29 +26,28 @@ struct UIGalleryView: View {
     var filteredPhotos: [Photo] {
         var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
         if let currentAlbum {
-            if let filterOptions = currentAlbum.filterOptions, let filterMode = currentAlbum.filterMode {
+            if let filterOptions = JSONToOptions(currentAlbum.filterOptionsSet), let filterMode = currentAlbum.filterMode {
                 filteredPhotos = filteredPhotos.filter { photo in
                     var matchFilters = true
                     for option in filterOptions {
-                        if let type = option["type"] as? String, type == "tagFilter" {
-                            if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
-                                if logicalNot {
-//                                    if let keys = photo.keywords, keys.count > 0 {
-//                                        return false
-//                                    }
+                        if let type = option["type"], type == "tagFilter" {
+                            if let keyword = option["filterBy"], let logicalNot = option["logicalNot"] {
+                                if logicalNot == "true" {
+                                    if let keys = JSONToSet(photo.keywordsJSON), keys.count > 0 {
+                                        matchFilters = false
+                                    }
 
-                                    if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
+                                    if let photoKeywords = JSONToSet(photo.keywordsJSON), photoKeywords.contains(keyword) {
                                         matchFilters = false
                                     } else if filterMode == "OR" {
                                         matchFilters = true
                                         break
                                     }
                                 } else {
-                                    if let photoKeywords = photo.keywords {
-//                                        if photoKeywords.count == 0 {
-//                                            print("PROBLEM HERE")
-//                                            return true
-//                                        }
+                                    if let photoKeywords = JSONToSet(photo.keywordsJSON) {
+                                        if photoKeywords.count == 0 {
+                                            matchFilters = true
+                                        }
 
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
@@ -66,9 +66,9 @@ struct UIGalleryView: View {
                 }
             } else {
                 filteredPhotos = filteredPhotos.filter { photo in
-                    currentAlbum.photos.contains { phId in
+                    JSONToSet(currentAlbum.photosSet)!.contains { phId in
                         if let uuid = photo.uuid {
-                            return uuid == phId
+                            return uuid.uuidString == phId
                         } else {
                             return false
                         }
@@ -106,7 +106,7 @@ struct UIGalleryView: View {
                             GeometryReader { geometryReader in
                                 let size = geometryReader.size
                                 VStack {
-                                    if let data = getMiniature(for: item.uuid!, context: viewContext), let uiImage = UIImage(data: data) {
+                                    if let data = miniatures.first(where: { $0.uuid == item.uuid})?.miniature, let uiImage = UIImage(data: data) {
                                         Image(uiImage: uiImage)
                                             .resizable()
                                             .scaledToFill()
@@ -186,8 +186,8 @@ struct UIGalleryView: View {
                     }
                 })
                 .fullScreenCover(isPresented: $goToDetailedView) {
-                    ImageDetailedView(library: library, photos: filteredPhotos, photosResult: photos, albums: albums,
-                            photosSelector: $photosSelector, selectedImage: $openedImage)
+                    ImageDetailedView(library: library, photos: filteredPhotos, photosResult: photos, albums: albums, miniatures: miniatures,
+                                      photosSelector: $photosSelector, selectedImage: $openedImage)
                 }
             }
         } else {

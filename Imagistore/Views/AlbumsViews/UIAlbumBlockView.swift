@@ -9,6 +9,7 @@ struct UIAlbumBlockView: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
     @State var currentAlbum: Album?
     @Binding var sortingArgument: PhotosSortArgument
     @State var photosSelector: PhotoStatus
@@ -17,28 +18,28 @@ struct UIAlbumBlockView: View {
     var filteredPhotos: [Photo] {
         var filteredPhotos = sortedPhotos(photos, by: sortingArgument, filter: photosSelector)
         if let currentAlbum {
-            if let filterOptions = currentAlbum.filterOptions, let filterMode = currentAlbum.filterMode {
+            if let filterOptions = JSONToOptions(currentAlbum.filterOptionsSet), let filterMode = currentAlbum.filterMode {
                 filteredPhotos = filteredPhotos.filter { photo in
                     var matchFilters = true
                     for option in filterOptions {
-                        if let type = option["type"] as? String, type == "tagFilter" {
-                            if let keyword = option["filterBy"] as? String, let logicalNot = option["logicalNot"] as? Bool {
-                                if logicalNot {
-//                                    if let keys = photo.keywords, keys.count > 0 {
-//                                        return false
-//                                    }
+                        if let type = option["type"], type == "tagFilter" {
+                            if let keyword = option["filterBy"], let logicalNot = option["logicalNot"] {
+                                if logicalNot == "true" {
+                                    if let keys = JSONToSet(photo.keywordsJSON), keys.count > 0 {
+                                        matchFilters = false
+                                    }
 
-                                    if let photoKeywords = photo.keywords, photoKeywords.contains(keyword) {
+                                    if let photoKeywords = JSONToSet(photo.keywordsJSON), photoKeywords.contains(keyword) {
                                         matchFilters = false
                                     } else if filterMode == "OR" {
                                         matchFilters = true
                                         break
                                     }
                                 } else {
-                                    if let photoKeywords = photo.keywords {
-//                                        if photoKeywords.count > 0 {
-//                                            return true
-//                                        }
+                                    if let photoKeywords = JSONToSet(photo.keywordsJSON) {
+                                        if photoKeywords.count > 0 {
+                                            matchFilters = true
+                                        }
 
                                         if !photoKeywords.contains(keyword) {
                                             matchFilters = false
@@ -57,9 +58,9 @@ struct UIAlbumBlockView: View {
                 }
             } else {
                 filteredPhotos = filteredPhotos.filter { photo in
-                    currentAlbum.photos.contains { phId in
+                    JSONToSet(currentAlbum.photosSet)!.contains { phId in
                         if let uuid = photo.uuid {
-                            return uuid == phId
+                            return uuid.uuidString == phId
                         } else {
                             return false
                         }
@@ -72,18 +73,18 @@ struct UIAlbumBlockView: View {
 
     var body: some View {
         NavigationLink(destination: {
-            GallerySceneView(library: library, photos: photos, albums: albums, currentAlbum: currentAlbum,
+            GallerySceneView(library: library, photos: photos, albums: albums, miniatures: miniatures, currentAlbum: currentAlbum,
                              sortingArgument: $sortingArgument, navToRoot: $navToRoot, photosSelector: photosSelector)
         }, label: {
             HStack {
                 if let lastImage = filteredPhotos.last,
-                   let data = getMiniature(for: lastImage.uuid!, context: viewContext),
-                   let uiImage = UIImage(data: data) {
+                   let data = miniatures.first(where: { $0.uuid == lastImage.uuid!})?.miniature,
+                   let uiImage = UIImage(data: data) { 
                     Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: UIScreen.main.bounds.width / 2.3,
-                                   height: UIScreen.main.bounds.width / 2.3)
+                            .frame(width: UIScreen.main.bounds.width /  ( UIDevice.current.userInterfaceIdiom == .phone ? 2.3 : 3.5),
+                                   height: UIScreen.main.bounds.width / ( UIDevice.current.userInterfaceIdiom == .phone ? 2.3 : 3.5))
                             .clipped()
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(5)
@@ -96,8 +97,8 @@ struct UIAlbumBlockView: View {
                             .font(.title)
                         Spacer()
                     }
-                    .frame(width: UIScreen.main.bounds.width / 2.3,
-                           height: UIScreen.main.bounds.width / 2.3)
+                    .frame(width: UIScreen.main.bounds.width /  ( UIDevice.current.userInterfaceIdiom == .phone ? 2.3 : 3.5),
+                           height: UIScreen.main.bounds.width / ( UIDevice.current.userInterfaceIdiom == .phone ? 2.3 : 3.5))
                     .background(Color(.init(gray: 0.8, alpha: 1)))
                     .cornerRadius(5)
                 }

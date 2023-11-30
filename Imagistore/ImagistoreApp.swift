@@ -6,7 +6,7 @@ import SwiftUI
 
 @main
 struct ImagistoreApp: App {
-    private var persistenceController = PersistenceController.shared
+    let persistenceController = PersistenceController.shared
 
     var body: some Scene {
         WindowGroup {

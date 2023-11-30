@@ -13,6 +13,7 @@ struct GallerySceneView: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
     @State var currentAlbum: Album?
 
     @Binding var sortingArgument: PhotosSortArgument
@@ -40,6 +41,7 @@ struct GallerySceneView: View {
                     library: library,
                     photos: photos,
                     albums: albums,
+                    miniatures: miniatures,
                     currentAlbum: currentAlbum,
                     photosSelector: photosSelector,
                     sortingArgument: $sortingArgument,
@@ -175,13 +177,14 @@ struct GallerySceneView: View {
                             }
                             .disabled(selectedImagesArray.count == 0)
                             Menu {
-                                if currentAlbum != nil, currentAlbum?.filterOptions == nil {
+                                if currentAlbum != nil, currentAlbum?.filterOptionsSet == nil {
                                     Button {
                                         withAnimation {
                                             selectedImagesArray.forEach { img in
-                                                if let uuid = img.uuid,
-                                                   let index = currentAlbum?.photos.firstIndex(of: uuid) {
-                                                    currentAlbum?.photos.remove(at: index)
+                                                if let uuid = img.uuid, let set = JSONToSet(currentAlbum?.photosSet) {
+                                                    var currentSet = set
+                                                    currentSet.remove(uuid.uuidString)
+                                                    currentAlbum?.photosSet = setToJSON(currentSet)!
                                                 }
                                             }
                                         }
@@ -223,7 +226,7 @@ struct GallerySceneView: View {
             }
 
             .sheet(isPresented: $isPresentingAddToAlbum) {
-                AddToAlbumView(photos: photos, albums: albums, isPresentingAddToAlbum: $isPresentingAddToAlbum,
+                AddToAlbumView(photos: photos, albums: albums, miniatures: miniatures, isPresentingAddToAlbum: $isPresentingAddToAlbum,
                                selectingMode: $selectingMode, selectedImagesArray: $selectedImagesArray)
             }
             .sheet(isPresented: $isPresentingEditTags, onDismiss: {
@@ -231,11 +234,12 @@ struct GallerySceneView: View {
                     selectedImagesArray = []
                     selectingMode = false
                     isPhotosChanged = false
+                    sceneSettings.isShowingTabBar.toggle()
                 }
             }, content: {
                 if selectedImagesArray.count > 0 {
                     EditTagsView(selectedImages: selectedImagesArray.map { $0.uuid! },
-                                 photos: photos, isChanged: $isPhotosChanged)
+                                 photos: photos, library: library, isChanged: $isPhotosChanged)
                 }
             })
         }

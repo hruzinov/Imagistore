@@ -12,6 +12,7 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest var photos: FetchedResults<Photo>
     @FetchRequest var albums: FetchedResults<Album>
+    @FetchRequest var miniatures: FetchedResults<Miniature>
 
     @State var sortingArgument: PhotosSortArgument = .importDateDesc
     @State var selectedTab: Tab = .library
@@ -34,11 +35,11 @@ struct ContentView: View {
             VStack {
                 TabView(selection: handler) {
                     GallerySceneView(library: photosLibrary, photos: photos, albums: albums,
-                                     sortingArgument: $sortingArgument,
+                                     miniatures: miniatures, sortingArgument: $sortingArgument,
                                      navToRoot: $navToRoot, photosSelector: .normal, isMainLibraryScreen: true)
                     .tag(Tab.library)
                     AlbumsSceneView(library: photosLibrary, photos: photos, albums: albums,
-                                    sortingArgument: $sortingArgument, navToRoot: $navToRoot)
+                                    miniatures: miniatures, sortingArgument: $sortingArgument, navToRoot: $navToRoot)
                     .tag(Tab.albums)
                     SettingsSceneView(goToPhotosLibrary: $goToPhotosLibrary)
                     .tag(Tab.settings)
@@ -47,18 +48,6 @@ struct ContentView: View {
                     CustomTabBar(selection: handler)
                 }
                 .toolbar(.hidden, for: .tabBar)
-            }
-            .task {
-                Task {
-//                    for photo in photos {
-//                        let newMiniature = Miniature(context: viewContext)
-//                        newMiniature.uuid = photo.uuid!
-//                        newMiniature.miniature = photo.miniature!
-//                        photo.lastChange = Date.now
-//                        try! viewContext.save()
-//                    }
-//                    print("ALL GOOD")
-                }
             }
             .overlay(alignment: .center, content: {
                 if sceneSettings.isShowingInfoBar {
@@ -86,15 +75,4 @@ struct ContentView: View {
                 }
         }
     }
-}
-
-func saveToCloudKit() {
-
-//    let photoCloudRecord = CKRecord(recordType: "FullSizePhotos")
-//    photoCloudRecord["library"] = library.uuid.uuidString as CKRecordValue
-//    photoCloudRecord["photo"] = uuid.uuidString as CKRecordValue
-//    photoCloudRecord["asset"] = imageAsset
-//    newPhoto.fullsizeCloudID = photoCloudRecord.recordID.recordName
-//    syncArr.append(uuid)
-//    cloudRecords.append(photoCloudRecord)
 }

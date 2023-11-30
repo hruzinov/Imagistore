@@ -8,25 +8,48 @@ struct EditTagsView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var viewContext
     @State var newKeyword: String = ""
-    @State var selectedImages: [UUID]
-    @State var photos: FetchedResults<Photo>
     @Binding var isChanged: Bool
+    @State var photos: FetchedResults<Photo>
 
-    var allKeywords: [String] {
-        var keys: [String] = []
+    @State var allKeywords: Set<String>
+
+    var library: PhotosLibrary
+    var selectedImages: [UUID]
+
+    init(selectedImages: [UUID], photos: FetchedResults<Photo>, library: PhotosLibrary, isChanged: Binding<Bool>) {
+        self.selectedImages = selectedImages
+        self._photos = State(initialValue: photos)
+        self._isChanged = isChanged
+        self.library = library
+
+        var keys: Set<String> = []
         for image in photos {
-            if let imageKeywords = image.keywords {
-                keys += imageKeywords
+            if let imageKeywords = JSONToSet(image.keywordsJSON) {
+                for key in imageKeywords {
+                    keys.insert(key)
+                }
             }
         }
-        return Array(Set(keys))
+        self._allKeywords = State(initialValue: keys)
     }
+
+//    var allKeywords: Set<String> {
+//        var keys: Set<String> = []
+//        for image in photos {
+//            if let imageKeywords = JSONToSet(image.keywordsJSON) {
+//                for key in imageKeywords {
+//                    keys.insert(key)
+//                }
+//            }
+//        }
+//        return keys
+//    }
     var selectedImagesKeywords: [String: KeywordState] {
         var keysDict: [String: KeywordState] = [:]
         var selectedKeywords: [String] = []
 
         for selectedImage in selectedImages {
-            if let keywords = photos.first(where: {$0.uuid == selectedImage})?.keywords {
+            if let keywords = JSONToSet(photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON) {
                 selectedKeywords += keywords
             }
         }
@@ -35,7 +58,7 @@ struct EditTagsView: View {
         for key in selectedKeywords {
             var isInAll = true
             for selectedImage in selectedImages {
-                if let keywords = photos.first(where: {$0.uuid == selectedImage})?.keywords {
+                if let keywords = photos.first(where: {$0.uuid == selectedImage})?.keywordsJSON {
                     if !keywords.contains(key) {
                         isInAll = false
                         break
@@ -58,8 +81,9 @@ struct EditTagsView: View {
     }
     var freeKeywords: [String: KeywordState] {
         var keys: [String: KeywordState] = [:]
+        let selectedKeywords = selectedImagesKeywords
         for keyword in allKeywords {
-            if !selectedImagesKeywords.keys.contains(keyword) {
+            if !selectedKeywords.keys.contains(keyword) {
                 keys.updateValue(.none, forKey: keyword)
             }
         }
@@ -89,18 +113,21 @@ struct EditTagsView: View {
                                 let selectedPhoto = photos.first(where: {$0.uuid == selectedImage})
                                 if let selectedPhoto {
                                     withAnimation {
-                                        if selectedPhoto.keywords == nil {
-                                            selectedPhoto.keywords = []
+                                        if JSONToSet(selectedPhoto.keywordsJSON) == nil {
+                                            selectedPhoto.keywordsJSON = setToJSON([])
                                         }
                                         
-                                        if newKeyword != "anyKeyword", !selectedPhoto.keywords!.contains(newKeyword) {
-                                            selectedPhoto.keywords?.append(newKeyword)
+                                        if newKeyword != "anyKeyword", !JSONToSet(selectedPhoto.keywordsJSON)!.contains(newKeyword) {
+                                            var currentSet = JSONToSet(selectedPhoto.keywordsJSON)!
+                                            currentSet.insert(newKeyword)
+                                            selectedPhoto.keywordsJSON = setToJSON(currentSet)
+                                            allKeywords.insert(newKeyword)
                                         }
-                                        
                                     }
                                 }
                             }
                             do {
+                                library.lastChange = Date.now
                                 try viewContext.save()
                                 isChanged = true
                             } catch {
@@ -111,12 +138,13 @@ struct EditTagsView: View {
                     } label: {
                         Image(systemName: "plus")
                             .background(Color.white)
+                            .foregroundStyle(.black)
                     }.disabled(newKeyword.count == 0)
                 }
-                TagsCloudUIView(keywords: selectedImagesKeywords, selectedImages: selectedImages,
+                TagsCloudUIView(keywords: selectedImagesKeywords, selectedImages: selectedImages, library: library,
                                 photos: $photos, isChanged: $isChanged)
                     .padding(.top, 10)
-                TagsCloudUIView(keywords: freeKeywords, selectedImages: selectedImages, photos: $photos, isChanged: $isChanged)
+                TagsCloudUIView(keywords: freeKeywords, selectedImages: selectedImages, library: library, photos: $photos, isChanged: $isChanged)
             }
         }
     }

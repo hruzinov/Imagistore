@@ -13,6 +13,7 @@ struct ImageDetailedView: View {
     var photos: [Photo]
     var photosResult: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
 
     @Binding var photosSelector: PhotoStatus
     @Binding var selectedImage: UUID?
@@ -31,7 +32,8 @@ struct ImageDetailedView: View {
                         ForEach(photos, id: \.uuid) { item in
                             VStack {
                                 if let uuid = item.uuid, 
-                                    let miniature = getMiniature(for: uuid, context: viewContext) {
+                                    let miniature = miniatures
+                                    .first(where: { $0.uuid == uuid })?.miniature {
                                     if item.uuid == selectedImage! {
                                         if fileExistsAtPath(imageFileURL(uuid, fileExtension: item.fileExtension!, libraryID: item.libraryID).path) ||
                                             fileExistsAtPath(imageFileURL(uuid, fileExtension: "heic", libraryID: item.libraryID).path) {
@@ -82,7 +84,7 @@ struct ImageDetailedView: View {
                             LazyHStack(spacing: 2) {
                                 ForEach(photos, id: \.uuid) { item in
                                     if let uuid = item.uuid {
-                                        if let data = getMiniature(for: uuid, context: viewContext), let uiImage = UIImage(data: data) {
+                                        if let data = miniatures.first(where: {$0.uuid == uuid})?.miniature, let uiImage = UIImage(data: data) {
                                             Button {
                                                 self.selectedImage = uuid
                                                 scrollTo = selectedImage
@@ -184,13 +186,13 @@ struct ImageDetailedView: View {
             }
             .padding(.vertical, 10)
             .sheet(isPresented: $isPresentingAddToAlbum) {
-                AddToAlbumView(photos: photosResult, albums: albums,
+                AddToAlbumView(photos: photosResult, albums: albums, miniatures: miniatures,
                                isPresentingAddToAlbum: $isPresentingAddToAlbum, selectingMode: .constant(true),
                                selectedImagesArray: .constant([]), selectedImage: selectedImage)
             }
             .sheet(isPresented: $isPresentingEditTags, content: {
                 if let selectedImage {
-                    EditTagsView(selectedImages: [selectedImage], photos: photosResult, isChanged: .constant(false))
+                    EditTagsView(selectedImages: [selectedImage], photos: photosResult, library: library, isChanged: .constant(false))
                 }
             })
             .confirmationDialog("Delete this photo", isPresented: $isPresentingConfirm) {

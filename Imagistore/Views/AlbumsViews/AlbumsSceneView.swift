@@ -12,15 +12,21 @@ struct AlbumsSceneView: View {
     @StateObject var library: PhotosLibrary
     var photos: FetchedResults<Photo>
     var albums: FetchedResults<Album>
+    var miniatures: FetchedResults<Miniature>
     @Binding var sortingArgument: PhotosSortArgument
     @Binding var navToRoot: Bool
 
-    let rows1 = [
+    let columns1 = [
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2))
     ]
-    let rows2 = [
+    let columns2 = [
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2.2)),
         GridItem(.flexible(minimum: UIScreen.main.bounds.width / 2.2))
+    ]
+    let columns3 = [
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 3.3)),
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 3.3)),
+        GridItem(.flexible(minimum: UIScreen.main.bounds.width / 3.3))
     ]
 
     var body: some View {
@@ -35,11 +41,13 @@ struct AlbumsSceneView: View {
                 }
 
                 ScrollView {
-                    LazyVGrid(columns: rows2) {
+                    LazyVGrid(columns:
+                                UIDevice.current.userInterfaceIdiom == .phone ? columns2 : columns3) {
                         ForEach(albums, id: \.self) { album in
                             UIAlbumBlockView(library: library,
                                              photos: photos,
-                                             albums: albums,
+                                             albums: albums, 
+                                             miniatures: miniatures,
                                              currentAlbum: album,
                                              sortingArgument: $sortingArgument,
                                              photosSelector: .normal,
@@ -51,7 +59,8 @@ struct AlbumsSceneView: View {
                         }).count > 0 {
                             UIAlbumBlockView(library: library,
                                              photos: photos,
-                                             albums: albums,
+                                             albums: albums, 
+                                             miniatures: miniatures,
                                              currentAlbum: nil,
                                              sortingArgument: $sortingArgument,
                                              photosSelector: .deleted,

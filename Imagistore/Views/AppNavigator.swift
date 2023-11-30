@@ -25,6 +25,8 @@ struct AppNavigator: View {
                                                      predicate: NSPredicate(format: "libraryID = %@", photosLibrary.uuid as CVarArg)),
                                 albums: FetchRequest(sortDescriptors: [],
                                         predicate: NSPredicate(format: "library = %@", photosLibrary.uuid as CVarArg)),
+                                miniatures: FetchRequest(sortDescriptors: [],
+                                        predicate: NSPredicate(format: "library = %@", photosLibrary.uuid as CVarArg)),
                                 goToPhotosLibrary: $goToPhotosLibrary, applicationSettings: $applicationSettings)
                 } else {
                     LibrariesSelectorView(applicationSettings: $applicationSettings, selectedLibrary: $photosLibrary)
